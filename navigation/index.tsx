@@ -3,7 +3,7 @@
  * https://reactnavigation.org/docs/getting-started
  *
  */
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome, AntDesign } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -15,6 +15,7 @@ import NotFoundScreen from '../screens/NotFoundScreen';
 import HomeScreen from '../screens/HomeScreen';
 import NewScreen from '../screens/NewScreen';
 import LibraryScreen from '../screens/LibraryScreen';
+import ProfileScreen from '../screens/ProfileScreen';
 import {
   RootStackParamList,
   RootTabParamList,
@@ -85,7 +86,8 @@ function BottomTabNavigator() {
         component={HomeScreen}
         options={({ navigation }: RootTabScreenProps<'Home'>) => ({
           headerTitleStyle: { color: Colors.text, fontFamily: Fonts.bold },
-          tabBarIcon: () => <TabBarIcon name='home' color={Colors.text} />,
+          tabBarActiveTintColor: Colors.text,
+          tabBarIcon: ({ color }) => <TabBarIcon name='home' color={color} />,
           headerRight: () => (
             <Pressable
               onPress={() => navigation.navigate('Modal')}
@@ -93,10 +95,10 @@ function BottomTabNavigator() {
                 opacity: pressed ? 0.5 : 1,
               })}
             >
-              <FontAwesome
-                name='info-circle'
+              <AntDesign
+                name='user'
                 size={25}
-                color={Colors.button}
+                color={Colors.text}
                 style={{ marginRight: 15 }}
               />
             </Pressable>
@@ -106,20 +108,84 @@ function BottomTabNavigator() {
       <BottomTab.Screen
         name='New'
         component={NewScreen}
-        options={{
+        options={({ navigation }: RootTabScreenProps<'New'>) => ({
           headerTitle: 'New plant',
           headerTitleStyle: { color: Colors.text, fontFamily: Fonts.bold },
-          tabBarIcon: () => <TabBarIcon name='plus' color={Colors.text} />,
-        }}
+          tabBarActiveTintColor: Colors.text,
+          tabBarIcon: ({ color }) => (
+            <TabBarIcon name='pluscircleo' color={color} />
+          ),
+          headerLeft: () => (
+            <Pressable
+              onPress={() => navigation.navigate('Home')}
+              style={({ pressed }) => ({
+                opacity: pressed ? 0.5 : 1,
+              })}
+            >
+              <AntDesign
+                name='arrowleft'
+                size={25}
+                color={Colors.text}
+                style={{ marginLeft: 15 }}
+              />
+            </Pressable>
+          ),
+          headerRight: () => (
+            <Pressable
+              onPress={() => navigation.navigate('Modal')}
+              style={({ pressed }) => ({
+                opacity: pressed ? 0.5 : 1,
+              })}
+            >
+              <AntDesign
+                name='user'
+                size={25}
+                color={Colors.text}
+                style={{ marginRight: 15 }}
+              />
+            </Pressable>
+          ),
+        })}
       />
       <BottomTab.Screen
         name='Library'
         component={LibraryScreen}
-        options={{
+        options={({ navigation }: RootTabScreenProps<'Library'>) => ({
           headerTitle: 'Plant library',
           headerTitleStyle: { color: Colors.text, fontFamily: Fonts.bold },
-          tabBarIcon: () => <TabBarIcon name='book' color={Colors.text} />,
-        }}
+          tabBarActiveTintColor: Colors.text,
+          tabBarIcon: ({ color }) => <TabBarIcon name='book' color={color} />,
+          headerLeft: () => (
+            <Pressable
+              onPress={() => navigation.navigate('Home')}
+              style={({ pressed }) => ({
+                opacity: pressed ? 0.5 : 1,
+              })}
+            >
+              <AntDesign
+                name='arrowleft'
+                size={25}
+                color={Colors.text}
+                style={{ marginLeft: 15 }}
+              />
+            </Pressable>
+          ),
+          headerRight: () => (
+            <Pressable
+              onPress={() => navigation.navigate('Modal')}
+              style={({ pressed }) => ({
+                opacity: pressed ? 0.5 : 1,
+              })}
+            >
+              <AntDesign
+                name='user'
+                size={25}
+                color={Colors.text}
+                style={{ marginRight: 15 }}
+              />
+            </Pressable>
+          ),
+        })}
       />
     </BottomTab.Navigator>
   );
@@ -129,8 +195,8 @@ function BottomTabNavigator() {
  * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
  */
 function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>['name'];
+  name: React.ComponentProps<typeof AntDesign>['name'];
   color: string;
 }) {
-  return <FontAwesome size={30} style={{ marginBottom: -3 }} {...props} />;
+  return <AntDesign size={25} {...props} />;
 }
