@@ -1,12 +1,10 @@
-import React from 'react';
 import { StyleSheet } from 'react-native';
 import { BoldText, View } from '../components/Themed';
-import { RootTabScreenProps } from '../types';
 
-export default function ProfileScreen({ navigation }: RootTabScreenProps<'Profile'>) {
+export default function ProfileScreen() {
   return (
     <View style={styles.container}>
-      <BoldText> Profile</BoldText>
+      <BoldText>Profile</BoldText>
     </View>
   );
 }

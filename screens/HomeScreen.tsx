@@ -1,12 +1,11 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { BoldText, View } from '../components/Themed';
-import { RootTabScreenProps } from '../types';
 
-export default function HomeScreen({ navigation }: RootTabScreenProps<'Home'>) {
+export default function HomeScreen() {
   return (
     <View style={styles.container}>
-      <BoldText> Bla bla bla</BoldText>
+      <BoldText>Home</BoldText>
     </View>
   );
 }

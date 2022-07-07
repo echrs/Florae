@@ -15,25 +15,23 @@ const linking: LinkingOptions<RootStackParamList> = {
     screens: {
       Root: {
         screens: {
-          Home: {
+          HomeTab: {
             screens: {
               HomeScreen: 'home',
             },
           },
-          New: {
+          TasksTab: {
             screens: {
-              NewScreen: 'new',
+              TasksScreen: 'tasks',
             },
           },
-          Library: {
+          PlantsTab: {
             screens: {
-              LibraryScreen: 'library',
+              PlantsScreen: 'plants',
             },
           },
         },
       },
-      Modal: 'modal',
-      NotFound: '*',
     },
   },
 };

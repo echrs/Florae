@@ -1,11 +1,10 @@
 import { StyleSheet, Text } from 'react-native';
 import { BoldText, View } from '../components/Themed';
 
-export default function LibraryScreen() {
+export default function PlantsScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Plant library</Text>
-      <View style={styles.separator} />
+      <BoldText>Plant library</BoldText>
     </View>
   );
 }

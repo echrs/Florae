@@ -1,36 +1,19 @@
-/**
- * Learn more about using TypeScript with React Navigation:
- * https://reactnavigation.org/docs/typescript/
- */
+import { NavigatorScreenParams } from '@react-navigation/native';
 
-import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
-import { CompositeScreenProps, NavigatorScreenParams } from '@react-navigation/native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-
-declare global {
-  namespace ReactNavigation {
-    interface RootParamList extends RootStackParamList {}
-  }
-}
+export type NO_PARAMS = undefined;
 
 export type RootStackParamList = {
-  Root: NavigatorScreenParams<RootTabParamList> | undefined;
-  Modal: undefined;
-  NotFound: undefined;
+  Root: NavigatorScreenParams<RootTabParamList> | NO_PARAMS;
 };
-
-export type RootStackScreenProps<Screen extends keyof RootStackParamList> = NativeStackScreenProps<
-  RootStackParamList,
-  Screen
->;
 
 export type RootTabParamList = {
-  Home: undefined;
-  New: undefined;
-  Library: undefined;
+  HomeTab: NO_PARAMS;
+  TasksTab: NO_PARAMS;
+  PlantsTab: NO_PARAMS;
 };
 
-export type RootTabScreenProps<Screen extends keyof RootTabParamList> = CompositeScreenProps<
-  BottomTabScreenProps<RootTabParamList, Screen>,
-  NativeStackScreenProps<RootStackParamList>
->;
+export type HomeTabParamList = {
+  Home: NO_PARAMS;
+  Tasks: NO_PARAMS;
+  Profile: NO_PARAMS;
+};
