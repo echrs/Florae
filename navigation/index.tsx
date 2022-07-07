@@ -1,4 +1,3 @@
-import { AntDesign } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -19,7 +18,6 @@ import {
   TasksTabParamList,
 } from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
-import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { Pressable } from 'react-native';
 import Fonts from '../constants/Fonts';
 import WelcomeScreen from '../screens/WelcomeScreen';
@@ -176,8 +174,8 @@ function TabNavigator() {
                 opacity: pressed ? 0.5 : 1,
               })}
             >
-              <AntDesign
-                name='user'
+              <MaterialCommunityIcons
+                name='account-outline'
                 size={25}
                 color={Colors.text}
                 style={{ marginRight: 15 }}
@@ -207,8 +205,8 @@ function TabNavigator() {
                 opacity: pressed ? 0.5 : 1,
               })}
             >
-              <AntDesign
-                name='user'
+              <MaterialCommunityIcons
+                name='account-outline'
                 size={25}
                 color={Colors.text}
                 style={{ marginRight: 15 }}
