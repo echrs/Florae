@@ -8,10 +8,11 @@ import Colors from '../constants/Colors';
 import HomeScreen from '../screens/HomeScreen';
 import TaskScreen from '../screens/TasksScreen';
 import PlantsScreen from '../screens/PlantsScreen';
-import {
-  RootStackParamList,
-  RootTabParamList,
-} from '../types';
+import ProfileScreen from '../screens/ProfileScreen';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { FontAwesome5 } from '@expo/vector-icons';
+import { Octicons } from '@expo/vector-icons';
+import { RootStackParamList, RootTabParamList } from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { Pressable } from 'react-native';
@@ -19,7 +20,8 @@ import Fonts from '../constants/Fonts';
 
 export default function Navigation() {
   return (
-    <NavigationContainer linking={LinkingConfiguration}>
+    // <NavigationContainer linking={LinkingConfiguration}>
+    <NavigationContainer>
       <RootNavigator />
     </NavigationContainer>
   );
@@ -31,19 +33,31 @@ function RootNavigator() {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name='Root'
-        component={BottomTabNavigator}
+        name='Tabs'
+        component={TabNavigator}
         options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name='Profile'
+        component={ProfileScreen}
+        options={{
+          headerTitle: '',
+          headerTitleStyle: { color: Colors.text },
+          headerShown: true,
+          headerTransparent: true,
+          headerShadowVisible: false,
+          headerTintColor: '#ffffff',
+        }}
       />
     </Stack.Navigator>
   );
 }
 
-const BottomTab = createBottomTabNavigator<RootTabParamList>();
+const Tab = createBottomTabNavigator<RootTabParamList>();
 
-function BottomTabNavigator() {
+function TabNavigator() {
   return (
-    <BottomTab.Navigator
+    <Tab.Navigator
       initialRouteName='HomeTab'
       screenOptions={{
         tabBarStyle: {
@@ -56,16 +70,19 @@ function BottomTabNavigator() {
         headerTransparent: true,
       }}
     >
-      <BottomTab.Screen
+      <Tab.Screen
         name='HomeTab'
         component={HomeScreen}
         options={({ navigation }) => ({
+          headerTitle: 'Home',
           headerTitleStyle: { color: Colors.text, fontFamily: Fonts.bold },
           tabBarActiveTintColor: Colors.text,
-          tabBarIcon: ({ color }) => <TabBarIcon name='home' color={color} />,
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons name='home-outline' size={25} color={color} />
+          ),
           headerRight: () => (
             <Pressable
-              onPress={() => navigation.navigate('ProfileScreen')}
+              onPress={() => navigation.navigate('Profile')}
               style={({ pressed }) => ({
                 opacity: pressed ? 0.5 : 1,
               })}
@@ -80,7 +97,7 @@ function BottomTabNavigator() {
           ),
         })}
       />
-      <BottomTab.Screen
+      <Tab.Screen
         name='TasksTab'
         component={TaskScreen}
         options={({ navigation }) => ({
@@ -88,11 +105,11 @@ function BottomTabNavigator() {
           headerTitleStyle: { color: Colors.text, fontFamily: Fonts.bold },
           tabBarActiveTintColor: Colors.text,
           tabBarIcon: ({ color }) => (
-            <TabBarIcon name='pluscircleo' color={color} />
+            <MaterialCommunityIcons name='book-open-outline' size={25} color={color} />
           ),
           headerRight: () => (
             <Pressable
-              onPress={() => navigation.navigate('ProfileScreen')}
+              onPress={() => navigation.navigate('Profile')}
               style={({ pressed }) => ({
                 opacity: pressed ? 0.5 : 1,
               })}
@@ -107,17 +124,23 @@ function BottomTabNavigator() {
           ),
         })}
       />
-      <BottomTab.Screen
+      <Tab.Screen
         name='PlantsTab'
         component={PlantsScreen}
         options={({ navigation }) => ({
           headerTitle: 'Plant library',
           headerTitleStyle: { color: Colors.text, fontFamily: Fonts.bold },
           tabBarActiveTintColor: Colors.text,
-          tabBarIcon: ({ color }) => <TabBarIcon name='book' color={color} />,
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons
+              name='flower-tulip-outline'
+              size={25}
+              color={color}
+            />
+          ),
           headerRight: () => (
             <Pressable
-              onPress={() => navigation.navigate('ProfileScreen')}
+              onPress={() => navigation.navigate('Profile')}
               style={({ pressed }) => ({
                 opacity: pressed ? 0.5 : 1,
               })}
@@ -132,13 +155,6 @@ function BottomTabNavigator() {
           ),
         })}
       />
-    </BottomTab.Navigator>
+    </Tab.Navigator>
   );
-}
-
-function TabBarIcon(props: {
-  name: React.ComponentProps<typeof AntDesign>['name'];
-  color: string;
-}) {
-  return <AntDesign size={25} {...props} />;
 }

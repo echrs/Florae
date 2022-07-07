@@ -3,7 +3,8 @@ import { NavigatorScreenParams } from '@react-navigation/native';
 export type NO_PARAMS = undefined;
 
 export type RootStackParamList = {
-  Root: NavigatorScreenParams<RootTabParamList> | NO_PARAMS;
+  Tabs: NavigatorScreenParams<RootTabParamList> | NO_PARAMS;
+  Profile: NO_PARAMS;
 };
 
 export type RootTabParamList = {
