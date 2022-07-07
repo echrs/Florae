@@ -13,25 +13,33 @@ const linking: LinkingOptions<RootStackParamList> = {
   prefixes: [Linking.createURL('/')],
   config: {
     screens: {
-      Root: {
+      App: {
         screens: {
-          HomeTab: {
+          Tabs: {
             screens: {
-              HomeScreen: 'home',
+              HomeTab: {
+                screens: {
+                  HomeScreen: 'home',
+                },
+              },
+              TasksTab: {
+                screens: {
+                  TasksScreen: 'tasks',
+                },
+              },
+              PlantsTab: {
+                screens: {
+                  PlantsScreen: 'plants',
+                },
+              },
             },
           },
-          TasksTab: {
-            screens: {
-              TasksScreen: 'tasks',
-            },
-          },
-          PlantsTab: {
-            screens: {
-              PlantsScreen: 'plants',
-            },
-          },
+          Profile: 'profile',
         },
       },
+      Welcome: 'welcome',
+      SignIn: 'signin',
+      SignUp: 'signup',
     },
   },
 };

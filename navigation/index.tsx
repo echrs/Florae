@@ -1,4 +1,4 @@
-import { FontAwesome, AntDesign } from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -10,50 +10,104 @@ import TaskScreen from '../screens/TasksScreen';
 import PlantsScreen from '../screens/PlantsScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { FontAwesome5 } from '@expo/vector-icons';
-import { Octicons } from '@expo/vector-icons';
-import { RootStackParamList, RootTabParamList } from '../types';
+import {
+  AppStackParamList,
+  HomeTabParamList,
+  PlantsTabParamList,
+  RootStackParamList,
+  TabsParamList,
+  TasksTabParamList,
+} from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { Pressable } from 'react-native';
 import Fonts from '../constants/Fonts';
+import WelcomeScreen from '../screens/WelcomeScreen';
+import SignInScreen from '../screens/SignInScreen';
+import SignUpScreen from '../screens/SignUpScreen';
+import TasksScreen from '../screens/TasksScreen';
 
 export default function Navigation() {
   return (
-    // <NavigationContainer linking={LinkingConfiguration}>
-    <NavigationContainer>
+    <NavigationContainer linking={LinkingConfiguration}>
       <RootNavigator />
     </NavigationContainer>
   );
 }
 
-const Stack = createNativeStackNavigator<RootStackParamList>();
+const Root = createNativeStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
+  var isLoggedIn = true;
   return (
-    <Stack.Navigator>
-      <Stack.Screen
+    <Root.Navigator>
+      {isLoggedIn ? (
+        <Root.Screen
+          name='App'
+          component={AppNavigator}
+          options={{ headerShown: false }}
+        />
+      ) : (
+        <>
+          <Root.Screen
+            name='Welcome'
+            component={WelcomeScreen}
+            options={{
+              headerTitle: '',
+              headerTransparent: true,
+              headerShadowVisible: false,
+            }}
+          />
+          <Root.Screen
+            name='SignIn'
+            component={SignInScreen}
+            options={{
+              headerTitle: '',
+              headerTransparent: true,
+              headerShadowVisible: false,
+            }}
+          />
+          <Root.Screen
+            name='SignUp'
+            component={SignUpScreen}
+            options={{
+              headerTitle: '',
+              headerTransparent: true,
+              headerShadowVisible: false,
+            }}
+          />
+        </>
+      )}
+    </Root.Navigator>
+  );
+}
+
+const App = createNativeStackNavigator<AppStackParamList>();
+
+function AppNavigator() {
+  return (
+    <App.Navigator>
+      <App.Screen
         name='Tabs'
         component={TabNavigator}
         options={{ headerShown: false }}
       />
-      <Stack.Screen
+      <App.Screen
         name='Profile'
         component={ProfileScreen}
         options={{
           headerTitle: '',
-          headerTitleStyle: { color: Colors.text },
           headerShown: true,
           headerTransparent: true,
           headerShadowVisible: false,
           headerTintColor: '#ffffff',
         }}
       />
-    </Stack.Navigator>
+    </App.Navigator>
   );
 }
 
-const Tab = createBottomTabNavigator<RootTabParamList>();
+const Tab = createBottomTabNavigator<TabsParamList>();
 
 function TabNavigator() {
   return (
@@ -72,13 +126,17 @@ function TabNavigator() {
     >
       <Tab.Screen
         name='HomeTab'
-        component={HomeScreen}
+        component={HomeTabNavigator}
         options={({ navigation }) => ({
           headerTitle: 'Home',
           headerTitleStyle: { color: Colors.text, fontFamily: Fonts.bold },
           tabBarActiveTintColor: Colors.text,
           tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name='home-outline' size={25} color={color} />
+            <MaterialCommunityIcons
+              name='home-outline'
+              size={25}
+              color={color}
+            />
           ),
           headerRight: () => (
             <Pressable
@@ -87,8 +145,8 @@ function TabNavigator() {
                 opacity: pressed ? 0.5 : 1,
               })}
             >
-              <AntDesign
-                name='user'
+              <MaterialCommunityIcons
+                name='account-outline'
                 size={25}
                 color={Colors.text}
                 style={{ marginRight: 15 }}
@@ -99,13 +157,17 @@ function TabNavigator() {
       />
       <Tab.Screen
         name='TasksTab'
-        component={TaskScreen}
+        component={TasksTabNavigator}
         options={({ navigation }) => ({
           headerTitle: 'Plant tasks',
           headerTitleStyle: { color: Colors.text, fontFamily: Fonts.bold },
           tabBarActiveTintColor: Colors.text,
           tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name='book-open-outline' size={25} color={color} />
+            <MaterialCommunityIcons
+              name='book-open-outline'
+              size={25}
+              color={color}
+            />
           ),
           headerRight: () => (
             <Pressable
@@ -126,7 +188,7 @@ function TabNavigator() {
       />
       <Tab.Screen
         name='PlantsTab'
-        component={PlantsScreen}
+        component={PlantsTabNavigator}
         options={({ navigation }) => ({
           headerTitle: 'Plant library',
           headerTitleStyle: { color: Colors.text, fontFamily: Fonts.bold },
@@ -158,3 +220,46 @@ function TabNavigator() {
     </Tab.Navigator>
   );
 }
+
+const HomeTab = createNativeStackNavigator<HomeTabParamList>();
+
+function HomeTabNavigator() {
+  return (
+    <HomeTab.Navigator>
+      <HomeTab.Screen
+        name='Home'
+        component={HomeScreen}
+        options={{ headerShown: false }}
+      />
+    </HomeTab.Navigator>
+  );
+}
+
+const TasksTab = createNativeStackNavigator<TasksTabParamList>();
+
+function TasksTabNavigator() {
+  return (
+    <TasksTab.Navigator>
+      <TasksTab.Screen
+        name='Tasks'
+        component={TasksScreen}
+        options={{ headerShown: false }}
+      />
+    </TasksTab.Navigator>
+  );
+}
+
+const PlantsTab = createNativeStackNavigator<PlantsTabParamList>();
+
+function PlantsTabNavigator() {
+  return (
+    <PlantsTab.Navigator>
+      <PlantsTab.Screen
+        name='Plants'
+        component={PlantsScreen}
+        options={{ headerShown: false }}
+      />
+    </PlantsTab.Navigator>
+  );
+}
+

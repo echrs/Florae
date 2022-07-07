@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
 import { BoldText, View } from '../components/Themed';
 
-export default function TaskScreen() {
+export default function TasksScreen() {
   return (
     <View style={styles.container}>
       <BoldText>Tasks</BoldText>

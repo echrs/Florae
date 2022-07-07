@@ -3,11 +3,18 @@ import { NavigatorScreenParams } from '@react-navigation/native';
 export type NO_PARAMS = undefined;
 
 export type RootStackParamList = {
-  Tabs: NavigatorScreenParams<RootTabParamList> | NO_PARAMS;
+  App: NO_PARAMS;
+  SignUp: NO_PARAMS;
+  SignIn: NO_PARAMS;
+  Welcome: NO_PARAMS;
+};
+
+export type AppStackParamList = {
+  Tabs: NO_PARAMS;
   Profile: NO_PARAMS;
 };
 
-export type RootTabParamList = {
+export type TabsParamList = {
   HomeTab: NO_PARAMS;
   TasksTab: NO_PARAMS;
   PlantsTab: NO_PARAMS;
@@ -15,6 +22,23 @@ export type RootTabParamList = {
 
 export type HomeTabParamList = {
   Home: NO_PARAMS;
-  Tasks: NO_PARAMS;
-  Profile: NO_PARAMS;
+  ViewPlant: NO_PARAMS,
+  NewPlant: NO_PARAMS,
 };
+
+export type TasksTabParamList = {
+  Tasks: NO_PARAMS;
+  NewTask: NO_PARAMS;
+  EditTask: NO_PARAMS;
+  ViewTask: NO_PARAMS;
+  //ViewPlant: NO_PARAMS;
+};
+
+export type PlantsTabParamList = {
+  Plants: NO_PARAMS;
+  NewPlant: NO_PARAMS;
+  EditPlant: NO_PARAMS;
+  ViewPlant: NO_PARAMS;
+  //ViewTask: NO_PARAMS;
+};
+
