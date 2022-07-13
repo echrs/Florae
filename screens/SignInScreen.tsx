@@ -2,31 +2,29 @@ import React, { useContext, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import {
   Image,
-  Text,
   useWindowDimensions,
   StyleSheet,
-  TextInput,
-  Button,
-  TouchableOpacity,
   ScrollView,
 } from 'react-native';
 
 import {
   BoldText,
   CustomButton,
+  FieldWrapper,
+  FormInput,
   FormView,
+  IconWrapper,
   LightText,
-  SemiBoldText,
   View,
 } from '../components/CustomStyled';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { HomeTabParamList, RootStackParamList } from '../types';
+import { RootStackParamList } from '../types';
 import Constants from 'expo-constants';
-import { CompositeScreenProps } from '@react-navigation/native';
+import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 
-type SignInScreenNavigationProp = CompositeScreenProps<
-  NativeStackScreenProps<RootStackParamList, 'SignIn'>,
-  NativeStackScreenProps<HomeTabParamList, 'Home'>
+type SignInScreenNavigationProp = NativeStackScreenProps<
+  RootStackParamList,
+  'SignIn'
 >;
 
 export default function SignInScreen({
@@ -49,10 +47,8 @@ export default function SignInScreen({
   });
 
   const onSubmit = async (data: any) => {
-    //fix nav
-    navigation.navigate('App');
+    //nema nav samo mijenjaj stanje isloggedin.
     setLoading(true);
-
     setLoading(false);
   };
 
@@ -75,42 +71,53 @@ export default function SignInScreen({
         <FormView
           style={{ justifyContent: 'center', flex: 1 /*paddingTop: 40*/ }}
         >
-          {/* <BoldText style={{fontSize: 30}}>Welcome.</BoldText> */}
-          <Controller
-            control={control}
-            rules={{
-              required: true,
-            }}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                placeholder='Email'
-                style={styles.input}
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
+          <FieldWrapper>
+            <IconWrapper>
+              <MaterialCommunityIcons
+                name='email-outline'
+                size={22}
+                color='#999'
               />
-            )}
-            name='email'
-          />
+            </IconWrapper>
+            <Controller
+              control={control}
+              rules={{
+                required: true,
+              }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <FormInput
+                  placeholder='Email'
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  value={value}
+                />
+              )}
+              name='email'
+            />
+          </FieldWrapper>
           {/* {errors.email && <Text>Please enter a valid email address.</Text>} */}
-          <Controller
-            control={control}
-            rules={{
-              maxLength: 100,
-            }}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                secureTextEntry={true}
-                placeholder='Password'
-                style={styles.input}
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-              />
-            )}
-            name='password'
-          />
-          {/* {errors.email && <Text>Please enter a password.</Text>} */}
+          <FieldWrapper>
+            <IconWrapper>
+              <MaterialIcons name='lock-outline' size={22} color='#999' />
+            </IconWrapper>
+            <Controller
+              control={control}
+              rules={{
+                maxLength: 100,
+              }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <FormInput
+                  secureTextEntry={true}
+                  placeholder='Password'
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  value={value}
+                />
+              )}
+              name='password'
+            />
+          </FieldWrapper>
+          {/* {errors.password && <Text>Please enter a password.</Text>} */}
           <View style={{ paddingTop: 5, width: '40%', alignSelf: 'center' }}>
             <CustomButton onPress={onSubmit}>
               <BoldText>Sign in</BoldText>
@@ -130,15 +137,5 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     width: '100%',
-  },
-  input: {
-    backgroundColor: 'white',
-    width: '100%',
-    height: 45,
-    borderColor: '#ffffff',
-    borderWidth: 1,
-    borderRadius: 15,
-    paddingHorizontal: 15,
-    marginVertical: 5,
   },
 });

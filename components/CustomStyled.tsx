@@ -1,9 +1,10 @@
-import { Text as DefaultText, View as DefaultView, TouchableOpacity as DefaultTouchableOpacity } from 'react-native';
+import { Text as DefaultText, View as DefaultView, TouchableOpacity as DefaultTouchableOpacity, TextInput as DefaultTextInput } from 'react-native';
 import { Colors, Fonts } from '../constants/Constants';
 
 export type TextProps = DefaultText['props'];
 export type ViewProps = DefaultView['props'];
 export type TouchableOpacityProps = DefaultTouchableOpacity['props'];
+export type TextInputProps = DefaultTextInput['props'];
 
 export function BoldText(props: TextProps) {
   const { style, ...otherProps } = props;
@@ -36,11 +37,36 @@ export function View(props: ViewProps) {
   return <DefaultView style={[{ backgroundColor }, style]} {...otherProps} />;
 }
 
+export function TransparentView(props: ViewProps) {
+  const { style, ...otherProps } = props;
+
+  return <DefaultView style={[style]} {...otherProps} />;
+}
+
 export function FormView(props: ViewProps) {
   const { style, ...otherProps } = props;
   const customStyle = {
     paddingHorizontal: 40,
     width: '100%',
+  };
+  return <DefaultView style={[customStyle, style]} {...otherProps} />;
+}
+
+export function FieldWrapper(props: ViewProps) {
+  const { style, ...otherProps } = props;
+  const customStyle = {
+    flexDirection: 'row',
+    alignItems: 'center'
+  };
+  return <DefaultView style={[customStyle, style]} {...otherProps} />;
+}
+
+export function IconWrapper(props: ViewProps) {
+  const { style, ...otherProps } = props;
+  const customStyle = {
+    position: 'absolute',
+    zIndex: 1,
+    left: 10,
   };
   return <DefaultView style={[customStyle, style]} {...otherProps} />;
 }
@@ -56,3 +82,19 @@ export function CustomButton(props: TouchableOpacityProps) {
   };
   return <DefaultTouchableOpacity style={[customStyle, style]} {...otherProps} />;
 }
+
+export function FormInput(props: TextInputProps) {
+  const { style, ...otherProps } = props;
+  const customStyle = {
+    backgroundColor: 'white',
+    width: '100%',
+    height: 45,
+    borderColor: '#ffffff',
+    borderWidth: 1,
+    borderRadius: 15,
+    paddingHorizontal: 40,
+    marginVertical: 5,
+  };
+  return <DefaultTextInput style={[customStyle, style]} {...otherProps} />;
+}
+
