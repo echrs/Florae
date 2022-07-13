@@ -3,7 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
 
-import Colors from '../constants/Colors';
+import {Colors, Fonts} from '../constants/Constants';
 import HomeScreen from '../screens/HomeScreen';
 import TaskScreen from '../screens/TasksScreen';
 import PlantsScreen from '../screens/PlantsScreen';
@@ -19,7 +19,6 @@ import {
 } from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
 import { Pressable } from 'react-native';
-import Fonts from '../constants/Fonts';
 import WelcomeScreen from '../screens/WelcomeScreen';
 import SignInScreen from '../screens/SignInScreen';
 import SignUpScreen from '../screens/SignUpScreen';
@@ -36,7 +35,7 @@ export default function Navigation() {
 const Root = createNativeStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
-  var isLoggedIn = true;
+  var isLoggedIn = false;
   return (
     <Root.Navigator>
       {isLoggedIn ? (

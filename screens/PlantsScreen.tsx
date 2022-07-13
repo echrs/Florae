@@ -1,5 +1,5 @@
 import { StyleSheet, Text } from 'react-native';
-import { BoldText, View } from '../components/Themed';
+import { BoldText, View } from '../components/CustomStyled';
 
 export default function PlantsScreen() {
   return (

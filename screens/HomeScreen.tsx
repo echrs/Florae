@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Button } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import { BoldText, View } from '../components/Themed';
+import { BoldText, View } from '../components/CustomStyled';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { HomeTabParamList, TabsParamList } from '../types';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';

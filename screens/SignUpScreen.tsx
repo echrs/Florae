@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import { BoldText, View } from '../components/Themed';
+import { BoldText, View } from '../components/CustomStyled';
 
 export default function SignUpScreen() {
   return (
