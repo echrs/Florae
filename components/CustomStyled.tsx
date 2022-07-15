@@ -30,6 +30,14 @@ export function LightText(props: TextProps) {
   return <DefaultText style={[{ color, fontFamily }, style]} {...otherProps} />;
 }
 
+export function Text(props: TextProps) {
+  const { style, ...otherProps } = props;
+  const color = Colors.text;
+  const fontFamily = Fonts.regular;
+
+  return <DefaultText style={[{ color, fontFamily }, style]} {...otherProps} />;
+}
+
 export function View(props: ViewProps) {
   const { style, ...otherProps } = props;
   const backgroundColor = Colors.background;

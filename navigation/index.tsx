@@ -62,6 +62,7 @@ function RootNavigator() {
               headerTitle: '',
               headerTransparent: true,
               headerShadowVisible: false,
+              headerTintColor: '#ffffff',
             }}
           />
           <Root.Screen
@@ -71,6 +72,7 @@ function RootNavigator() {
               headerTitle: '',
               headerTransparent: true,
               headerShadowVisible: false,
+              headerTintColor: '#ffffff',
             }}
           />
         </>

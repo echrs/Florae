@@ -5,6 +5,7 @@ import {
   useWindowDimensions,
   StyleSheet,
   ScrollView,
+  ImageBackground,
 } from 'react-native';
 
 import {
@@ -15,7 +16,9 @@ import {
   FormView,
   IconWrapper,
   LightText,
+  TransparentView,
   View,
+  Text,
 } from '../components/CustomStyled';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types';
@@ -63,70 +66,85 @@ export default function SignInScreen({
           flexGrow: 1,
         }}
       >
-        <Image
-          source={require('../assets/images/logoimg.jpg')}
-          style={{ width: width, height: height / 2 + statusBarHeight }}
-          resizeMode='cover'
-        />
-        <FormView
-          style={{ justifyContent: 'center', flex: 1 /*paddingTop: 40*/ }}
+        <ImageBackground
+          source={require('../assets/images/1-op.jpg')}
+          style={{ width: width, height: height + statusBarHeight }}
         >
-          <FieldWrapper>
-            <IconWrapper>
-              <MaterialCommunityIcons
-                name='email-outline'
-                size={22}
-                color='#999'
+          <FormView style={{ justifyContent: 'center', flex: 1 }}>
+            <BoldText
+              style={{ fontSize: 30, alignSelf: 'center', paddingBottom: 15 }}
+            >
+              Welcome back
+            </BoldText>
+            <FieldWrapper>
+              <IconWrapper>
+                <MaterialCommunityIcons
+                  name='email-outline'
+                  size={22}
+                  color='#999'
+                />
+              </IconWrapper>
+              <Controller
+                control={control}
+                rules={{
+                  required: true,
+                }}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <FormInput
+                    placeholder='Email'
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    value={value}
+                  />
+                )}
+                name='email'
               />
-            </IconWrapper>
-            <Controller
-              control={control}
-              rules={{
-                required: true,
-              }}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <FormInput
-                  placeholder='Email'
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                />
-              )}
-              name='email'
-            />
-          </FieldWrapper>
-          {/* {errors.email && <Text>Please enter a valid email address.</Text>} */}
-          <FieldWrapper>
-            <IconWrapper>
-              <MaterialIcons name='lock-outline' size={22} color='#999' />
-            </IconWrapper>
-            <Controller
-              control={control}
-              rules={{
-                maxLength: 100,
-              }}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <FormInput
-                  secureTextEntry={true}
-                  placeholder='Password'
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                />
-              )}
-              name='password'
-            />
-          </FieldWrapper>
-          {/* {errors.password && <Text>Please enter a password.</Text>} */}
-          <View style={{ paddingTop: 5, width: '40%', alignSelf: 'center' }}>
-            <CustomButton onPress={onSubmit}>
-              <BoldText>Sign in</BoldText>
-            </CustomButton>
-          </View>
-          <LightText style={{ fontSize: 13, padding: 5, alignSelf: 'center' }}>
-            Don't have an account? Sign up.
-          </LightText>
-        </FormView>
+            </FieldWrapper>
+            {errors.email && (
+              <Text style={{ fontSize: 11 }}>
+                Please enter a valid email address.
+              </Text>
+            )}
+            <FieldWrapper>
+              <IconWrapper>
+                <MaterialIcons name='lock-outline' size={22} color='#999' />
+              </IconWrapper>
+              <Controller
+                control={control}
+                rules={{
+                  maxLength: 100,
+                }}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <FormInput
+                    secureTextEntry={true}
+                    placeholder='Password'
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    value={value}
+                  />
+                )}
+                name='password'
+              />
+            </FieldWrapper>
+            {errors.password && (
+              <Text style={{ fontSize: 11 }}>
+                Please enter a password.
+              </Text>
+            )}
+            <TransparentView
+              style={{ paddingTop: 5, width: '40%', alignSelf: 'center' }}
+            >
+              <CustomButton onPress={handleSubmit(onSubmit)}>
+                <BoldText>Sign in</BoldText>
+              </CustomButton>
+            </TransparentView>
+            <LightText
+              style={{ fontSize: 13, padding: 5, alignSelf: 'center' }}
+            >
+              Don't have an account? Sign up.
+            </LightText>
+          </FormView>
+        </ImageBackground>
       </ScrollView>
     </View>
   );
