@@ -1,40 +1,19 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import Constants from 'expo-constants';
 import React from 'react';
-import {
-  Button,
-  ImageBackground,
-  StyleSheet,
-  TouchableOpacity,
-  useWindowDimensions,
-} from 'react-native';
-import {
-  BoldText,
-  CustomButton,
-  FormView,
-  LightText,
-  View,
-} from '../components/CustomStyled';
+import { Button, ImageBackground, StyleSheet, TouchableOpacity, useWindowDimensions } from 'react-native';
+import { BoldText, CustomButton, FormView, LightText, View } from '../components/CustomStyled';
 import { RootStackParamList } from '../types';
 
-type WelcomeScreenNavigationProp = NativeStackScreenProps<
-  RootStackParamList,
-  'Welcome'
->;
+type WelcomeScreenNavigationProp = NativeStackScreenProps<RootStackParamList, 'Welcome'>;
 
-export default function WelcomeScreen({
-  navigation,
-  route,
-}: WelcomeScreenNavigationProp) {
+export default function WelcomeScreen({ navigation, route }: WelcomeScreenNavigationProp) {
   const statusBarHeight = Constants.statusBarHeight;
   const { height, width } = useWindowDimensions();
 
   return (
     <View style={styles.container}>
-      <ImageBackground
-        source={require('../assets/images/1-op.jpg')}
-        style={{ width: width, height: height + statusBarHeight }}
-      >
+      <ImageBackground source={require('../assets/images/1-op.jpg')} style={{ width: width, height: height + statusBarHeight }}>
         <FormView style={{ justifyContent: 'center', flex: 1 }}>
           <BoldText
             style={{
@@ -78,14 +57,18 @@ export default function WelcomeScreen({
               marginTop: 5,
             }}
             onPress={() => {
-              navigation.navigate('SignIn');
+              //google
             }}
           >
             <BoldText>Google</BoldText>
           </TouchableOpacity>
-          <LightText style={{ fontSize: 13, padding: 5, alignSelf: 'center' }}>
-            Already have an account? Sign in.
-          </LightText>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('SignIn');
+            }}
+          >
+            <LightText style={{ fontSize: 13, padding: 5, alignSelf: 'center' }}>Already have an account? Sign in.</LightText>
+          </TouchableOpacity>
         </FormView>
       </ImageBackground>
     </View>

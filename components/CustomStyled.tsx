@@ -64,7 +64,7 @@ export function FieldWrapper(props: ViewProps) {
   const { style, ...otherProps } = props;
   const customStyle = {
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
   };
   return <DefaultView style={[customStyle, style]} {...otherProps} />;
 }
@@ -86,7 +86,7 @@ export function CustomButton(props: TouchableOpacityProps) {
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 15,
-    height: 45
+    height: 45,
   };
   return <DefaultTouchableOpacity style={[customStyle, style]} {...otherProps} />;
 }
@@ -105,4 +105,3 @@ export function FormInput(props: TextInputProps) {
   };
   return <DefaultTextInput style={[customStyle, style]} {...otherProps} />;
 }
-
