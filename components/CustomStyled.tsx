@@ -75,6 +75,7 @@ export function IconWrapper(props: ViewProps) {
     position: 'absolute',
     zIndex: 1,
     left: 10,
+    paddingTop: 16
   };
   return <DefaultView style={[customStyle, style]} {...otherProps} />;
 }

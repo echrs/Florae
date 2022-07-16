@@ -18,19 +18,9 @@ export default function SignUpScreen({ navigation, route }: SignInScreenNavigati
   const { height, width } = useWindowDimensions();
   const { userCtx } = useContext(Context);
   const [user, setUser] = userCtx;
-
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
-    defaultValues: {
-      name: '',
-      email: '',
-      password: '',
-      confirmPassword: '',
-    },
-  });
+  const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+  const { control, handleSubmit, watch } = useForm();
+  const pass = watch('password');
 
   const onSubmit = (formData: any) => {
     //nema nav samo mijenjaj stanje isloggedin.
@@ -57,61 +47,91 @@ export default function SignUpScreen({ navigation, route }: SignInScreenNavigati
           <FormView style={{ justifyContent: 'center', flex: 1 }}>
             <BoldText style={{ fontSize: 30, alignSelf: 'center', paddingBottom: 15 }}>Join us</BoldText>
             <FieldWrapper>
-              <IconWrapper>
-                <MaterialCommunityIcons name='card-account-details-outline' size={22} color='#999' />
-              </IconWrapper>
               <Controller
                 control={control}
                 rules={{
-                  required: true,
+                  required: 'Please enter a name.',
+                  maxLength: {
+                    value: 15,
+                    message: 'Name should be max 15 characters long.',
+                  },
                 }}
-                render={({ field: { onChange, onBlur, value } }) => <FormInput placeholder='Name' onBlur={onBlur} onChangeText={onChange} value={value} />}
                 name='name'
+                render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                  <TransparentView style={{ width: '100%' }}>
+                    <IconWrapper>
+                      <MaterialCommunityIcons name='card-account-details-outline' size={22} color='#999' />
+                    </IconWrapper>
+                    <FormInput placeholder='Name' onBlur={onBlur} onChangeText={onChange} value={value} />
+                    {error && <Text style={{ fontSize: 11 }}>{error.message || 'Error'}</Text>}
+                  </TransparentView>
+                )}
               />
             </FieldWrapper>
-            {errors.name && <Text style={{ fontSize: 11 }}>Please enter a name.</Text>}
             <FieldWrapper>
-              <IconWrapper>
-                <MaterialCommunityIcons name='email-outline' size={22} color='#999' />
-              </IconWrapper>
               <Controller
                 control={control}
                 rules={{
-                  required: true,
+                  required: 'Please enter a valid email address.',
+                  pattern: { value: EMAIL_REGEX, message: 'Email is invalid.' },
                 }}
-                render={({ field: { onChange, onBlur, value } }) => <FormInput placeholder='Email' onBlur={onBlur} onChangeText={onChange} value={value} />}
                 name='email'
+                render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                  <TransparentView style={{ width: '100%' }}>
+                    <IconWrapper>
+                      <MaterialCommunityIcons name='email-outline' size={22} color='#999' />
+                    </IconWrapper>
+                    <FormInput placeholder='Email' onBlur={onBlur} onChangeText={onChange} value={value} />
+                    {error && <Text style={{ fontSize: 11 }}>{error.message || 'Error'}</Text>}
+                  </TransparentView>
+                )}
               />
             </FieldWrapper>
-            {errors.email && <Text style={{ fontSize: 11 }}>Please enter a valid email address.</Text>}
             <FieldWrapper>
-              <IconWrapper>
-                <MaterialIcons name='lock-outline' size={22} color='#999' />
-              </IconWrapper>
               <Controller
                 control={control}
                 rules={{
-                  maxLength: 100,
+                  required: 'Please enter a password.',
+                  minLength: {
+                    value: 6,
+                    message: 'Password should be at least 6 characters long.',
+                  },
+                  maxLength: {
+                    value: 24,
+                    message: 'Password should be max 24 characters long.',
+                  },
                 }}
-                render={({ field: { onChange, onBlur, value } }) => <FormInput secureTextEntry={true} placeholder='Password' onBlur={onBlur} onChangeText={onChange} value={value} />}
                 name='password'
+                render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                  <TransparentView style={{ width: '100%' }}>
+                    <IconWrapper>
+                      <MaterialIcons name='lock-outline' size={22} color='#999' />
+                    </IconWrapper>
+                    <FormInput secureTextEntry placeholder='Password' onBlur={onBlur} onChangeText={onChange} value={value} />
+                    {error && <Text style={{ fontSize: 11 }}>{error.message || 'Error'}</Text>}
+                  </TransparentView>
+                )}
               />
             </FieldWrapper>
-            {errors.password && <Text style={{ fontSize: 10 }}>Please enter a password.</Text>}
             <FieldWrapper>
-              <IconWrapper>
-                <MaterialIcons name='lock-outline' size={22} color='#999' />
-              </IconWrapper>
               <Controller
                 control={control}
                 rules={{
-                  maxLength: 100,
+                  required: 'Please confirm your password.',
+                  validate: value => value === pass || 'Passwords do not match.',
                 }}
-                render={({ field: { onChange, onBlur, value } }) => <FormInput secureTextEntry={true} placeholder='Confirm password' onBlur={onBlur} onChangeText={onChange} value={value} />}
                 name='confirmPassword'
+                render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                  <TransparentView style={{ width: '100%' }}>
+                    <IconWrapper>
+                      <MaterialIcons name='lock-outline' size={22} color='#999' />
+                    </IconWrapper>
+                    <FormInput secureTextEntry placeholder='Confirm password' onBlur={onBlur} onChangeText={onChange} value={value} />
+                    {error && <Text style={{ fontSize: 11 }}>{error.message || 'Error'}</Text>}
+                  </TransparentView>
+                )}
               />
             </FieldWrapper>
-            {errors.confirmPassword && <Text style={{ fontSize: 11 }}>Please confirm your password.</Text>}
             <TransparentView style={{ paddingTop: 5, width: '40%', alignSelf: 'center' }}>
               <CustomButton onPress={handleSubmit(onSubmit)}>
                 <BoldText>Sign up</BoldText>

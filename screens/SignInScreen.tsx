@@ -18,17 +18,7 @@ export default function SignInScreen({ navigation, route }: SignInScreenNavigati
   const { height, width } = useWindowDimensions();
   const { userCtx } = useContext(Context);
   const [user, setUser] = userCtx;
-  
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
-    defaultValues: {
-      email: '',
-      password: '',
-    },
-  });
+  const { control, handleSubmit } = useForm();
 
   const onSubmit = (formData: any) => {
     //nema nav samo mijenjaj stanje isloggedin.
@@ -55,33 +45,41 @@ export default function SignInScreen({ navigation, route }: SignInScreenNavigati
           <FormView style={{ justifyContent: 'center', flex: 1 }}>
             <BoldText style={{ fontSize: 30, alignSelf: 'center', paddingBottom: 15 }}>Welcome back</BoldText>
             <FieldWrapper>
-              <IconWrapper>
-                <MaterialCommunityIcons name='email-outline' size={22} color='#999' />
-              </IconWrapper>
               <Controller
                 control={control}
                 rules={{
-                  required: true,
+                  required: 'Please enter a valid email address.',
                 }}
-                render={({ field: { onChange, onBlur, value } }) => <FormInput placeholder='Email' onBlur={onBlur} onChangeText={onChange} value={value} />}
                 name='email'
+                render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                  <TransparentView style={{ width: '100%' }}>
+                    <IconWrapper>
+                      <MaterialCommunityIcons name='email-outline' size={22} color='#999' />
+                    </IconWrapper>
+                    <FormInput placeholder='Email' onBlur={onBlur} onChangeText={onChange} value={value} />
+                    {error && <Text style={{ fontSize: 11 }}>{error.message || 'Error'}</Text>}
+                  </TransparentView>
+                )}
               />
             </FieldWrapper>
-            {errors.email && <Text style={{ fontSize: 11 }}>Please enter a valid email address.</Text>}
             <FieldWrapper>
-              <IconWrapper>
-                <MaterialIcons name='lock-outline' size={22} color='#999' />
-              </IconWrapper>
               <Controller
                 control={control}
                 rules={{
-                  maxLength: 100,
+                  required: 'Please enter a password.',
                 }}
-                render={({ field: { onChange, onBlur, value } }) => <FormInput secureTextEntry={true} placeholder='Password' onBlur={onBlur} onChangeText={onChange} value={value} />}
                 name='password'
+                render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                  <TransparentView style={{ width: '100%' }}>
+                    <IconWrapper>
+                      <MaterialIcons name='lock-outline' size={22} color='#999' />
+                    </IconWrapper>
+                    <FormInput secureTextEntry placeholder='Password' onBlur={onBlur} onChangeText={onChange} value={value} />
+                    {error && <Text style={{ fontSize: 11 }}>{error.message || 'Error'}</Text>}
+                  </TransparentView>
+                )}
               />
             </FieldWrapper>
-            {errors.password && <Text style={{ fontSize: 11 }}>Please enter a password.</Text>}
             <TransparentView style={{ paddingTop: 5, width: '40%', alignSelf: 'center' }}>
               <CustomButton onPress={handleSubmit(onSubmit)}>
                 <BoldText>Sign in</BoldText>
