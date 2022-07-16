@@ -7,6 +7,8 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types';
 import Constants from 'expo-constants';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import { getCurrentUser, login } from '../api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type SignInScreenNavigationProp = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
 
@@ -25,9 +27,19 @@ export default function SignInScreen({ navigation, route }: SignInScreenNavigati
     },
   });
 
-  const onSubmit = (data: any) => {
+  const onSubmit = (formData: any) => {
     //nema nav samo mijenjaj stanje isloggedin.
-    console.log(data);
+    login(formData).then(
+      async (response) => {
+        await AsyncStorage.setItem('userCredentials', JSON.stringify(response));
+        //var user = await getCurrentUser();
+        //console.log("user: " + user);
+      },
+      (error) => {
+        //handleerror
+        console.log(error.response.data);
+      }
+    );
   };
 
   return (
