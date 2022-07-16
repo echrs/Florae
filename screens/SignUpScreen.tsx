@@ -9,12 +9,15 @@ import Constants from 'expo-constants';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { getCurrentUser, register } from '../api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Context } from '../Context';
 
 type SignInScreenNavigationProp = NativeStackScreenProps<RootStackParamList, 'SignUp'>;
 
 export default function SignUpScreen({ navigation, route }: SignInScreenNavigationProp) {
   const statusBarHeight = Constants.statusBarHeight;
   const { height, width } = useWindowDimensions();
+  const { userCtx } = useContext(Context);
+  const [user, setUser] = userCtx;
 
   const {
     control,
@@ -33,9 +36,8 @@ export default function SignUpScreen({ navigation, route }: SignInScreenNavigati
     //nema nav samo mijenjaj stanje isloggedin.
     register(formData).then(
       async (response) => {
-        await AsyncStorage.setItem('userCredentials', JSON.stringify(response));
-        // var user = await getCurrentUser();
-        // console.log("user: " + user);
+        await AsyncStorage.setItem('userCredentials', JSON.stringify(response.data));
+        setUser(response.data);
       },
       (error) => {
         //handleerror

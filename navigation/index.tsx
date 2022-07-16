@@ -2,27 +2,22 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
-
-import {Colors, Fonts} from '../constants/Constants';
+import { Colors, Fonts } from '../constants/Constants';
 import HomeScreen from '../screens/HomeScreen';
 import TaskScreen from '../screens/TasksScreen';
 import PlantsScreen from '../screens/PlantsScreen';
 import ProfileScreen from '../screens/ProfileScreen';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import {
-  AppStackParamList,
-  HomeTabParamList,
-  PlantsTabParamList,
-  RootStackParamList,
-  TabsParamList,
-  TasksTabParamList,
-} from '../types';
+import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import { AppStackParamList, HomeTabParamList, PlantsTabParamList, RootStackParamList, TabsParamList, TasksTabParamList } from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
 import { Pressable } from 'react-native';
 import WelcomeScreen from '../screens/WelcomeScreen';
 import SignInScreen from '../screens/SignInScreen';
 import SignUpScreen from '../screens/SignUpScreen';
 import TasksScreen from '../screens/TasksScreen';
+import { useContext } from 'react';
+import { Context } from '../Context';
+import { logout } from '../api';
 
 export default function Navigation() {
   return (
@@ -35,15 +30,13 @@ export default function Navigation() {
 const Root = createNativeStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
-  var isLoggedIn = false;
+  const { userCtx } = useContext(Context);
+  const user = userCtx;
+
   return (
     <Root.Navigator>
-      {isLoggedIn ? (
-        <Root.Screen
-          name='App'
-          component={AppNavigator}
-          options={{ headerShown: false }}
-        />
+      {user[0].userId ? (
+        <Root.Screen name='App' component={AppNavigator} options={{ headerShown: false }} />
       ) : (
         <>
           <Root.Screen
@@ -84,13 +77,12 @@ function RootNavigator() {
 const App = createNativeStackNavigator<AppStackParamList>();
 
 function AppNavigator() {
+  const { userCtx } = useContext(Context);
+  const [user, setUser] = userCtx;
+
   return (
     <App.Navigator>
-      <App.Screen
-        name='Tabs'
-        component={TabNavigator}
-        options={{ headerShown: false }}
-      />
+      <App.Screen name='Tabs' component={TabNavigator} options={{ headerShown: false }} />
       <App.Screen
         name='Profile'
         component={ProfileScreen}
@@ -100,6 +92,16 @@ function AppNavigator() {
           headerTransparent: true,
           headerShadowVisible: false,
           headerTintColor: '#ffffff',
+          headerRight: () => (
+            <Pressable
+              onPress={() => {logout(); setUser('');}}
+              style={({ pressed }) => ({
+                opacity: pressed ? 0.5 : 1,
+              })}
+            >
+              <MaterialIcons name='logout' size={25} color={Colors.text} />
+            </Pressable>
+          ),
         }}
       />
     </App.Navigator>
@@ -130,13 +132,7 @@ function TabNavigator() {
           headerTitle: 'Home',
           headerTitleStyle: { color: Colors.text, fontFamily: Fonts.bold },
           tabBarActiveTintColor: Colors.text,
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons
-              name='home-outline'
-              size={25}
-              color={color}
-            />
-          ),
+          tabBarIcon: ({ color }) => <MaterialCommunityIcons name='home-outline' size={25} color={color} />,
           headerRight: () => (
             <Pressable
               onPress={() => navigation.navigate('Profile')}
@@ -144,12 +140,7 @@ function TabNavigator() {
                 opacity: pressed ? 0.5 : 1,
               })}
             >
-              <MaterialCommunityIcons
-                name='account-outline'
-                size={25}
-                color={Colors.text}
-                style={{ marginRight: 15 }}
-              />
+              <MaterialCommunityIcons name='account-outline' size={25} color={Colors.text} style={{ marginRight: 15 }} />
             </Pressable>
           ),
         })}
@@ -161,13 +152,7 @@ function TabNavigator() {
           headerTitle: 'Plant tasks',
           headerTitleStyle: { color: Colors.text, fontFamily: Fonts.bold },
           tabBarActiveTintColor: Colors.text,
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons
-              name='book-open-outline'
-              size={25}
-              color={color}
-            />
-          ),
+          tabBarIcon: ({ color }) => <MaterialCommunityIcons name='book-open-outline' size={25} color={color} />,
           headerRight: () => (
             <Pressable
               onPress={() => navigation.navigate('Profile')}
@@ -175,12 +160,7 @@ function TabNavigator() {
                 opacity: pressed ? 0.5 : 1,
               })}
             >
-              <MaterialCommunityIcons
-                name='account-outline'
-                size={25}
-                color={Colors.text}
-                style={{ marginRight: 15 }}
-              />
+              <MaterialCommunityIcons name='account-outline' size={25} color={Colors.text} style={{ marginRight: 15 }} />
             </Pressable>
           ),
         })}
@@ -192,13 +172,7 @@ function TabNavigator() {
           headerTitle: 'Plant library',
           headerTitleStyle: { color: Colors.text, fontFamily: Fonts.bold },
           tabBarActiveTintColor: Colors.text,
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons
-              name='flower-tulip-outline'
-              size={25}
-              color={color}
-            />
-          ),
+          tabBarIcon: ({ color }) => <MaterialCommunityIcons name='flower-tulip-outline' size={25} color={color} />,
           headerRight: () => (
             <Pressable
               onPress={() => navigation.navigate('Profile')}
@@ -206,12 +180,7 @@ function TabNavigator() {
                 opacity: pressed ? 0.5 : 1,
               })}
             >
-              <MaterialCommunityIcons
-                name='account-outline'
-                size={25}
-                color={Colors.text}
-                style={{ marginRight: 15 }}
-              />
+              <MaterialCommunityIcons name='account-outline' size={25} color={Colors.text} style={{ marginRight: 15 }} />
             </Pressable>
           ),
         })}
@@ -225,11 +194,7 @@ const HomeTab = createNativeStackNavigator<HomeTabParamList>();
 function HomeTabNavigator() {
   return (
     <HomeTab.Navigator>
-      <HomeTab.Screen
-        name='Home'
-        component={HomeScreen}
-        options={{ headerShown: false }}
-      />
+      <HomeTab.Screen name='Home' component={HomeScreen} options={{ headerShown: false }} />
     </HomeTab.Navigator>
   );
 }
@@ -239,11 +204,7 @@ const TasksTab = createNativeStackNavigator<TasksTabParamList>();
 function TasksTabNavigator() {
   return (
     <TasksTab.Navigator>
-      <TasksTab.Screen
-        name='Tasks'
-        component={TasksScreen}
-        options={{ headerShown: false }}
-      />
+      <TasksTab.Screen name='Tasks' component={TasksScreen} options={{ headerShown: false }} />
     </TasksTab.Navigator>
   );
 }
@@ -253,12 +214,7 @@ const PlantsTab = createNativeStackNavigator<PlantsTabParamList>();
 function PlantsTabNavigator() {
   return (
     <PlantsTab.Navigator>
-      <PlantsTab.Screen
-        name='Plants'
-        component={PlantsScreen}
-        options={{ headerShown: false }}
-      />
+      <PlantsTab.Screen name='Plants' component={PlantsScreen} options={{ headerShown: false }} />
     </PlantsTab.Navigator>
   );
 }
-
