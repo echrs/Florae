@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Image, useWindowDimensions, StyleSheet, ScrollView, ImageBackground, TouchableOpacity } from 'react-native';
 
-import { BoldText, CustomButton, FieldWrapper, FormInput, FormView, IconWrapper, LightText, TransparentView, View, Text } from '../components/CustomStyled';
+import { BoldText, CustomButton, FieldWrapper, FormInput, FormView, IconWrapper, LightText, TransparentView, View, Text, SemiBoldText } from '../components/CustomStyled';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types';
 import Constants from 'expo-constants';
@@ -19,17 +19,16 @@ export default function SignInScreen({ navigation, route }: SignInScreenNavigati
   const { userCtx } = useContext(Context);
   const [user, setUser] = userCtx;
   const { control, handleSubmit } = useForm();
+  const [valMsg, setValMsg] = useState('');
 
   const onSubmit = (formData: any) => {
-    //nema nav samo mijenjaj stanje isloggedin.
     login(formData).then(
       async (response) => {
         await AsyncStorage.setItem('userCredentials', JSON.stringify(response.data));
         setUser(response.data);
       },
       (error) => {
-        //handleerror
-        console.log(error.response.data);
+        setValMsg('Error: ' + error.response.data);
       }
     );
   };
@@ -80,6 +79,7 @@ export default function SignInScreen({ navigation, route }: SignInScreenNavigati
                 )}
               />
             </FieldWrapper>
+            {valMsg.length > 0 && <SemiBoldText style={{ alignSelf: 'center' }}>{valMsg}</SemiBoldText>}
             <TransparentView style={{ paddingTop: 5, width: '40%', alignSelf: 'center' }}>
               <CustomButton onPress={handleSubmit(onSubmit)}>
                 <BoldText>Sign in</BoldText>

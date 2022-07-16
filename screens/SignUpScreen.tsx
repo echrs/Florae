@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Image, useWindowDimensions, StyleSheet, ScrollView, ImageBackground, TouchableOpacity } from 'react-native';
 
-import { BoldText, CustomButton, FieldWrapper, FormInput, FormView, IconWrapper, LightText, Text, TransparentView, View } from '../components/CustomStyled';
+import { BoldText, CustomButton, FieldWrapper, FormInput, FormView, IconWrapper, LightText, SemiBoldText, Text, TransparentView, View } from '../components/CustomStyled';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types';
 import Constants from 'expo-constants';
@@ -21,17 +21,16 @@ export default function SignUpScreen({ navigation, route }: SignInScreenNavigati
   const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
   const { control, handleSubmit, watch } = useForm();
   const pass = watch('password');
+  const [valMsg, setValMsg] = useState('');
 
   const onSubmit = (formData: any) => {
-    //nema nav samo mijenjaj stanje isloggedin.
     register(formData).then(
       async (response) => {
         await AsyncStorage.setItem('userCredentials', JSON.stringify(response.data));
         setUser(response.data);
       },
       (error) => {
-        //handleerror
-        console.log(error.response.data);
+        setValMsg('Error: ' + error.response.data);
       }
     );
   };
@@ -118,7 +117,7 @@ export default function SignUpScreen({ navigation, route }: SignInScreenNavigati
                 control={control}
                 rules={{
                   required: 'Please confirm your password.',
-                  validate: value => value === pass || 'Passwords do not match.',
+                  validate: (value) => value === pass || 'Passwords do not match.',
                 }}
                 name='confirmPassword'
                 render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
@@ -132,6 +131,7 @@ export default function SignUpScreen({ navigation, route }: SignInScreenNavigati
                 )}
               />
             </FieldWrapper>
+            {valMsg.length > 0 && <SemiBoldText style={{ alignSelf: 'center' }}>{valMsg}</SemiBoldText>}
             <TransparentView style={{ paddingTop: 5, width: '40%', alignSelf: 'center' }}>
               <CustomButton onPress={handleSubmit(onSubmit)}>
                 <BoldText>Sign up</BoldText>
