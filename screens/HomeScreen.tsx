@@ -1,12 +1,14 @@
 import React from 'react';
-import { StyleSheet, Button } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { BoldText, View } from '../components/CustomStyled';
+import { StyleSheet, Button, useWindowDimensions, TouchableOpacityBase, TouchableOpacity } from 'react-native';
+import { BoldText, TransparentView, Text, SafeAreaView, CustomButton } from '../components/CustomStyled';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { HomeTabParamList, TabsParamList } from '../types';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 
 import type { CompositeScreenProps } from '@react-navigation/native';
+import Constants from 'expo-constants';
+import { ProgressBar } from 'react-native-paper';
+import { Colors } from '../constants/Constants';
 
 type HomeScreenNavigationProp = CompositeScreenProps<
   NativeStackScreenProps<HomeTabParamList, 'Home'>,
@@ -14,15 +16,46 @@ type HomeScreenNavigationProp = CompositeScreenProps<
 >;
 
 export default function HomeScreen({ navigation, route }: HomeScreenNavigationProp) {
+    const statusBarHeight = Constants.statusBarHeight;
+    const { height, width } = useWindowDimensions();
+    
   return (
-    <View style={styles.container}>
-      <BoldText>Home</BoldText>
-
-      <Button
-        title='Go to Tasks'
-        onPress={() => navigation.jumpTo('TasksTab')}
-      />
-    </View>
+    <>
+      <SafeAreaView style={styles.container}>
+        <TransparentView style={{ width: '90%' }}>
+          <BoldText style={{ alignSelf: 'flex-start', paddingBottom: 20, fontSize: 36 }}>Good morning!</BoldText>
+          <TouchableOpacity
+            style={styles.tasks}
+            onPress={() => {
+              navigation.jumpTo('TasksTab');
+            }}
+          >
+            <BoldText style={{ fontSize: 20 }}>Plant tasks</BoldText>
+            <Text style={{ paddingTop: 5 }}>Are your plants happy?</Text>
+            <BoldText style={{ paddingTop: 30 }}>100%</BoldText>
+            <ProgressBar style={{ marginBottom: 5 }} progress={1} color={Colors.button} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.plants}
+            onPress={() => {
+              navigation.jumpTo('PlantsTab');
+            }}
+          >
+            <BoldText style={{ fontSize: 20 }}>Latest plants</BoldText>
+            <TransparentView style={{ flexDirection: 'row', paddingTop: 5 }}>
+              <Text>There are currently none!</Text>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate('NewPlant');
+                }}
+              >
+                <BoldText style={{ paddingLeft: 5 }}>Add one now.</BoldText>
+              </TouchableOpacity>
+            </TransparentView>
+          </TouchableOpacity>
+        </TransparentView>
+      </SafeAreaView>
+    </>
   );
 }
 
@@ -30,7 +63,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
+    paddingTop: 70,
+  },
+  tasks: {
+    backgroundColor: '#333333',
+    padding: 20,
+    borderRadius: 15,
+  },
+  plants: {
+    backgroundColor: '#333333',
+    padding: 20,
+    borderRadius: 15,
+    marginTop: 20
   },
   title: {
     fontSize: 20,

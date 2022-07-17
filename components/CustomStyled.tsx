@@ -1,5 +1,6 @@
 import { Text as DefaultText, View as DefaultView, TouchableOpacity as DefaultTouchableOpacity, TextInput as DefaultTextInput } from 'react-native';
 import { Colors, Fonts } from '../constants/Constants';
+import { SafeAreaView as DefaultSafeAreaView } from 'react-native-safe-area-context';
 
 export type TextProps = DefaultText['props'];
 export type ViewProps = DefaultView['props'];
@@ -49,6 +50,13 @@ export function TransparentView(props: ViewProps) {
   const { style, ...otherProps } = props;
 
   return <DefaultView style={[style]} {...otherProps} />;
+}
+
+export function SafeAreaView(props: any) {
+  const { style, ...otherProps } = props;
+  const backgroundColor = Colors.background;
+
+  return <DefaultSafeAreaView style={[{ backgroundColor }, style]} {...otherProps} />;
 }
 
 export function FormView(props: ViewProps) {

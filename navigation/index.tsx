@@ -18,6 +18,7 @@ import TasksScreen from '../screens/TasksScreen';
 import { useContext } from 'react';
 import { Context } from '../Context';
 import { logout } from '../api';
+import NewPlantScreen from '../screens/NewPlantScreen';
 
 export default function Navigation() {
   return (
@@ -195,6 +196,12 @@ function HomeTabNavigator() {
   return (
     <HomeTab.Navigator>
       <HomeTab.Screen name='Home' component={HomeScreen} options={{ headerShown: false }} />
+      <HomeTab.Screen name='NewPlant' component={NewPlantScreen} options={{
+          headerTitle: '',
+          headerShown: true,
+          headerTransparent: true,
+          headerShadowVisible: false,
+          headerTintColor: '#ffffff',}} />
     </HomeTab.Navigator>
   );
 }
