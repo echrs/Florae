@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Image, useWindowDimensions, StyleSheet, ScrollView, ImageBackground, TouchableOpacity } from 'react-native';
+import { Image, useWindowDimensions, StyleSheet, ScrollView, ImageBackground, TouchableOpacity, ActivityIndicator } from 'react-native';
 
 import { BoldText, CustomButton, FieldWrapper, FormInput, FormView, IconWrapper, LightText, TransparentView, View, Text, SemiBoldText } from '../components/CustomStyled';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -18,8 +18,9 @@ export default function SignInScreen({ navigation, route }: SignInScreenNavigati
   const { height, width } = useWindowDimensions();
   const { userCtx } = useContext(Context);
   const [user, setUser] = userCtx;
-  const { control, handleSubmit } = useForm();
+  const { control, handleSubmit, formState } = useForm();
   const [valMsg, setValMsg] = useState('');
+  const { isSubmitting } = formState;
 
   const onSubmit = (formData: any) => {
     login(formData).then(
@@ -81,9 +82,15 @@ export default function SignInScreen({ navigation, route }: SignInScreenNavigati
             </FieldWrapper>
             {valMsg.length > 0 && <SemiBoldText style={{ alignSelf: 'center' }}>{valMsg}</SemiBoldText>}
             <TransparentView style={{ paddingTop: 5, width: '40%', alignSelf: 'center' }}>
-              <CustomButton onPress={handleSubmit(onSubmit)}>
-                <BoldText>Sign in</BoldText>
-              </CustomButton>
+              {!isSubmitting ? (
+                <CustomButton onPress={handleSubmit(onSubmit)}>
+                  <BoldText>Sign in</BoldText>
+                </CustomButton>
+              ) : (
+                <CustomButton>
+                  <ActivityIndicator size={30} color='white' />
+                </CustomButton>
+              )}
             </TransparentView>
             <TouchableOpacity
               onPress={() => {

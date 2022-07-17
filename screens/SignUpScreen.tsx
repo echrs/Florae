@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Image, useWindowDimensions, StyleSheet, ScrollView, ImageBackground, TouchableOpacity } from 'react-native';
+import { Image, useWindowDimensions, StyleSheet, ScrollView, ImageBackground, TouchableOpacity, ActivityIndicator } from 'react-native';
 
 import { BoldText, CustomButton, FieldWrapper, FormInput, FormView, IconWrapper, LightText, SemiBoldText, Text, TransparentView, View } from '../components/CustomStyled';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -19,9 +19,10 @@ export default function SignUpScreen({ navigation, route }: SignInScreenNavigati
   const { userCtx } = useContext(Context);
   const [user, setUser] = userCtx;
   const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-  const { control, handleSubmit, watch } = useForm();
+  const { control, handleSubmit, watch, formState } = useForm();
   const pass = watch('password');
   const [valMsg, setValMsg] = useState('');
+  const { isSubmitting } = formState;
 
   const onSubmit = (formData: any) => {
     register(formData).then(
@@ -133,9 +134,15 @@ export default function SignUpScreen({ navigation, route }: SignInScreenNavigati
             </FieldWrapper>
             {valMsg.length > 0 && <SemiBoldText style={{ alignSelf: 'center' }}>{valMsg}</SemiBoldText>}
             <TransparentView style={{ paddingTop: 5, width: '40%', alignSelf: 'center' }}>
-              <CustomButton onPress={handleSubmit(onSubmit)}>
-                <BoldText>Sign up</BoldText>
-              </CustomButton>
+              {!isSubmitting ? (
+                <CustomButton onPress={handleSubmit(onSubmit)}>
+                  <BoldText>Sign up</BoldText>
+                </CustomButton>
+              ) : (
+                <CustomButton>
+                  <ActivityIndicator size={30} color='white' />
+                </CustomButton>
+              )}
             </TransparentView>
             <TouchableOpacity
               onPress={() => {
