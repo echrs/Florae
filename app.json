@@ -1,16 +1,16 @@
 {
   "expo": {
     "name": "Florae",
-    "slug": "Florae",
+    "slug": "florae",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "com.primenum.florae",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#1A1A1A"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -21,7 +21,8 @@
     "ios": {
       "supportsTablet": true
     },
-    "android": {
+    "android": {      
+      "package": "com.primenum.florae",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"

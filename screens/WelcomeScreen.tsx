@@ -57,17 +57,10 @@ export default function WelcomeScreen({ navigation, route }: WelcomeScreenNaviga
               marginTop: 5,
             }}
             onPress={() => {
-              //google
-            }}
-          >
-            <BoldText>Google</BoldText>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
               navigation.navigate('SignIn');
             }}
           >
-            <LightText style={{ fontSize: 13, padding: 5, alignSelf: 'center' }}>Already have an account? Sign in.</LightText>
+            <BoldText>Sign in</BoldText>
           </TouchableOpacity>
         </FormView>
       </ImageBackground>
