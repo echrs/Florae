@@ -19,6 +19,7 @@ import { useContext } from 'react';
 import { Context } from '../Context';
 import { logout } from '../api';
 import NewPlantScreen from '../screens/NewPlantScreen';
+import { BoldText } from '../components/CustomStyled';
 
 export default function Navigation() {
   return (
@@ -179,13 +180,23 @@ function HomeTabNavigator() {
       <HomeTab.Screen
         name='NewPlant'
         component={NewPlantScreen}
-        options={{
+        options={({ navigation }) => ({
           headerTitle: 'New plant',
           headerShown: true,
           headerTransparent: true,
           headerShadowVisible: false,
           headerTintColor: '#ffffff',
-        }}
+          headerRight: () => (
+            <Pressable
+              onPress={() => navigation.navigate('Profile')}
+              style={({ pressed }) => ({
+                opacity: pressed ? 0.5 : 1,
+              })}
+            >
+              <BoldText>SAVE</BoldText>
+            </Pressable>
+          ),
+        })}
       />
     </HomeTab.Navigator>
   );
