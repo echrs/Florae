@@ -95,7 +95,10 @@ function AppNavigator() {
           headerTintColor: '#ffffff',
           headerRight: () => (
             <Pressable
-              onPress={() => {logout(); setUser('');}}
+              onPress={() => {
+                logout();
+                setUser('');
+              }}
               style={({ pressed }) => ({
                 opacity: pressed ? 0.5 : 1,
               })}
@@ -129,62 +132,21 @@ function TabNavigator() {
       <Tab.Screen
         name='HomeTab'
         component={HomeTabNavigator}
-        options={({ navigation }) => ({
-          headerTitle: 'Home',
-          headerTitleStyle: { color: Colors.text, fontFamily: Fonts.bold },
-          tabBarActiveTintColor: Colors.text,
-          tabBarIcon: ({ color }) => <MaterialCommunityIcons name='home-outline' size={25} color={color} />,
-          headerRight: () => (
-            <Pressable
-              onPress={() => navigation.navigate('Profile')}
-              style={({ pressed }) => ({
-                opacity: pressed ? 0.5 : 1,
-              })}
-            >
-              <MaterialCommunityIcons name='account-outline' size={25} color={Colors.text} style={{ marginRight: 15 }} />
-            </Pressable>
-          ),
-        })}
+        options={{ headerShown: false, tabBarActiveTintColor: Colors.text, tabBarIcon: ({ color }) => <MaterialCommunityIcons name='home-outline' size={25} color={color} /> }}
       />
       <Tab.Screen
         name='TasksTab'
         component={TasksTabNavigator}
-        options={({ navigation }) => ({
-          headerTitle: 'Plant tasks',
-          headerTitleStyle: { color: Colors.text, fontFamily: Fonts.bold },
-          tabBarActiveTintColor: Colors.text,
-          tabBarIcon: ({ color }) => <MaterialCommunityIcons name='book-open-outline' size={25} color={color} />,
-          headerRight: () => (
-            <Pressable
-              onPress={() => navigation.navigate('Profile')}
-              style={({ pressed }) => ({
-                opacity: pressed ? 0.5 : 1,
-              })}
-            >
-              <MaterialCommunityIcons name='account-outline' size={25} color={Colors.text} style={{ marginRight: 15 }} />
-            </Pressable>
-          ),
-        })}
+        options={{ headerShown: false, tabBarActiveTintColor: Colors.text, tabBarIcon: ({ color }) => <MaterialCommunityIcons name='book-open-outline' size={25} color={color} /> }}
       />
       <Tab.Screen
         name='PlantsTab'
         component={PlantsTabNavigator}
-        options={({ navigation }) => ({
-          headerTitle: 'Plant library',
-          headerTitleStyle: { color: Colors.text, fontFamily: Fonts.bold },
+        options={{
+          headerShown: false,
           tabBarActiveTintColor: Colors.text,
           tabBarIcon: ({ color }) => <MaterialCommunityIcons name='flower-tulip-outline' size={25} color={color} />,
-          headerRight: () => (
-            <Pressable
-              onPress={() => navigation.navigate('Profile')}
-              style={({ pressed }) => ({
-                opacity: pressed ? 0.5 : 1,
-              })}
-            >
-              <MaterialCommunityIcons name='account-outline' size={25} color={Colors.text} style={{ marginRight: 15 }} />
-            </Pressable>
-          ),
-        })}
+        }}
       />
     </Tab.Navigator>
   );
@@ -195,13 +157,36 @@ const HomeTab = createNativeStackNavigator<HomeTabParamList>();
 function HomeTabNavigator() {
   return (
     <HomeTab.Navigator>
-      <HomeTab.Screen name='Home' component={HomeScreen} options={{ headerShown: false }} />
-      <HomeTab.Screen name='NewPlant' component={NewPlantScreen} options={{
-          headerTitle: '',
+      <HomeTab.Screen
+        name='Home'
+        component={HomeScreen}
+        options={({ navigation }) => ({
+          headerTitle: 'Home',
+          headerTransparent: true,
+          headerTitleStyle: { color: Colors.text, fontFamily: Fonts.bold },
+          headerRight: () => (
+            <Pressable
+              onPress={() => navigation.navigate('Profile')}
+              style={({ pressed }) => ({
+                opacity: pressed ? 0.5 : 1,
+              })}
+            >
+              <MaterialCommunityIcons name='account-outline' size={25} color={Colors.text} />
+            </Pressable>
+          ),
+        })}
+      />
+      <HomeTab.Screen
+        name='NewPlant'
+        component={NewPlantScreen}
+        options={{
+          headerTitle: 'New plant',
           headerShown: true,
           headerTransparent: true,
           headerShadowVisible: false,
-          headerTintColor: '#ffffff',}} />
+          headerTintColor: '#ffffff',
+        }}
+      />
     </HomeTab.Navigator>
   );
 }
@@ -211,7 +196,25 @@ const TasksTab = createNativeStackNavigator<TasksTabParamList>();
 function TasksTabNavigator() {
   return (
     <TasksTab.Navigator>
-      <TasksTab.Screen name='Tasks' component={TasksScreen} options={{ headerShown: false }} />
+      <TasksTab.Screen
+        name='Tasks'
+        component={TasksScreen}
+        options={({ navigation }) => ({
+          headerTitle: 'Plant tasks',
+          headerTransparent: true,
+          headerTitleStyle: { color: Colors.text, fontFamily: Fonts.bold },
+          headerRight: () => (
+            <Pressable
+              onPress={() => navigation.navigate('Profile')}
+              style={({ pressed }) => ({
+                opacity: pressed ? 0.5 : 1,
+              })}
+            >
+              <MaterialCommunityIcons name='account-outline' size={25} color={Colors.text} />
+            </Pressable>
+          ),
+        })}
+      />
     </TasksTab.Navigator>
   );
 }
@@ -221,7 +224,25 @@ const PlantsTab = createNativeStackNavigator<PlantsTabParamList>();
 function PlantsTabNavigator() {
   return (
     <PlantsTab.Navigator>
-      <PlantsTab.Screen name='Plants' component={PlantsScreen} options={{ headerShown: false }} />
+      <PlantsTab.Screen
+        name='Plants'
+        component={PlantsScreen}
+        options={({ navigation }) => ({
+          headerTitle: 'Plant library',
+          headerTransparent: true,
+          headerTitleStyle: { color: Colors.text, fontFamily: Fonts.bold },
+          headerRight: () => (
+            <Pressable
+              onPress={() => navigation.navigate('Profile')}
+              style={({ pressed }) => ({
+                opacity: pressed ? 0.5 : 1,
+              })}
+            >
+              <MaterialCommunityIcons name='account-outline' size={25} color={Colors.text} />
+            </Pressable>
+          ),
+        })}
+      />
     </PlantsTab.Navigator>
   );
 }
