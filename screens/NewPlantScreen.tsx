@@ -35,6 +35,8 @@ export default function NewPlantScreen({ navigation, route }: PlantScreenNavigat
   const [fieldName, setFieldName] = useState('');
   const [nameField, setNameField] = useState('');
   const [nicknameField, setNicknameField] = useState('');
+  const [multiline, setMultiline] = useState(false);
+  const [notesField, setNotesField] = useState('Currently there are no notes.');
 
   const onSubmit = (formData: any) => {
     console.log(formData);
@@ -65,13 +67,17 @@ export default function NewPlantScreen({ navigation, route }: PlantScreenNavigat
                 <>
                   <BoldText style={{ textTransform: 'uppercase' }}>{fieldName}</BoldText>
                   <TransparentView style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <TextInput selectionColor={Colors.button} style={styles.textInput} onBlur={onBlur} onChangeText={onChange} value={value} />
+                    <TextInput multiline={multiline} selectionColor={Colors.button} style={styles.textInput} onBlur={onBlur} onChangeText={onChange} value={value} />
                     <TouchableOpacity
                       style={{ alignSelf: 'center' }}
                       onPress={() => {
                         if (fieldName === 'Nickname') {
                           setNicknameField(watch(fieldName));
-                        } else setNameField(watch(fieldName));
+                        } else if (fieldName === 'Name') {
+                          setNameField(watch(fieldName));
+                        } else {
+                          setNotesField(watch(fieldName));
+                        }
                         setModalVisible(false);
                       }}
                     >
@@ -104,6 +110,7 @@ export default function NewPlantScreen({ navigation, route }: PlantScreenNavigat
               onPress={() => {
                 setModalVisible(true);
                 setFieldName('Nickname');
+                setMultiline(false);
               }}
             >
               <CustomButton>
@@ -116,6 +123,7 @@ export default function NewPlantScreen({ navigation, route }: PlantScreenNavigat
               onPress={() => {
                 setModalVisible(true);
                 setFieldName('Name');
+                setMultiline(false);
               }}
             >
               <CustomButton>
@@ -137,14 +145,15 @@ export default function NewPlantScreen({ navigation, route }: PlantScreenNavigat
               </CustomButton>
             </TouchableOpacity>
             <BoldText style={styles.headerText}>NOTES</BoldText>
-            <TouchableOpacity style={styles.section} onPress={handleSubmit(onSubmit)}>
-              <Text style={{ textAlign: 'justify' }}>
-                Poison ivy is a type of allergenic plant in the genus Toxicodendron native to Asia and North America. Formerly considered a single species, Toxicodendron radicans, poison ivies are now
-                generally treated as a complex of three separate species: Toxicodendron radicans, Toxicodendron rydbergii, and Toxicodendron orientale. They are well known for causing urushiol-induced
-                contact dermatitis, an itchy, irritating, and sometimes painful rash, in most people who touch it. The rash is caused by urushiol, a clear liquid compound in the plant's sap. They are
-                variable in appearance and habit, and despite its common name, it is not a "true" ivy (Hedera), but rather a member of the cashew and pistachio family (Anacardiaceae). T. radicans is
-                commonly eaten by many animals, and the seeds are consumed by birds, but poison ivy is most often thought of as an unwelcome weed.
-              </Text>
+            <TouchableOpacity
+              style={styles.section}
+              onPress={() => {
+                setModalVisible(true);
+                setFieldName('Notes');
+                setMultiline(true);
+              }}
+            >
+              <Text style={{ textAlign: 'justify' }}>{notesField}</Text>
             </TouchableOpacity>
           </TransparentView>
         </ScrollView>

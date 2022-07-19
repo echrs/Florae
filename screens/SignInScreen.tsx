@@ -56,7 +56,7 @@ export default function SignInScreen({ navigation, route }: SignInScreenNavigati
                     <IconWrapper>
                       <MaterialCommunityIcons name='email-outline' size={22} color='#999' />
                     </IconWrapper>
-                    <FormInput selectionColor={Colors.button} placeholder='Email' onBlur={onBlur} onChangeText={onChange} value={value} />
+                    <FormInput selectionColor={Colors.buttonShade} placeholder='Email' onBlur={onBlur} onChangeText={onChange} value={value} />
                     {error && <Text style={{ fontSize: 11 }}>{error.message || 'Error'}</Text>}
                   </TransparentView>
                 )}
@@ -74,7 +74,7 @@ export default function SignInScreen({ navigation, route }: SignInScreenNavigati
                     <IconWrapper>
                       <MaterialIcons name='lock-outline' size={22} color='#999' />
                     </IconWrapper>
-                    <FormInput selectionColor={Colors.buttonShade}secureTextEntry placeholder='Password' onBlur={onBlur} onChangeText={onChange} value={value} />
+                    <FormInput selectionColor={Colors.buttonShade} secureTextEntry placeholder='Password' onBlur={onBlur} onChangeText={onChange} value={value} />
                     {error && <Text style={{ fontSize: 11 }}>{error.message || 'Error'}</Text>}
                   </TransparentView>
                 )}
