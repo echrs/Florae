@@ -102,8 +102,12 @@ export function SignInUpButton(props: TouchableOpacityProps) {
 
 export function CustomButton(props: TouchableOpacityProps) {
   const { style, ...otherProps } = props;
-  const customStyle = { flexDirection: 'row', justifyContent: 'space-between' };
-  return <DefaultTouchableOpacity style={[customStyle, style]} {...otherProps} />;
+  const customStyle = { flexDirection: 'row', justifyContent: 'space-between',  };
+  return (
+    <TransparentView pointerEvents='none'>
+      <DefaultTouchableOpacity style={[customStyle, style]} {...otherProps} />
+    </TransparentView>
+  );
 }
 
 export function FormInput(props: TextInputProps) {

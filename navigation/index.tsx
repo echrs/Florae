@@ -185,16 +185,7 @@ function HomeTabNavigator() {
           headerTransparent: true,
           headerShadowVisible: false,
           headerTintColor: '#ffffff',
-          headerRight: () => (
-            <Pressable
-              onPress={() => navigation.navigate('Profile')}
-              style={({ pressed }) => ({
-                opacity: pressed ? 0.5 : 1,
-              })}
-            >
-              <BoldText>SAVE</BoldText>
-            </Pressable>
-          ),
+
         })}
       />
     </HomeTab.Navigator>

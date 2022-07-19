@@ -1,6 +1,6 @@
 import React from 'react';
-import { StyleSheet, Button, useWindowDimensions, TouchableOpacityBase, TouchableOpacity } from 'react-native';
-import { BoldText, TransparentView, Text, SafeAreaView, CustomButton } from '../components/CustomStyled';
+import { StyleSheet, useWindowDimensions, TouchableOpacity } from 'react-native';
+import { BoldText, TransparentView, Text, SafeAreaView } from '../components/CustomStyled';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { HomeTabParamList, TabsParamList } from '../types';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
@@ -10,15 +10,9 @@ import Constants from 'expo-constants';
 import { ProgressBar } from 'react-native-paper';
 import { Colors } from '../constants/Constants';
 
-type HomeScreenNavigationProp = CompositeScreenProps<
-  NativeStackScreenProps<HomeTabParamList, 'Home'>,
-  BottomTabScreenProps<TabsParamList>
->;
+type HomeScreenNavigationProp = CompositeScreenProps<NativeStackScreenProps<HomeTabParamList, 'Home'>, BottomTabScreenProps<TabsParamList>>;
 
 export default function HomeScreen({ navigation, route }: HomeScreenNavigationProp) {
-    const statusBarHeight = Constants.statusBarHeight;
-    const { height, width } = useWindowDimensions();
-    
   return (
     <>
       <SafeAreaView style={styles.container}>
@@ -74,7 +68,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#333333',
     padding: 20,
     borderRadius: 15,
-    marginTop: 20
+    marginTop: 20,
   },
   title: {
     fontSize: 20,

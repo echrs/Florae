@@ -3,7 +3,8 @@ export const Colors = {
   background: '#1A1A1A',
   button: '#1D4D47',
   tint: '#1D1D47',
-  other: '#333333'
+  other: '#333333',
+  buttonShade: '#c7eae6',
 };
  
 export const Fonts = {

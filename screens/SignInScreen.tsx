@@ -9,6 +9,7 @@ import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { login } from '../api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Context } from '../Context';
+import { Colors } from '../constants/Constants';
 
 type SignInScreenNavigationProp = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
 
@@ -55,7 +56,7 @@ export default function SignInScreen({ navigation, route }: SignInScreenNavigati
                     <IconWrapper>
                       <MaterialCommunityIcons name='email-outline' size={22} color='#999' />
                     </IconWrapper>
-                    <FormInput placeholder='Email' onBlur={onBlur} onChangeText={onChange} value={value} />
+                    <FormInput selectionColor={Colors.button} placeholder='Email' onBlur={onBlur} onChangeText={onChange} value={value} />
                     {error && <Text style={{ fontSize: 11 }}>{error.message || 'Error'}</Text>}
                   </TransparentView>
                 )}
@@ -73,7 +74,7 @@ export default function SignInScreen({ navigation, route }: SignInScreenNavigati
                     <IconWrapper>
                       <MaterialIcons name='lock-outline' size={22} color='#999' />
                     </IconWrapper>
-                    <FormInput secureTextEntry placeholder='Password' onBlur={onBlur} onChangeText={onChange} value={value} />
+                    <FormInput selectionColor={Colors.buttonShade}secureTextEntry placeholder='Password' onBlur={onBlur} onChangeText={onChange} value={value} />
                     {error && <Text style={{ fontSize: 11 }}>{error.message || 'Error'}</Text>}
                   </TransparentView>
                 )}
