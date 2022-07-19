@@ -1,5 +1,5 @@
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, TouchableOpacity, useWindowDimensions, TextInput, KeyboardAvoidingView } from 'react-native';
 import { BoldText, Text, View, TransparentView, CustomButton, FormInput, SignInUpButton } from '../components/CustomStyled';
 import PickImage from '../components/PickImage';
@@ -13,18 +13,20 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 type PlantScreenNavigationProp = NativeStackScreenProps<HomeTabParamList, 'NewPlant'>;
 
 export default function NewPlantScreen({ navigation, route }: PlantScreenNavigationProp) {
-  navigation.setOptions({
-    headerRight: () => (
-      <Pressable
-        onPress={handleSubmit(onSubmit)}
-        style={({ pressed }) => ({
-          opacity: pressed ? 0.5 : 1,
-        })}
-      >
-        <BoldText>SAVE</BoldText>
-      </Pressable>
-    ),
-  });
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <Pressable
+          onPress={handleSubmit(onSubmit)}
+          style={({ pressed }) => ({
+            opacity: pressed ? 0.5 : 1,
+          })}
+        >
+          <BoldText>SAVE</BoldText>
+        </Pressable>
+      ),
+    });
+  }, []);
 
   const [mode, setMode] = useState(Mode.new); //future
 
@@ -37,6 +39,10 @@ export default function NewPlantScreen({ navigation, route }: PlantScreenNavigat
   const [nicknameField, setNicknameField] = useState('');
   const [multiline, setMultiline] = useState(false);
   const [notesField, setNotesField] = useState('Currently there are no notes.');
+  const [waterFieldDays, setWaterFieldDays] = useState(7);
+  const [waterFieldTime, setWaterFieldTime] = useState(12);
+  const [feedFieldDays, setFeedFieldDays] = useState(28);
+  const [feedFieldTime, setFeedFieldTime] = useState(12);
 
   const onSubmit = (formData: any) => {
     console.log(formData);
@@ -49,17 +55,22 @@ export default function NewPlantScreen({ navigation, route }: PlantScreenNavigat
         statusBarTranslucent
         deviceHeight={height + statusBarHeight + 5}
         isVisible={modalVisible}
-        swipeDirection={['up', 'left', 'right', 'down']}
-        onBackdropPress={() => setModalVisible(false)}
         onBackButtonPress={() => setModalVisible(false)}
-        onSwipeComplete={() => setModalVisible(false)}
         hideModalContentWhileAnimating={true}
         backdropOpacity={0.5}
         useNativeDriver
         avoidKeyboard
       >
         <KeyboardAvoidingView behavior='padding'>
-          <TransparentView style={{ alignSelf: 'center', backgroundColor: Colors.background, width: '100%', padding: 30, borderRadius: 15 }}>
+          <TransparentView
+            style={{
+              alignSelf: 'center',
+              backgroundColor: Colors.background,
+              width: '100%',
+              padding: 30,
+              borderRadius: 15,
+            }}
+          >
             <Controller
               control={control}
               name={fieldName}
@@ -67,7 +78,40 @@ export default function NewPlantScreen({ navigation, route }: PlantScreenNavigat
                 <>
                   <BoldText style={{ textTransform: 'uppercase' }}>{fieldName}</BoldText>
                   <TransparentView style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <TextInput multiline={multiline} selectionColor={Colors.button} style={styles.textInput} onBlur={onBlur} onChangeText={onChange} value={value} />
+                    {fieldName === 'Water' || fieldName === 'Feed' ? (
+                      <TransparentView style={{ flexDirection: 'row' }}>
+                        <Text style={{ marginTop: 10, marginRight: 10 }}>Every</Text>
+                        <TextInput
+                          selectionColor={Colors.button}
+                          keyboardType='numeric'
+                          style={styles.numInput}
+                          onBlur={onBlur}
+                          onChangeText={onChange}
+                          value={value}
+                          maxLength={2}
+                        />
+                        <Text style={{ marginTop: 10, marginRight: 10, marginLeft: 10 }}>days @ </Text>
+                        <TextInput
+                          selectionColor={Colors.button}
+                          keyboardType='numeric'
+                          style={styles.numInput}
+                          onBlur={onBlur}
+                          onChangeText={onChange}
+                          value={value}
+                          maxLength={2}
+                        />
+                        <Text style={{ marginTop: 10, marginRight: 10, marginLeft: 10 }}> h </Text>
+                      </TransparentView>
+                    ) : (
+                      <TextInput
+                        multiline={multiline}
+                        selectionColor={Colors.button}
+                        style={styles.textInput}
+                        onBlur={onBlur}
+                        onChangeText={onChange}
+                        value={value}
+                      />
+                    )}
                     <TouchableOpacity
                       style={{ alignSelf: 'center' }}
                       onPress={() => {
@@ -132,16 +176,34 @@ export default function NewPlantScreen({ navigation, route }: PlantScreenNavigat
               </CustomButton>
             </TouchableOpacity>
             <BoldText style={styles.headerText}>TASKS</BoldText>
-            <TouchableOpacity style={styles.section} onPress={() => {}}>
+            <TouchableOpacity
+              style={styles.section}
+              onPress={() => {
+                setModalVisible(true);
+                setFieldName('Water');
+                setMultiline(false);
+              }}
+            >
               <CustomButton>
                 <BoldText>WATER</BoldText>
-                <Text>Every 7 days</Text>
+                <Text>
+                  Every {waterFieldDays} days @ {waterFieldTime}h
+                </Text>
               </CustomButton>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.section} onPress={() => {}}>
+            <TouchableOpacity
+              style={styles.section}
+              onPress={() => {
+                setModalVisible(true);
+                setFieldName('Feed');
+                setMultiline(false);
+              }}
+            >
               <CustomButton>
                 <BoldText>FEED</BoldText>
-                <Text>Every 21 days</Text>
+                <Text>
+                  Every {feedFieldDays} days @ {feedFieldTime}h
+                </Text>
               </CustomButton>
             </TouchableOpacity>
             <BoldText style={styles.headerText}>NOTES</BoldText>
@@ -173,6 +235,14 @@ const styles = StyleSheet.create({
     borderColor: '#ffffff',
     borderBottomWidth: 1,
     marginVertical: 5,
+  },
+  numInput: {
+    color: '#ffffff',
+    width: '10%',
+    borderColor: '#ffffff',
+    borderBottomWidth: 1,
+    marginVertical: 5,
+    textAlign: 'center',
   },
   container: {
     flex: 1,
