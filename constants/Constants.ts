@@ -12,3 +12,9 @@ export const Fonts = {
   light: 'inter-light',
   regular: 'inter-regular',
 };
+
+export const Mode = {
+  new: 0,
+  edit: 1,
+  view: 2
+}

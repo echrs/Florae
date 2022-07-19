@@ -1,8 +1,8 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import Constants from 'expo-constants';
 import React from 'react';
-import { Button, ImageBackground, StyleSheet, TouchableOpacity, useWindowDimensions } from 'react-native';
-import { BoldText, CustomButton, FormView, LightText, View } from '../components/CustomStyled';
+import { ImageBackground, StyleSheet, TouchableOpacity, useWindowDimensions } from 'react-native';
+import { BoldText, SignInUpButton, FormView, LightText, View } from '../components/CustomStyled';
 import { RootStackParamList } from '../types';
 
 type WelcomeScreenNavigationProp = NativeStackScreenProps<RootStackParamList, 'Welcome'>;
@@ -38,14 +38,14 @@ export default function WelcomeScreen({ navigation, route }: WelcomeScreenNaviga
           >
             Happy plants, happy you.
           </LightText>
-          <CustomButton
+          <SignInUpButton
             style={{ height: 50 }}
             onPress={() => {
               navigation.navigate('SignUp');
             }}
           >
             <BoldText>Sign up with Email</BoldText>
-          </CustomButton>
+          </SignInUpButton>
 
           <TouchableOpacity
             style={{

@@ -1,13 +1,12 @@
 import React, { useContext, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Image, useWindowDimensions, StyleSheet, ScrollView, ImageBackground, TouchableOpacity, ActivityIndicator } from 'react-native';
-
-import { BoldText, CustomButton, FieldWrapper, FormInput, FormView, IconWrapper, LightText, SemiBoldText, Text, TransparentView, View } from '../components/CustomStyled';
+import { useWindowDimensions, StyleSheet, ScrollView, ImageBackground, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { BoldText, SignInUpButton, FieldWrapper, FormInput, FormView, IconWrapper, LightText, SemiBoldText, Text, TransparentView, View } from '../components/CustomStyled';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types';
 import Constants from 'expo-constants';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
-import { getCurrentUser, register } from '../api';
+import { register } from '../api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Context } from '../Context';
 
@@ -135,13 +134,13 @@ export default function SignUpScreen({ navigation, route }: SignInScreenNavigati
             {valMsg.length > 0 && <SemiBoldText style={{ alignSelf: 'center' }}>{valMsg}</SemiBoldText>}
             <TransparentView style={{ paddingTop: 5, width: '40%', alignSelf: 'center' }}>
               {!isSubmitting ? (
-                <CustomButton onPress={handleSubmit(onSubmit)}>
+                <SignInUpButton onPress={handleSubmit(onSubmit)}>
                   <BoldText>Sign up</BoldText>
-                </CustomButton>
+                </SignInUpButton>
               ) : (
-                <CustomButton>
+                <SignInUpButton>
                   <ActivityIndicator size={30} color='white' />
-                </CustomButton>
+                </SignInUpButton>
               )}
             </TransparentView>
             <TouchableOpacity

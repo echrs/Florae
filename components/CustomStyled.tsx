@@ -88,7 +88,7 @@ export function IconWrapper(props: ViewProps) {
   return <DefaultView style={[customStyle, style]} {...otherProps} />;
 }
 
-export function CustomButton(props: TouchableOpacityProps) {
+export function SignInUpButton(props: TouchableOpacityProps) {
   const { style, ...otherProps } = props;
   const customStyle = {
     backgroundColor: '#1D4D47',
@@ -97,6 +97,12 @@ export function CustomButton(props: TouchableOpacityProps) {
     borderRadius: 15,
     height: 45,
   };
+  return <DefaultTouchableOpacity style={[customStyle, style]} {...otherProps} />;
+}
+
+export function CustomButton(props: TouchableOpacityProps) {
+  const { style, ...otherProps } = props;
+  const customStyle = { flexDirection: 'row', justifyContent: 'space-between' };
   return <DefaultTouchableOpacity style={[customStyle, style]} {...otherProps} />;
 }
 

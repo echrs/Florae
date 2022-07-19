@@ -4,7 +4,6 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
 import { Colors, Fonts } from '../constants/Constants';
 import HomeScreen from '../screens/HomeScreen';
-import TaskScreen from '../screens/TasksScreen';
 import PlantsScreen from '../screens/PlantsScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
