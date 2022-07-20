@@ -9,6 +9,7 @@ import Constants from 'expo-constants';
 import { Controller, useForm } from 'react-hook-form';
 import { HomeTabParamList } from '../types';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { setStatusBarNetworkActivityIndicatorVisible } from 'expo-status-bar';
 
 type PlantScreenNavigationProp = NativeStackScreenProps<HomeTabParamList, 'NewPlant'>;
 
@@ -71,66 +72,90 @@ export default function NewPlantScreen({ navigation, route }: PlantScreenNavigat
               borderRadius: 15,
             }}
           >
-            <Controller
-              control={control}
-              name={fieldName}
-              render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-                <>
-                  <BoldText style={{ textTransform: 'uppercase' }}>{fieldName}</BoldText>
-                  <TransparentView style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                    {fieldName === 'Water' || fieldName === 'Feed' ? (
-                      <TransparentView style={{ flexDirection: 'row' }}>
-                        <Text style={{ marginTop: 10, marginRight: 10 }}>Every</Text>
-                        <TextInput
-                          selectionColor={Colors.button}
-                          keyboardType='numeric'
-                          style={styles.numInput}
-                          onBlur={onBlur}
-                          onChangeText={onChange}
-                          value={value}
-                          maxLength={2}
-                        />
-                        <Text style={{ marginTop: 10, marginRight: 10, marginLeft: 10 }}>days @ </Text>
-                        <TextInput
-                          selectionColor={Colors.button}
-                          keyboardType='numeric'
-                          style={styles.numInput}
-                          onBlur={onBlur}
-                          onChangeText={onChange}
-                          value={value}
-                          maxLength={2}
-                        />
-                        <Text style={{ marginTop: 10, marginRight: 10, marginLeft: 10 }}> h </Text>
-                      </TransparentView>
-                    ) : (
+            <BoldText style={{ textTransform: 'uppercase' }}>{fieldName}</BoldText>
+            <TransparentView style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+              {fieldName === 'Water' || fieldName === 'Feed' ? (
+                <TransparentView style={{ flexDirection: 'row' }}>
+                  <Text style={{ marginTop: 10, marginRight: 10 }}>Every</Text>
+                  <Controller
+                    control={control}
+                    defaultValue={fieldName === 'Water' ? '7' : '28'}
+                    name={fieldName + 'Days'}
+                    render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                       <TextInput
-                        multiline={multiline}
                         selectionColor={Colors.button}
-                        style={styles.textInput}
+                        keyboardType='numeric'
+                        style={styles.numInput}
                         onBlur={onBlur}
                         onChangeText={onChange}
                         value={value}
+                        maxLength={2}
                       />
                     )}
-                    <TouchableOpacity
-                      style={{ alignSelf: 'center' }}
-                      onPress={() => {
-                        if (fieldName === 'Nickname') {
-                          setNicknameField(watch(fieldName));
-                        } else if (fieldName === 'Name') {
-                          setNameField(watch(fieldName));
-                        } else {
-                          setNotesField(watch(fieldName));
-                        }
-                        setModalVisible(false);
-                      }}
-                    >
-                      <MaterialCommunityIcons name='content-save-outline' size={30} color='white' />
-                    </TouchableOpacity>
-                  </TransparentView>
-                </>
+                  />
+                  <Text style={{ marginTop: 10, marginRight: 10, marginLeft: 10 }}>days @ </Text>
+                  <Controller
+                    control={control}
+                    defaultValue={'12'}
+                    name={fieldName + 'Time'}
+                    render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                      <TextInput
+                        selectionColor={Colors.button}
+                        keyboardType='numeric'
+                        style={styles.numInput}
+                        onBlur={onBlur}
+                        onChangeText={onChange}
+                        value={value}
+                        maxLength={2}
+                      />
+                    )}
+                  />
+                  <Text style={{ marginTop: 10, marginRight: 10, marginLeft: 10 }}> h </Text>
+                </TransparentView>
+              ) : (
+                <Controller
+                  control={control}
+                  name={fieldName}
+                  render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                    <TextInput
+                      multiline={multiline}
+                      selectionColor={Colors.button}
+                      style={styles.textInput}
+                      onBlur={onBlur}
+                      onChangeText={onChange}
+                      value={value}
+                    />
+                  )}
+                />
               )}
-            />
+              <TouchableOpacity
+                style={{ alignSelf: 'center' }}
+                onPress={() => {
+                  switch (fieldName) {
+                    case 'Nickname':
+                      setNicknameField(watch(fieldName));
+                      break;
+                    case 'Name':
+                      setNameField(watch(fieldName));
+                      break;
+                    case 'Notes':
+                      setNotesField(watch(fieldName));
+                      break;
+                    case 'Water':
+                      setWaterFieldDays(watch(fieldName + 'Days'));
+                      setWaterFieldTime(watch(fieldName + 'Time'));
+                      break;
+                    case 'Feed':
+                      setFeedFieldDays(watch(fieldName + 'Days'));
+                      setFeedFieldTime(watch(fieldName + 'Time'));
+                      break;
+                  }
+                  setModalVisible(false);
+                }}
+              >
+                <MaterialCommunityIcons name='content-save-outline' size={30} color='white' />
+              </TouchableOpacity>
+            </TransparentView>
           </TransparentView>
         </KeyboardAvoidingView>
       </Modal>
