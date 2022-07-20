@@ -34,19 +34,63 @@ export default function NewPlantScreen({ navigation, route }: PlantScreenNavigat
   const [modalVisible, setModalVisible] = useState(false);
   const { height, width } = useWindowDimensions();
   const statusBarHeight = Constants.statusBarHeight;
-  const { control, handleSubmit, watch } = useForm();
+  const { control, handleSubmit, watch, getValues } = useForm();
   const [fieldName, setFieldName] = useState('');
   const [nameField, setNameField] = useState('');
-  const [nicknameField, setNicknameField] = useState('');
+  const [nicknameField, setNicknameField] = useState('Plant' + Math.floor(Math.random() * 1000) + 1);
   const [multiline, setMultiline] = useState(false);
-  const [notesField, setNotesField] = useState('Currently there are no notes.');
+  const [notesField, setNotesField] = useState('');
   const [waterFieldDays, setWaterFieldDays] = useState(7);
-  const [waterFieldTime, setWaterFieldTime] = useState(12);
+  const [waterFieldTime, setWaterFieldTime] = useState();
   const [feedFieldDays, setFeedFieldDays] = useState(28);
-  const [feedFieldTime, setFeedFieldTime] = useState(12);
+  const [feedFieldTime, setFeedFieldTime] = useState();
+  const [formData, setFormData] = useState({});
 
-  const onSubmit = (formData: any) => {
-    console.log(formData);
+  const onSubmit = (data: any) => {
+    //dodaj podatke u jedan objekt koji onda saljes kod save-a
+    var obj = {
+      nickname: getValues().Nickname ? getValues().Nickname : nicknameField,
+      name: getValues().Name ? getValues().Name : nameField,
+      tasks: [
+        {
+          name: 'Water',
+          repeatDays: getValues().WaterDays ? getValues().WaterDays : waterFieldDays,
+          time: getValues().WaterTime ? getValues().WaterTime : waterFieldTime,
+        },
+        {
+          name: 'Feed',
+          repeatDays: getValues().FeedDays ? getValues().FeedDays : feedFieldDays,
+          time: getValues().FeedTime ? getValues().FeedTime : feedFieldTime,
+        },
+      ],
+      notes: getValues().Notes ? getValues().Notes : notesField,
+    };
+    console.log('onsubmit: ' + JSON.stringify(obj));
+  };
+
+  const checkInput = (fieldName: string) => {
+    switch (fieldName) {
+      case 'Nickname':
+        if (getValues().Nickname) setNicknameField(getValues().Nickname);
+        break;
+      case 'Name':
+        setNameField(getValues().Name);
+        break;
+      case 'Notes':
+        setNotesField(getValues().Notes);
+        break;
+      case 'Water':
+        //regex
+        if (getValues().WaterDays) setWaterFieldDays(getValues().WaterDays);
+        else setWaterFieldDays(7);
+        setWaterFieldTime(getValues().WaterTime);
+        break;
+      case 'Feed':
+        if (getValues().FeedDays) setFeedFieldDays(getValues().FeedDays);
+        else setFeedFieldDays(28);
+        setFeedFieldTime(getValues().FeedTime);
+        break;
+    }
   };
 
   return (
@@ -79,7 +123,6 @@ export default function NewPlantScreen({ navigation, route }: PlantScreenNavigat
                   <Text style={{ marginTop: 10, marginRight: 10 }}>Every</Text>
                   <Controller
                     control={control}
-                    defaultValue={fieldName === 'Water' ? '7' : '28'}
                     name={fieldName + 'Days'}
                     render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                       <TextInput
@@ -96,7 +139,6 @@ export default function NewPlantScreen({ navigation, route }: PlantScreenNavigat
                   <Text style={{ marginTop: 10, marginRight: 10, marginLeft: 10 }}>days @ </Text>
                   <Controller
                     control={control}
-                    defaultValue={'12'}
                     name={fieldName + 'Time'}
                     render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                       <TextInput
@@ -131,25 +173,7 @@ export default function NewPlantScreen({ navigation, route }: PlantScreenNavigat
               <TouchableOpacity
                 style={{ alignSelf: 'center' }}
                 onPress={() => {
-                  switch (fieldName) {
-                    case 'Nickname':
-                      setNicknameField(watch(fieldName));
-                      break;
-                    case 'Name':
-                      setNameField(watch(fieldName));
-                      break;
-                    case 'Notes':
-                      setNotesField(watch(fieldName));
-                      break;
-                    case 'Water':
-                      setWaterFieldDays(watch(fieldName + 'Days'));
-                      setWaterFieldTime(watch(fieldName + 'Time'));
-                      break;
-                    case 'Feed':
-                      setFeedFieldDays(watch(fieldName + 'Days'));
-                      setFeedFieldTime(watch(fieldName + 'Time'));
-                      break;
-                  }
+                  checkInput(fieldName);
                   setModalVisible(false);
                 }}
               >
@@ -212,7 +236,8 @@ export default function NewPlantScreen({ navigation, route }: PlantScreenNavigat
               <CustomButton>
                 <BoldText>WATER</BoldText>
                 <Text>
-                  Every {waterFieldDays} days @ {waterFieldTime}h
+                  {waterFieldDays && waterFieldTime ? 'Every ' + waterFieldDays + ' days @ ' + waterFieldTime + 'h' : ''}
+                  {waterFieldDays && !waterFieldTime ? 'Every ' + waterFieldDays + ' days' : ''}{' '}
                 </Text>
               </CustomButton>
             </TouchableOpacity>
@@ -227,7 +252,8 @@ export default function NewPlantScreen({ navigation, route }: PlantScreenNavigat
               <CustomButton>
                 <BoldText>FEED</BoldText>
                 <Text>
-                  Every {feedFieldDays} days @ {feedFieldTime}h
+                  {feedFieldDays && feedFieldTime ? 'Every ' + feedFieldDays + ' days @ ' + feedFieldTime + 'h' : ''}
+                  {feedFieldDays && !feedFieldTime ? 'Every ' + feedFieldDays + ' days' : ''}
                 </Text>
               </CustomButton>
             </TouchableOpacity>
@@ -240,7 +266,7 @@ export default function NewPlantScreen({ navigation, route }: PlantScreenNavigat
                 setMultiline(true);
               }}
             >
-              <Text style={{ textAlign: 'justify' }}>{notesField}</Text>
+              <Text style={{ textAlign: 'justify' }}>{notesField ? notesField : 'Currently there are no notes.'}</Text>
             </TouchableOpacity>
           </TransparentView>
         </ScrollView>
