@@ -34,7 +34,7 @@ export default function NewPlantScreen({ navigation, route }: PlantScreenNavigat
   const [modalVisible, setModalVisible] = useState(false);
   const { height, width } = useWindowDimensions();
   const statusBarHeight = Constants.statusBarHeight;
-  const { control, handleSubmit, watch, getValues } = useForm();
+  const { control, handleSubmit, getValues } = useForm();
   const [fieldName, setFieldName] = useState('');
   const [nameField, setNameField] = useState('');
   const [nicknameField, setNicknameField] = useState('Plant' + Math.floor(Math.random() * 1000) + 1);
@@ -80,15 +80,18 @@ export default function NewPlantScreen({ navigation, route }: PlantScreenNavigat
         setNotesField(getValues().Notes);
         break;
       case 'Water':
-        //regex
-        if (getValues().WaterDays) setWaterFieldDays(getValues().WaterDays);
+        let daysWater = (getValues().WaterDays)?.replace(/\D+/g, '');
+        if (daysWater) setWaterFieldDays(daysWater);
         else setWaterFieldDays(7);
-        setWaterFieldTime(getValues().WaterTime);
+        let timeWater = (getValues().WaterTime)?.replace(/\D+/g, '');
+        setWaterFieldTime(timeWater > 23 && timeWater > 0 ? 0 : timeWater);
         break;
       case 'Feed':
-        if (getValues().FeedDays) setFeedFieldDays(getValues().FeedDays);
+        let daysFeed = (getValues().FeedDays)?.replace(/\D+/g, '');
+        if (daysFeed) setFeedFieldDays(daysFeed);
         else setFeedFieldDays(28);
-        setFeedFieldTime(getValues().FeedTime);
+        let timeFeed = (getValues().FeedTime)?.replace(/\D+/g, '');
+        setFeedFieldTime(timeFeed > 23 && timeFeed > 0 ? 0 : timeFeed);
         break;
     }
   };
@@ -126,6 +129,7 @@ export default function NewPlantScreen({ navigation, route }: PlantScreenNavigat
                     name={fieldName + 'Days'}
                     render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                       <TextInput
+                        defaultValue={fieldName === 'Water' ? '7' : '28'}
                         selectionColor={Colors.button}
                         keyboardType='numeric'
                         style={styles.numInput}
