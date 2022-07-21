@@ -1,5 +1,5 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NavigationContainer } from '@react-navigation/native';
+import { getFocusedRouteNameFromRoute, NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
 import { Colors, Fonts } from '../constants/Constants';
@@ -18,7 +18,6 @@ import { useContext } from 'react';
 import { Context } from '../Context';
 import { logout } from '../api';
 import NewPlantScreen from '../screens/NewPlantScreen';
-import { BoldText } from '../components/CustomStyled';
 
 export default function Navigation() {
   return (
@@ -115,29 +114,43 @@ function AppNavigator() {
 const Tab = createBottomTabNavigator<TabsParamList>();
 
 function TabNavigator() {
+  const getTabBarVisibility = (route: any) => {
+    const routeName = getFocusedRouteNameFromRoute(route) || '';
+    const offScreens = ['NewPlant'];
+    if (offScreens.indexOf(routeName) >= 0) return 'none';
+  };
   return (
     <Tab.Navigator
       initialRouteName='HomeTab'
-      screenOptions={{
+      screenOptions={({ route }) => ({
         tabBarStyle: {
           backgroundColor: 'transparent',
           position: 'absolute',
           borderTopWidth: 0,
           elevation: 0,
+          display: getTabBarVisibility(route),
         },
         tabBarShowLabel: false,
         headerTransparent: true,
-      }}
+      })}
     >
       <Tab.Screen
         name='HomeTab'
         component={HomeTabNavigator}
-        options={{ headerShown: false, tabBarActiveTintColor: Colors.text, tabBarIcon: ({ color }) => <MaterialCommunityIcons name='home-outline' size={25} color={color} /> }}
+        options={({ route }) => ({
+          headerShown: false,
+          tabBarActiveTintColor: Colors.text,
+          tabBarIcon: ({ color }) => <MaterialCommunityIcons name='home-outline' size={25} color={color} />,
+        })}
       />
       <Tab.Screen
         name='TasksTab'
         component={TasksTabNavigator}
-        options={{ headerShown: false, tabBarActiveTintColor: Colors.text, tabBarIcon: ({ color }) => <MaterialCommunityIcons name='book-open-outline' size={25} color={color} /> }}
+        options={{
+          headerShown: false,
+          tabBarActiveTintColor: Colors.text,
+          tabBarIcon: ({ color }) => <MaterialCommunityIcons name='book-open-outline' size={25} color={color} />,
+        }}
       />
       <Tab.Screen
         name='PlantsTab'
@@ -185,7 +198,6 @@ function HomeTabNavigator() {
           headerTransparent: true,
           headerShadowVisible: false,
           headerTintColor: '#ffffff',
-
         })}
       />
     </HomeTab.Navigator>

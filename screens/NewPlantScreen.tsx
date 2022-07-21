@@ -7,11 +7,12 @@ import { Colors, Mode } from '../constants/Constants';
 import Modal from 'react-native-modal';
 import Constants from 'expo-constants';
 import { Controller, useForm } from 'react-hook-form';
-import { HomeTabParamList } from '../types';
+import { HomeTabParamList, TabsParamList } from '../types';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { setStatusBarNetworkActivityIndicatorVisible } from 'expo-status-bar';
+import type { CompositeScreenProps } from '@react-navigation/native';
+import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 
-type PlantScreenNavigationProp = NativeStackScreenProps<HomeTabParamList, 'NewPlant'>;
+type PlantScreenNavigationProp = CompositeScreenProps<NativeStackScreenProps<HomeTabParamList, 'NewPlant'>, BottomTabScreenProps<TabsParamList>>;
 
 export default function NewPlantScreen({ navigation, route }: PlantScreenNavigationProp) {
   useEffect(() => {
@@ -66,6 +67,9 @@ export default function NewPlantScreen({ navigation, route }: PlantScreenNavigat
       ],
     };
     console.log('onsubmit: ' + JSON.stringify(obj));
+    //after plant added
+    navigation.pop();
+    navigation.jumpTo('PlantsTab');
   };
 
   const checkInput = (fieldName: string) => {
