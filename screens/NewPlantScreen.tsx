@@ -1,5 +1,5 @@
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, TouchableOpacity, useWindowDimensions, TextInput, KeyboardAvoidingView } from 'react-native';
 import { BoldText, Text, View, TransparentView, CustomButton, FormInput, SignInUpButton } from '../components/CustomStyled';
 import PickImage from '../components/PickImage';
@@ -11,12 +11,15 @@ import { HomeTabParamList, TabsParamList } from '../types';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { CompositeScreenProps } from '@react-navigation/native';
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
+import { savePlant } from '../api';
+import { Context } from '../Context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type PlantScreenNavigationProp = CompositeScreenProps<NativeStackScreenProps<HomeTabParamList, 'NewPlant'>, BottomTabScreenProps<TabsParamList>>;
 
 export default function NewPlantScreen({ navigation, route }: PlantScreenNavigationProp) {
   useEffect(() => {
-    navigation.setOptions({
+    +navigation.setOptions({
       headerRight: () => (
         <Pressable
           onPress={handleSubmit(onSubmit)}
@@ -29,8 +32,6 @@ export default function NewPlantScreen({ navigation, route }: PlantScreenNavigat
       ),
     });
   }, []);
-
-  const [mode, setMode] = useState(Mode.new); //future
 
   const [modalVisible, setModalVisible] = useState(false);
   const { height, width } = useWindowDimensions();
@@ -45,11 +46,15 @@ export default function NewPlantScreen({ navigation, route }: PlantScreenNavigat
   const [waterFieldTime, setWaterFieldTime] = useState('');
   const [feedFieldDays, setFeedFieldDays] = useState(28);
   const [feedFieldTime, setFeedFieldTime] = useState('');
-  const [formData, setFormData] = useState({});
+  const { plantCtx } = useContext(Context);
+  const [plants, setPlants] = plantCtx;
+  const { userCtx } = useContext(Context);
+  const [user, setUser] = userCtx;
 
   const onSubmit = (data: any) => {
     //dodaj podatke u jedan objekt koji onda saljes kod save-a
     var obj = {
+      user: user?.userId,
       nickname: getValues().Nickname ? getValues().Nickname : nicknameField,
       name: getValues().Name ? getValues().Name : nameField,
       notes: getValues().Notes ? getValues().Notes : notesField,
@@ -66,10 +71,23 @@ export default function NewPlantScreen({ navigation, route }: PlantScreenNavigat
         },
       ],
     };
-    console.log('onsubmit: ' + JSON.stringify(obj));
+
     //after plant added
-    navigation.pop();
-    navigation.jumpTo('PlantsTab');
+    savePlant(obj).then(
+      async (response) => {
+        let resp = JSON.stringify(response.data);
+        let plants = await AsyncStorage.getItem('plants');
+        const p = plants ? JSON.parse(plants) : [];
+        p.push(resp);
+        await AsyncStorage.setItem('plants', JSON.stringify(p));
+
+        navigation.pop();
+        navigation.jumpTo('PlantsTab');
+      },
+      (error) => {
+        //toast
+      }
+    );
   };
 
   const checkInput = (fieldName: string) => {
@@ -84,17 +102,17 @@ export default function NewPlantScreen({ navigation, route }: PlantScreenNavigat
         setNotesField(getValues().Notes);
         break;
       case 'Water':
-        let daysWater = (getValues().WaterDays)?.replace(/\D+/g, '');
+        let daysWater = getValues().WaterDays?.replace(/\D+/g, '');
         if (daysWater) setWaterFieldDays(daysWater);
         else setWaterFieldDays(7);
-        let timeWater = (getValues().WaterTime)?.replace(/\D+/g, '');
+        let timeWater = getValues().WaterTime?.replace(/\D+/g, '');
         setWaterFieldTime(timeWater > 23 && timeWater > 0 ? 0 : timeWater);
         break;
       case 'Feed':
-        let daysFeed = (getValues().FeedDays)?.replace(/\D+/g, '');
+        let daysFeed = getValues().FeedDays?.replace(/\D+/g, '');
         if (daysFeed) setFeedFieldDays(daysFeed);
         else setFeedFieldDays(28);
-        let timeFeed = (getValues().FeedTime)?.replace(/\D+/g, '');
+        let timeFeed = getValues().FeedTime?.replace(/\D+/g, '');
         setFeedFieldTime(timeFeed > 23 && timeFeed > 0 ? 0 : timeFeed);
         break;
     }

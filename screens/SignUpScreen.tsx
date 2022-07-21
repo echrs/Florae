@@ -19,13 +19,17 @@ export default function SignUpScreen({ navigation, route }: SignInScreenNavigati
   const { userCtx } = useContext(Context);
   const [user, setUser] = userCtx;
   const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-  const { control, handleSubmit, watch, formState } = useForm();
+  const {
+    control,
+    handleSubmit,
+    watch,
+    formState: { isSubmitting },
+  } = useForm();
   const pass = watch('password');
   const [valMsg, setValMsg] = useState('');
-  const { isSubmitting } = formState;
 
   const onSubmit = (formData: any) => {
-    register(formData).then(
+    return register(formData).then(
       async (response) => {
         await AsyncStorage.setItem('userCredentials', JSON.stringify(response.data));
         setUser(response.data);

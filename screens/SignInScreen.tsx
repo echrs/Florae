@@ -18,12 +18,15 @@ export default function SignInScreen({ navigation, route }: SignInScreenNavigati
   const { height, width } = useWindowDimensions();
   const { userCtx } = useContext(Context);
   const [user, setUser] = userCtx;
-  const { control, handleSubmit, formState } = useForm();
+  const {
+    control,
+    handleSubmit,
+    formState: { isSubmitting },
+  } = useForm();
   const [valMsg, setValMsg] = useState('');
-  const { isSubmitting } = formState;
 
   const onSubmit = (formData: any) => {
-    login(formData).then(
+    return login(formData).then(
       async (response) => {
         await AsyncStorage.setItem('userCredentials', JSON.stringify(response.data));
         setUser(response.data);
