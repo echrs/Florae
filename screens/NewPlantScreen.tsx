@@ -1,9 +1,8 @@
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import React, { useContext, useEffect, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, TouchableOpacity, useWindowDimensions, TextInput, KeyboardAvoidingView } from 'react-native';
-import { BoldText, Text, View, TransparentView, CustomButton, FormInput, SignInUpButton } from '../components/CustomStyled';
-import PickImage from '../components/PickImage';
-import { Colors, Mode } from '../constants/Constants';
+import { Image, Pressable, ScrollView, StyleSheet, TouchableOpacity, useWindowDimensions, TextInput, KeyboardAvoidingView } from 'react-native';
+import { BoldText, Text, View, TransparentView, CustomButton } from '../components/CustomStyled';
+import { Colors } from '../constants/Constants';
 import Modal from 'react-native-modal';
 import Constants from 'expo-constants';
 import { Controller, useForm } from 'react-hook-form';
@@ -14,6 +13,7 @@ import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { savePlant } from '../api';
 import { Context } from '../Context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as ImagePicker from 'expo-image-picker';
 
 type PlantScreenNavigationProp = CompositeScreenProps<NativeStackScreenProps<HomeTabParamList, 'NewPlant'>, BottomTabScreenProps<TabsParamList>>;
 
@@ -46,13 +46,39 @@ export default function NewPlantScreen({ navigation, route }: PlantScreenNavigat
   const [waterFieldTime, setWaterFieldTime] = useState('');
   const [feedFieldDays, setFeedFieldDays] = useState(28);
   const [feedFieldTime, setFeedFieldTime] = useState('');
-  const { plantCtx } = useContext(Context);
-  const [plants, setPlants] = plantCtx;
   const { userCtx } = useContext(Context);
   const [user, setUser] = userCtx;
 
+  const [imgModalVisible, setImgModalVisible] = useState(false);
+  const [img, setImg] = useState(null);
+
+  const selectPicture = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.cancelled) {
+      setImg(result.uri);
+    }
+
+    setModalVisible(false);
+  };
+
+  const takePicture = async () => {
+    await ImagePicker.requestCameraPermissionsAsync();
+    let result = await ImagePicker.launchCameraAsync();
+
+    if (!result.cancelled) {
+      setImg(result.uri);
+    }
+
+    setModalVisible(false);
+  };
+
   const onSubmit = (data: any) => {
-    //dodaj podatke u jedan objekt koji onda saljes kod save-a
     var obj = {
       user: user?.userId,
       nickname: getValues().Nickname ? getValues().Nickname : nicknameField,
@@ -72,20 +98,17 @@ export default function NewPlantScreen({ navigation, route }: PlantScreenNavigat
       ],
     };
 
-    //after plant added
-    savePlant(obj).then(
+    return savePlant(obj).then(
       async (response) => {
-        let resp = JSON.stringify(response.data);
         let plants = await AsyncStorage.getItem('plants');
         const p = plants ? JSON.parse(plants) : [];
-        p.push(resp);
+        p.push(response.data);
         await AsyncStorage.setItem('plants', JSON.stringify(p));
 
         navigation.pop();
         navigation.jumpTo('PlantsTab');
       },
       (error) => {
-        //toast
       }
     );
   };
@@ -215,7 +238,42 @@ export default function NewPlantScreen({ navigation, route }: PlantScreenNavigat
             alignItems: 'center',
           }}
         >
-          <PickImage></PickImage>
+          <>
+            <Modal
+              style={styles.view}
+              statusBarTranslucent
+              deviceHeight={height + statusBarHeight + 5}
+              isVisible={imgModalVisible}
+              swipeDirection={['up', 'left', 'right', 'down']}
+              onBackdropPress={() => setImgModalVisible(false)}
+              onBackButtonPress={() => setImgModalVisible(false)}
+              onSwipeComplete={() => setImgModalVisible(false)}
+              hideModalContentWhileAnimating={true}
+              backdropOpacity={0.5}
+              useNativeDriver
+            >
+              <TransparentView style={{ alignSelf: 'center', backgroundColor: Colors.background, width: '100%', padding: 30, borderRadius: 15 }}>
+                <BoldText style={{ paddingBottom: 20 }}>SELECT IMAGE FROM</BoldText>
+                <TransparentView style={{ flexDirection: 'row', justifyContent: 'space-evenly' }}>
+                  <TouchableOpacity onPress={selectPicture}>
+                    <MaterialIcons name='insert-photo' size={40} color={Colors.text} />
+                  </TouchableOpacity>
+                  <TouchableOpacity style={{ paddingLeft: 20 }} onPress={takePicture}>
+                    <MaterialCommunityIcons name='camera-outline' size={40} color={Colors.text} />
+                  </TouchableOpacity>
+                </TransparentView>
+              </TransparentView>
+            </Modal>
+            {img ? (
+              <TouchableOpacity onPress={() => setImgModalVisible(true)}>
+                <Image source={{ uri: img }} style={{ width: width, height: height * 0.4 }} />
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity style={{}} onPress={() => setImgModalVisible(true)}>
+                <Image source={require('../assets/images/1-op.jpg')} style={{ width: width, height: height * 0.4 }} />
+              </TouchableOpacity>
+            )}
+          </>
           <TransparentView style={{ width: '90%', marginTop: 20 }}>
             <TouchableOpacity style={styles.buttonSection} onPress={() => {}}>
               <CustomButton>

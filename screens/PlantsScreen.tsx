@@ -2,15 +2,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { CompositeScreenProps } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useEffect, useState } from 'react';
-import { StyleSheet, Text } from 'react-native';
-import { BoldText, View } from '../components/CustomStyled';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { BoldText, SafeAreaView, TransparentView, View } from '../components/CustomStyled';
 import { PlantsTabParamList, TabsParamList } from '../types';
 
 type PlantsScreenNavigationProp = CompositeScreenProps<NativeStackScreenProps<PlantsTabParamList, 'Plants'>, BottomTabScreenProps<TabsParamList>>;
 
 export default function PlantsScreen({ navigation, route }: PlantsScreenNavigationProp) {
-  const [plants, setPlants] = useState();
+  const [plants, setPlants] = useState([]);
   useEffect(() => {
     navigation.addListener('focus', () => {
       getAndSetPlants();
@@ -19,13 +19,20 @@ export default function PlantsScreen({ navigation, route }: PlantsScreenNavigati
     async function getAndSetPlants() {
       let plantsStorage = await AsyncStorage.getItem('plants');
       setPlants(JSON.parse(plantsStorage));
+      console.log(JSON.parse(plantsStorage))
     }
   }, []);
 
   return (
-    <View style={styles.container}>
-      <BoldText>{plants}</BoldText>
-    </View>
+    <SafeAreaView style={styles.container}>
+      <TransparentView style={{width: '90%'}}>
+        {plants?.map(({ _id, nickname }) => (
+          <TouchableOpacity key={_id} style={styles.section} onPress={() => {}}>
+            <BoldText>{nickname}</BoldText>
+          </TouchableOpacity>
+        ))}
+      </TransparentView>
+    </SafeAreaView>
   );
 }
 
@@ -33,7 +40,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
+    paddingTop: 70,
+  },
+  section: {
+    backgroundColor: '#333333',
+    padding: 20,
+    borderRadius: 15,
+    marginBottom: 5,
   },
   title: {
     fontSize: 20,
