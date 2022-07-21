@@ -41,9 +41,9 @@ export default function NewPlantScreen({ navigation, route }: PlantScreenNavigat
   const [multiline, setMultiline] = useState(false);
   const [notesField, setNotesField] = useState('');
   const [waterFieldDays, setWaterFieldDays] = useState(7);
-  const [waterFieldTime, setWaterFieldTime] = useState();
+  const [waterFieldTime, setWaterFieldTime] = useState('');
   const [feedFieldDays, setFeedFieldDays] = useState(28);
-  const [feedFieldTime, setFeedFieldTime] = useState();
+  const [feedFieldTime, setFeedFieldTime] = useState('');
   const [formData, setFormData] = useState({});
 
   const onSubmit = (data: any) => {
@@ -51,6 +51,7 @@ export default function NewPlantScreen({ navigation, route }: PlantScreenNavigat
     var obj = {
       nickname: getValues().Nickname ? getValues().Nickname : nicknameField,
       name: getValues().Name ? getValues().Name : nameField,
+      notes: getValues().Notes ? getValues().Notes : notesField,
       tasks: [
         {
           name: 'Water',
@@ -63,7 +64,6 @@ export default function NewPlantScreen({ navigation, route }: PlantScreenNavigat
           time: getValues().FeedTime ? getValues().FeedTime : feedFieldTime,
         },
       ],
-      notes: getValues().Notes ? getValues().Notes : notesField,
     };
     console.log('onsubmit: ' + JSON.stringify(obj));
   };
