@@ -80,7 +80,9 @@ export default function NewPlantScreen({ navigation, route }: PlantScreenNavigat
         navigation.pop();
         navigation.jumpTo('PlantsTab');
       },
-      (error) => {}
+      (error) => {
+        console.log(error);
+      }
     );
   };
 

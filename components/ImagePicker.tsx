@@ -6,6 +6,7 @@ import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { Colors } from '../constants/Constants';
 import Constants from 'expo-constants';
 import Modal from 'react-native-modal';
+import * as ImageManipulator from 'expo-image-manipulator';
 
 export const PickImage = ({ onChange, value }: any) => {
   const { height, width } = useWindowDimensions();
@@ -13,20 +14,26 @@ export const PickImage = ({ onChange, value }: any) => {
   const [imgModalVisible, setImgModalVisible] = useState(false);
   const [img64, setImg64] = useState(null);
 
+  const manipulateImg = async (imgUri: any) => {
+    let result = await ImageManipulator.manipulateAsync(imgUri, [{ resize: { width: 500, height: 500 } }], {
+      base64: true,
+    });
+    return result;
+  };
   const selectPicture = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3],
-      quality: 0.1,
+      quality: 1,
       base64: true,
     });
 
     if (!result.cancelled) {
-      setImg64(result.base64);
+      let manResult = await manipulateImg(result.uri);
+      setImg64(manResult.base64);
       onChange(result.base64);
     }
-
     setImgModalVisible(false);
   };
 
@@ -36,12 +43,13 @@ export const PickImage = ({ onChange, value }: any) => {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3],
-      quality: 0.1,
+      quality: 1,
       base64: true,
     });
 
     if (!result.cancelled) {
-      setImg64(result.base64);
+      let manResult = await manipulateImg(result.uri);
+      setImg64(manResult.base64);
       onChange(result.base64);
     }
 
