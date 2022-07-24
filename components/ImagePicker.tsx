@@ -6,20 +6,15 @@ import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { Colors } from '../constants/Constants';
 import Constants from 'expo-constants';
 import Modal from 'react-native-modal';
-import * as ImageManipulator from 'expo-image-manipulator';
+import * as FileSystem from 'expo-file-system';
+import uuid from 'react-native-uuid';
 
 export const PickImage = ({ onChange, value }: any) => {
   const { height, width } = useWindowDimensions();
   const statusBarHeight = Constants.statusBarHeight;
   const [imgModalVisible, setImgModalVisible] = useState(false);
-  const [img64, setImg64] = useState(null);
+  const [img, setImg] = useState(null);
 
-  const manipulateImg = async (imgUri: any) => {
-    let result = await ImageManipulator.manipulateAsync(imgUri, [{ resize: { width: 500, height: 500 } }], {
-      base64: true,
-    });
-    return result;
-  };
   const selectPicture = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -30,9 +25,9 @@ export const PickImage = ({ onChange, value }: any) => {
     });
 
     if (!result.cancelled) {
-      let manResult = await manipulateImg(result.uri);
-      setImg64(manResult.base64);
-      onChange(result.base64);
+      let uri = await saveImage(result);
+      setImg(uri);
+      onChange(uri);
     }
     setImgModalVisible(false);
   };
@@ -48,12 +43,26 @@ export const PickImage = ({ onChange, value }: any) => {
     });
 
     if (!result.cancelled) {
-      let manResult = await manipulateImg(result.uri);
-      setImg64(manResult.base64);
-      onChange(result.base64);
+      let uri = await saveImage(result);
+      setImg(uri);
+      onChange(uri);
     }
-
     setImgModalVisible(false);
+  };
+
+  
+  const saveImage = async (image: any) => {
+    let file = await FileSystem.getInfoAsync(FileSystem.documentDirectory + 'images/');
+    let uuidStr = uuid.v4();
+
+    !file.exists &&
+      (await FileSystem.makeDirectoryAsync(FileSystem.documentDirectory + 'images/', { intermediates: true }))
+
+    await FileSystem.writeAsStringAsync(FileSystem.documentDirectory + `images/${uuidStr}.jpg`, image.base64, {
+      encoding: FileSystem.EncodingType.Base64,
+    });
+    
+    return FileSystem.documentDirectory + `images/${uuidStr}.jpg`;
   };
 
   return (
@@ -83,9 +92,9 @@ export const PickImage = ({ onChange, value }: any) => {
           </TransparentView>
         </TransparentView>
       </Modal>
-      {img64 ? (
+      {img ? (
         <TouchableOpacity onPress={() => setImgModalVisible(true)}>
-          <Image source={{ uri: `data:image/gif;base64,${img64}` }} style={{ width: width, height: height * 0.4 }} />
+          <Image source={{ uri: img }} style={{ width: width, height: height * 0.4 }} />
         </TouchableOpacity>
       ) : (
         <TouchableOpacity style={{}} onPress={() => setImgModalVisible(true)}>

@@ -4,7 +4,7 @@ import { CompositeScreenProps } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
-import { BoldText, LightText, SafeAreaView, TransparentView, View } from '../components/CustomStyled';
+import { BoldText, SafeAreaView, TransparentView, View } from '../components/CustomStyled';
 import { PlantsTabParamList, TabsParamList } from '../types';
 
 type PlantsScreenNavigationProp = CompositeScreenProps<NativeStackScreenProps<PlantsTabParamList, 'Plants'>, BottomTabScreenProps<TabsParamList>>;
@@ -30,7 +30,7 @@ export default function PlantsScreen({ navigation, route }: PlantsScreenNavigati
           {plants?.map(({ _id, nickname, img }) => (
             <TouchableOpacity key={_id} style={styles.section} onPress={() => {}}>
               <>
-                <Image source={{ uri: `data:image/gif;base64,${img}` }} style={{ width: 45, height: 45, borderRadius: 10 }} />
+                <Image source={{ uri: img }} style={{ width: 45, height: 45, borderRadius: 10 }} />
                 <BoldText style={{ paddingLeft: 7, alignSelf: 'center', fontSize: 15 }}>{nickname}</BoldText>
               </>
             </TouchableOpacity>
