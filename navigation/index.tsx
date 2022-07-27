@@ -256,6 +256,17 @@ function PlantsTabNavigator() {
           ),
         })}
       />
+      <PlantsTab.Screen
+        name='NewPlant'
+        component={NewPlantScreen}
+        options={({ navigation }) => ({
+          headerTitle: 'New plant',
+          headerShown: true,
+          headerTransparent: true,
+          headerShadowVisible: false,
+          headerTintColor: '#ffffff',
+        })}
+      />
     </PlantsTab.Navigator>
   );
 }
