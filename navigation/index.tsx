@@ -124,7 +124,7 @@ function TabNavigator() {
       initialRouteName='HomeTab'
       screenOptions={({ route }) => ({
         tabBarStyle: {
-          backgroundColor: 'transparent',
+          backgroundColor: Colors.background,
           position: 'absolute',
           borderTopWidth: 0,
           elevation: 0,

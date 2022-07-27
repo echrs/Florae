@@ -91,7 +91,7 @@ export function IconWrapper(props: ViewProps) {
 export function SignInUpButton(props: TouchableOpacityProps) {
   const { style, ...otherProps } = props;
   const customStyle = {
-    backgroundColor: '#1D4D47',
+    backgroundColor: Colors.button,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 15,

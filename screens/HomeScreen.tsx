@@ -1,23 +1,51 @@
-import React from 'react';
-import { StyleSheet, useWindowDimensions, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 import { BoldText, TransparentView, Text, SafeAreaView } from '../components/CustomStyled';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { HomeTabParamList, TabsParamList } from '../types';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 
 import type { CompositeScreenProps } from '@react-navigation/native';
-import Constants from 'expo-constants';
 import { ProgressBar } from 'react-native-paper';
 import { Colors } from '../constants/Constants';
 
 type HomeScreenNavigationProp = CompositeScreenProps<NativeStackScreenProps<HomeTabParamList, 'Home'>, BottomTabScreenProps<TabsParamList>>;
 
 export default function HomeScreen({ navigation, route }: HomeScreenNavigationProp) {
+  const [timeStr, setTimeStr] = useState('');
+
+  useEffect(() => {
+    navigation.addListener('focus', () => {
+      getTime();
+    });
+    async function getTime() {
+      var time = new Date();
+      let hour = time.getHours();
+      switch (true) {
+        case hour < 6:
+          setTimeStr('night');
+          break;
+        case hour < 12:
+          setTimeStr('morning');
+          break;
+        case hour < 18:
+          setTimeStr('afternoon');
+          break;
+        case hour < 21:
+          setTimeStr('evening');
+          break;
+        case hour < 23:
+          setTimeStr('night');
+          break;
+      }
+    }
+  }, []);
+
   return (
     <>
       <SafeAreaView style={styles.container}>
         <TransparentView style={{ width: '90%' }}>
-          <BoldText style={{ alignSelf: 'flex-start', paddingBottom: 20, fontSize: 36 }}>Good morning!</BoldText>
+          <BoldText style={{ alignSelf: 'flex-start', paddingBottom: 20, fontSize: 36 }}>Good {timeStr}!</BoldText>
           <TouchableOpacity
             style={styles.tasks}
             onPress={() => {
