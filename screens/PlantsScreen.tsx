@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 15,
     marginTop: 20,
-    marginBottom: 25,
+    marginBottom: 50,
   },
   plant: {
     backgroundColor: '#3D3D3D',
