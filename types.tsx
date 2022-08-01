@@ -22,23 +22,17 @@ export type TabsParamList = {
 
 export type HomeTabParamList = {
   Home: NO_PARAMS;
-  ViewPlant: NO_PARAMS,
-  NewPlant: NO_PARAMS,
+  NewPlant: { plantId: string };
 };
 
 export type TasksTabParamList = {
   Tasks: NO_PARAMS;
   NewTask: NO_PARAMS;
-  EditTask: NO_PARAMS;
   ViewTask: NO_PARAMS;
-  //ViewPlant: NO_PARAMS;
 };
 
 export type PlantsTabParamList = {
   Plants: NO_PARAMS;
-  NewPlant: NO_PARAMS;
-  EditPlant: NO_PARAMS;
-  ViewPlant: NO_PARAMS;
-  //ViewTask: NO_PARAMS;
+  NewPlant: { plantId: string };
 };
 

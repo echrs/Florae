@@ -15,9 +15,9 @@ import { Context } from '../Context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { PickImage } from '../components/ImagePicker';
 
-type PlantScreenNavigationProp = CompositeScreenProps<NativeStackScreenProps<HomeTabParamList, 'NewPlant'>, BottomTabScreenProps<TabsParamList>>;
+type PlantScreenNavigationProp = CompositeScreenProps<NativeStackScreenProps<HomeTabParamList, 'Plant'>, BottomTabScreenProps<TabsParamList>>;
 
-export default function NewPlantScreen({ navigation, route }: PlantScreenNavigationProp) {
+export default function PlantScreen({ navigation, route }: PlantScreenNavigationProp) {
   useEffect(() => {
     +navigation.setOptions({
       headerRight: () => (
@@ -51,7 +51,7 @@ export default function NewPlantScreen({ navigation, route }: PlantScreenNavigat
 
   const onSubmit = () => {
     var obj = {
-      user: user?.userId,
+      userId: user?.userId,
       nickname: getValues().Nickname ? getValues().Nickname : nicknameField,
       name: getValues().Name ? getValues().Name : nameField,
       notes: getValues().Notes ? getValues().Notes : notesField,

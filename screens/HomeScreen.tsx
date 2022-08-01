@@ -72,7 +72,7 @@ export default function HomeScreen({ navigation, route }: HomeScreenNavigationPr
                   <Text>There are currently none!</Text>
                   <TouchableOpacity
                     onPress={() => {
-                      navigation.navigate('NewPlant');
+                      navigation.navigate('Plant');
                     }}
                   >
                     <BoldText style={{ paddingLeft: 5 }}>Add one now.</BoldText>
@@ -82,7 +82,13 @@ export default function HomeScreen({ navigation, route }: HomeScreenNavigationPr
               <TransparentView style={{ flexDirection: 'row', paddingTop: 10, flexWrap: 'wrap' }}>
                 {plants &&
                   plants?.slice(Math.max(plants.length - 4, 0)).map(({ _id, nickname, img }) => (
-                    <TouchableOpacity key={_id} style={styles.plant} onPress={() => {}}>
+                    <TouchableOpacity
+                      key={_id}
+                      style={styles.plant}
+                      onPress={() => {
+                        navigation.navigate('Plant', { plantId: _id });
+                      }}
+                    >
                       <TransparentView style={{}}>
                         {img ? (
                           <Image source={{ uri: img }} style={styles.img} />

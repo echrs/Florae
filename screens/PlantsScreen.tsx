@@ -77,7 +77,7 @@ export default function PlantsScreen({ navigation, route }: PlantsScreenNavigati
                 <TouchableOpacity
                   style={{ marginLeft: 5, marginTop: 3 }}
                   onPress={() => {
-                    navigation.navigate('NewPlant');
+                    navigation.navigate('Plant');
                   }}
                 >
                   <MaterialCommunityIcons name='plus-circle' size={24} color={Colors.text} />
@@ -85,7 +85,13 @@ export default function PlantsScreen({ navigation, route }: PlantsScreenNavigati
               </TransparentView>
             </TransparentView>
             {filteredPlants?.map(({ _id, nickname, img }) => (
-              <TouchableOpacity key={_id} style={styles.plant} onPress={() => {}}>
+              <TouchableOpacity
+                key={_id}
+                style={styles.plant}
+                onPress={() => {
+                  navigation.navigate('Plant', { plantId: _id });
+                }}
+              >
                 <TransparentView style={{ flexDirection: 'row' }}>
                   {img ? (
                     <Image source={{ uri: img }} style={styles.img} />

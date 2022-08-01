@@ -17,7 +17,7 @@ import TasksScreen from '../screens/TasksScreen';
 import { useContext } from 'react';
 import { Context } from '../Context';
 import { logout } from '../api';
-import NewPlantScreen from '../screens/NewPlantScreen';
+import PlantScreen from '../screens/PlantScreen';
 
 export default function Navigation() {
   return (
@@ -116,7 +116,7 @@ const Tab = createBottomTabNavigator<TabsParamList>();
 function TabNavigator() {
   const getTabBarVisibility = (route: any) => {
     const routeName = getFocusedRouteNameFromRoute(route) || '';
-    const offScreens = ['NewPlant'];
+    const offScreens = ['Plant'];
     if (offScreens.indexOf(routeName) >= 0) return 'none';
   };
   return (
@@ -190,8 +190,8 @@ function HomeTabNavigator() {
         })}
       />
       <HomeTab.Screen
-        name='NewPlant'
-        component={NewPlantScreen}
+        name='Plant'
+        component={PlantScreen}
         options={({ navigation }) => ({
           headerTitle: 'New plant',
           headerShown: true,
@@ -257,8 +257,8 @@ function PlantsTabNavigator() {
         })}
       />
       <PlantsTab.Screen
-        name='NewPlant'
-        component={NewPlantScreen}
+        name='Plant'
+        component={PlantScreen}
         options={({ navigation }) => ({
           headerTitle: 'New plant',
           headerShown: true,
