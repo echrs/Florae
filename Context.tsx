@@ -10,12 +10,20 @@ export const Provider = (props: any) => {
 
   useEffect(() => {
     fetchUser();
+    fetchPlants();
   }, []);
 
   const fetchUser = async () => {
     var credentials = await AsyncStorage.getItem('userCredentials');
-    if (credentials) setUser(JSON.parse(credentials)); 
+    if (credentials) setUser(JSON.parse(credentials));
     else setUser('');
+  };
+
+  const fetchPlants = async () => {
+    var plants = await AsyncStorage.getItem('plants');
+    if (!plants) {
+      //fetch from db, fill asyncstorage
+    }
   };
 
   return (

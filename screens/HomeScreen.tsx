@@ -79,7 +79,7 @@ export default function HomeScreen({ navigation, route }: HomeScreenNavigationPr
                   </TouchableOpacity>
                 </TransparentView>
               )}
-              <TransparentView style={{ flexDirection: 'row', paddingTop: 10, flexWrap: 'wrap', justifyContent: 'center' }}>
+              <TransparentView style={{ flexDirection: 'row', paddingTop: 10, flexWrap: 'wrap' }}>
                 {plants &&
                   plants?.slice(Math.max(plants.length - 4, 0)).map(({ _id, nickname, img }) => (
                     <TouchableOpacity key={_id} style={styles.plant} onPress={() => {}}>
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     marginBottom: 5,
     marginRight: 5,
-    width: '48%',
+    width: '48.4%',
   },
   img: {
     width: '100%',
