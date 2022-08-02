@@ -41,7 +41,6 @@ export default function PlantsScreen({ navigation, route }: PlantsScreenNavigati
       let plantsStorage = await AsyncStorage.getItem('plants');
       setPlants(JSON.parse(plantsStorage));
       setFilteredPlants(JSON.parse(plantsStorage));
-      console.log(plants);
     }
   }, []);
 

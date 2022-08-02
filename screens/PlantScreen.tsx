@@ -102,7 +102,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
   }, [mode]);
 
   const deleteCurrPlant = () => {
-    return deletePlant(plant._id).then(
+    return deletePlant(plant._id, user.token).then(
       async (response) => {
         let plants = await AsyncStorage.getItem('plants');
         let p = JSON.parse(plants);
@@ -118,7 +118,6 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
 
   const onSubmit = () => {
     var obj = {
-      userId: user?.userId,
       nickname: getValues().Nickname ? getValues().Nickname : nicknameField,
       name: getValues().Name ? getValues().Name : nameField,
       notes: getValues().Notes ? getValues().Notes : notesField,
@@ -138,7 +137,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
     };
 
     if (mode === Mode.new) {
-      return savePlant(obj).then(
+      return savePlant(obj, user.token).then(
         async (response) => {
           let plants = await AsyncStorage.getItem('plants');
           const p = plants ? JSON.parse(plants) : [];
@@ -151,19 +150,19 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
         }
       );
     } else if (mode === Mode.edit) {
-      return editPlant(plant._id, obj).then(
+      return editPlant(plant._id, obj, user.token).then(
         async (response) => {
-          console.log('yay');
           let plants = await AsyncStorage.getItem('plants');
           let p = JSON.parse(plants);
-          p[p.findIndex((el) => el._id === plant._id)] = {
+          let idx = p.findIndex((el) => el._id === plant._id);
+          p[idx] = {
             __v: 0,
             _id: plant._id,
             name: obj.name,
             nickname: obj.nickname,
             notes: obj.notes,
             tasks: obj.tasks,
-            img: obj.img,
+            img: obj.img ? obj.img : p[idx].img,
           };
           await AsyncStorage.setItem('plants', JSON.stringify(p));
           setMode(Mode.view);

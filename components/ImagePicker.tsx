@@ -92,9 +92,9 @@ export const PickImage = ({ disabled, viewImg, onChange, value }: any) => {
           </TransparentView>
         </TransparentView>
       </Modal>
-      {viewImg || img ? (
+      {img || viewImg ? (
         <TouchableOpacity disabled={disabled} onPress={() => setImgModalVisible(true)}>
-          <Image source={{ uri: viewImg || img }} style={{ width: width, height: height * 0.4 }} />
+          <Image source={{ uri: img || viewImg }} style={{ width: width, height: height * 0.4 }} />
         </TouchableOpacity>
       ) : (
         <TouchableOpacity disabled={disabled} style={{}} onPress={() => setImgModalVisible(true)}>
