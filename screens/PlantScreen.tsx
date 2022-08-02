@@ -151,8 +151,6 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
         }
       );
     } else if (mode === Mode.edit) {
-      console.log(plant._id);
-      console.log(obj);
       return editPlant(plant._id, obj).then(
         async (response) => {
           console.log('yay');
