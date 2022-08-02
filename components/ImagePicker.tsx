@@ -9,7 +9,7 @@ import Modal from 'react-native-modal';
 import * as FileSystem from 'expo-file-system';
 import uuid from 'react-native-uuid';
 
-export const PickImage = ({ onChange, value }: any) => {
+export const PickImage = ({ disabled, viewImg, onChange, value }: any) => {
   const { height, width } = useWindowDimensions();
   const statusBarHeight = Constants.statusBarHeight;
   const [imgModalVisible, setImgModalVisible] = useState(false);
@@ -92,12 +92,12 @@ export const PickImage = ({ onChange, value }: any) => {
           </TransparentView>
         </TransparentView>
       </Modal>
-      {img ? (
-        <TouchableOpacity onPress={() => setImgModalVisible(true)}>
-          <Image source={{ uri: img }} style={{ width: width, height: height * 0.4 }} />
+      {viewImg || img ? (
+        <TouchableOpacity disabled={disabled} onPress={() => setImgModalVisible(true)}>
+          <Image source={{ uri: viewImg || img }} style={{ width: width, height: height * 0.4 }} />
         </TouchableOpacity>
       ) : (
-        <TouchableOpacity style={{}} onPress={() => setImgModalVisible(true)}>
+        <TouchableOpacity disabled={disabled} style={{}} onPress={() => setImgModalVisible(true)}>
           <Image source={require('../assets/images/1-op.jpg')} style={{ width: width, height: height * 0.4 }} />
         </TouchableOpacity>
       )}

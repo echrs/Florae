@@ -67,7 +67,7 @@ export default function HomeScreen({ navigation, route }: HomeScreenNavigationPr
             </TouchableOpacity>
             <TransparentView style={styles.plants}>
               <BoldText style={{ fontSize: 20 }}>Latest plants</BoldText>
-              {!plants && (
+              {(!plants || !plants.length) && (
                 <TransparentView style={{ flexDirection: 'row', paddingTop: 5 }}>
                   <Text>There are currently none!</Text>
                   <TouchableOpacity
@@ -81,21 +81,21 @@ export default function HomeScreen({ navigation, route }: HomeScreenNavigationPr
               )}
               <TransparentView style={{ flexDirection: 'row', paddingTop: 10, flexWrap: 'wrap' }}>
                 {plants &&
-                  plants?.slice(Math.max(plants.length - 4, 0)).map(({ _id, nickname, img }) => (
+                  plants?.slice(Math.max(plants.length - 4, 0)).reverse().map((plant) => (
                     <TouchableOpacity
-                      key={_id}
+                      key={plant['_id']}
                       style={styles.plant}
                       onPress={() => {
-                        navigation.navigate('Plant', { plantId: _id });
+                        navigation.navigate('Plant', { plant: plant });
                       }}
                     >
                       <TransparentView style={{}}>
-                        {img ? (
-                          <Image source={{ uri: img }} style={styles.img} />
+                        {plant['img'] ? (
+                          <Image source={{ uri: plant['img'] }} style={styles.img} />
                         ) : (
                           <Image source={require('../assets/images/1-op.jpg')} style={styles.img} />
                         )}
-                        <Text style={{ fontSize: 15 }}>{nickname}</Text>
+                        <Text style={{ fontSize: 15 }}>{plant['nickname']}</Text>
                       </TransparentView>
                     </TouchableOpacity>
                   ))}

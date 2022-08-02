@@ -2,7 +2,7 @@ import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import React, { useContext, useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, TouchableOpacity, useWindowDimensions, TextInput, KeyboardAvoidingView } from 'react-native';
 import { BoldText, Text, View, TransparentView, CustomButton } from '../components/CustomStyled';
-import { Colors } from '../constants/Constants';
+import { Colors, Mode } from '../constants/Constants';
 import Modal from 'react-native-modal';
 import Constants from 'expo-constants';
 import { Controller, useForm } from 'react-hook-form';
@@ -10,7 +10,7 @@ import { HomeTabParamList, TabsParamList } from '../types';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { CompositeScreenProps } from '@react-navigation/native';
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
-import { savePlant } from '../api';
+import { deletePlant, editPlant, savePlant } from '../api';
 import { Context } from '../Context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { PickImage } from '../components/ImagePicker';
@@ -18,21 +18,6 @@ import { PickImage } from '../components/ImagePicker';
 type PlantScreenNavigationProp = CompositeScreenProps<NativeStackScreenProps<HomeTabParamList, 'Plant'>, BottomTabScreenProps<TabsParamList>>;
 
 export default function PlantScreen({ navigation, route }: PlantScreenNavigationProp) {
-  useEffect(() => {
-    +navigation.setOptions({
-      headerRight: () => (
-        <Pressable
-          onPress={handleSubmit(onSubmit)}
-          style={({ pressed }) => ({
-            opacity: pressed ? 0.5 : 1,
-          })}
-        >
-          <BoldText>SAVE</BoldText>
-        </Pressable>
-      ),
-    });
-  }, []);
-
   const [modalVisible, setModalVisible] = useState(false);
   const { height, width } = useWindowDimensions();
   const statusBarHeight = Constants.statusBarHeight;
@@ -48,6 +33,88 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
   const [feedFieldTime, setFeedFieldTime] = useState('');
   const { userCtx } = useContext(Context);
   const [user, setUser] = userCtx;
+  const [plant, setPlant] = useState({} as any);
+  const [mode, setMode] = useState(0);
+  const [viewImg, setViewImg] = useState('');
+
+  useEffect(() => {
+    if (route.params?.plant) {
+      let plant = route.params?.plant;
+      if (plant) {
+        setPlant(plant);
+        setMode(Mode.view);
+        setNicknameField(plant.nickname);
+        setNameField(plant.name);
+        setNotesField(plant.notes);
+        let waterInfo = plant.tasks.find((task: any) => task.name === 'Water');
+        setWaterFieldDays(waterInfo.repeatDays);
+        setWaterFieldTime(waterInfo.time);
+        let feedInfo = plant.tasks.find((task: any) => task.name === 'Feed');
+        setFeedFieldDays(feedInfo.repeatDays);
+        setFeedFieldTime(feedInfo.time);
+        setViewImg(plant.img);
+      }
+    } else {
+      setMode(Mode.new);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (mode === Mode.view) {
+      +navigation.setOptions({
+        headerRight: () => (
+          <>
+            <Pressable
+              onPress={() => setMode(Mode.edit)}
+              style={({ pressed }) => ({
+                opacity: pressed ? 0.5 : 1,
+              })}
+            >
+              <BoldText>EDIT</BoldText>
+            </Pressable>
+            <Pressable
+              onPress={() => deleteCurrPlant()}
+              style={({ pressed }) => ({
+                opacity: pressed ? 0.5 : 1,
+                marginLeft: 15,
+              })}
+            >
+              <BoldText>DELETE</BoldText>
+            </Pressable>
+          </>
+        ),
+        headerTitle: '',
+      });
+    } else if (mode === Mode.edit || mode === Mode.new) {
+      +navigation.setOptions({
+        headerRight: () => (
+          <Pressable
+            onPress={handleSubmit(onSubmit)}
+            style={({ pressed }) => ({
+              opacity: pressed ? 0.5 : 1,
+            })}
+          >
+            <BoldText>SAVE</BoldText>
+          </Pressable>
+        ),
+      });
+    }
+  }, [mode]);
+
+  const deleteCurrPlant = () => {
+    return deletePlant(plant._id).then(
+      async (response) => {
+        let plants = await AsyncStorage.getItem('plants');
+        let p = JSON.parse(plants);
+        p = p.filter((x) => x._id !== plant._id);
+        await AsyncStorage.setItem('plants', JSON.stringify(p));
+        navigation.pop();
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
+  };
 
   const onSubmit = () => {
     var obj = {
@@ -70,20 +137,44 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
       img: getValues().img,
     };
 
-    return savePlant(obj).then(
-      async (response) => {
-        let plants = await AsyncStorage.getItem('plants');
-        const p = plants ? JSON.parse(plants) : [];
-        p.push(response.data);
-        await AsyncStorage.setItem('plants', JSON.stringify(p));
-
-        navigation.pop();
-        navigation.jumpTo('PlantsTab');
-      },
-      (error) => {
-        console.log(error);
-      }
-    );
+    if (mode === Mode.new) {
+      return savePlant(obj).then(
+        async (response) => {
+          let plants = await AsyncStorage.getItem('plants');
+          const p = plants ? JSON.parse(plants) : [];
+          p.push(response.data);
+          await AsyncStorage.setItem('plants', JSON.stringify(p));
+          navigation.pop();
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
+    } else if (mode === Mode.edit) {
+      console.log(plant._id);
+      console.log(obj);
+      return editPlant(plant._id, obj).then(
+        async (response) => {
+          console.log('yay');
+          let plants = await AsyncStorage.getItem('plants');
+          let p = JSON.parse(plants);
+          p[p.findIndex((el) => el._id === plant._id)] = {
+            __v: 0,
+            _id: plant._id,
+            name: obj.name,
+            nickname: obj.nickname,
+            notes: obj.notes,
+            tasks: obj.tasks,
+            img: obj.img,
+          };
+          await AsyncStorage.setItem('plants', JSON.stringify(p));
+          setMode(Mode.view);
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
+    }
   };
 
   const checkInput = (fieldName: string) => {
@@ -213,19 +304,21 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
         >
           <Controller
             control={control}
-            name="img"
-            render={({ field: { onChange, value } }) => <PickImage onChange={onChange} value={value} />}
+            name='img'
+            render={({ field: { onChange, value } }) => <PickImage disabled={mode === 2} viewImg={viewImg} onChange={onChange} value={value} />}
           />
-
           <TransparentView style={{ width: '90%', marginTop: 20 }}>
-            <TouchableOpacity style={styles.buttonSection} onPress={() => {}}>
-              <CustomButton>
-                <BoldText>IDENTIFY PLANT</BoldText>
-                <MaterialIcons name='search' size={17} color={Colors.text} />
-              </CustomButton>
-            </TouchableOpacity>
+            {mode !== Mode.view && (
+              <TouchableOpacity style={styles.buttonSection} onPress={() => {}}>
+                <CustomButton>
+                  <BoldText>IDENTIFY PLANT</BoldText>
+                  <MaterialIcons name='search' size={17} color={Colors.text} />
+                </CustomButton>
+              </TouchableOpacity>
+            )}
             <BoldText style={styles.headerText}>GENERAL INFO</BoldText>
             <TouchableOpacity
+              disabled={mode === 2}
               style={styles.section}
               onPress={() => {
                 setModalVisible(true);
@@ -239,6 +332,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
               </CustomButton>
             </TouchableOpacity>
             <TouchableOpacity
+              disabled={mode === 2}
               style={styles.section}
               onPress={() => {
                 setModalVisible(true);
@@ -253,6 +347,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
             </TouchableOpacity>
             <BoldText style={styles.headerText}>TASKS</BoldText>
             <TouchableOpacity
+              disabled={mode === 2}
               style={styles.section}
               onPress={() => {
                 setModalVisible(true);
@@ -269,6 +364,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
               </CustomButton>
             </TouchableOpacity>
             <TouchableOpacity
+              disabled={mode === 2}
               style={styles.section}
               onPress={() => {
                 setModalVisible(true);
@@ -286,6 +382,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
             </TouchableOpacity>
             <BoldText style={styles.headerText}>NOTES</BoldText>
             <TouchableOpacity
+              disabled={mode === 2}
               style={styles.section}
               onPress={() => {
                 setModalVisible(true);

@@ -34,12 +34,14 @@ export default function PlantsScreen({ navigation, route }: PlantsScreenNavigati
   useEffect(() => {
     navigation.addListener('focus', () => {
       getAndSetPlants();
+      setSearch('');
     });
 
     async function getAndSetPlants() {
       let plantsStorage = await AsyncStorage.getItem('plants');
       setPlants(JSON.parse(plantsStorage));
       setFilteredPlants(JSON.parse(plantsStorage));
+      console.log(plants);
     }
   }, []);
 
@@ -75,7 +77,7 @@ export default function PlantsScreen({ navigation, route }: PlantsScreenNavigati
               <BoldText style={{ fontSize: 20 }}>All plants</BoldText>
               <TransparentView>
                 <TouchableOpacity
-                  style={{ marginLeft: 5, marginTop: 3 }}
+                  style={{ marginLeft: 5 }}
                   onPress={() => {
                     navigation.navigate('Plant');
                   }}
@@ -84,21 +86,21 @@ export default function PlantsScreen({ navigation, route }: PlantsScreenNavigati
                 </TouchableOpacity>
               </TransparentView>
             </TransparentView>
-            {filteredPlants?.map(({ _id, nickname, img }) => (
+            {filteredPlants?.map((plant) => (
               <TouchableOpacity
-                key={_id}
+                key={plant['_id']}
                 style={styles.plant}
                 onPress={() => {
-                  navigation.navigate('Plant', { plantId: _id });
+                  navigation.navigate('Plant', { plant: plant });
                 }}
               >
                 <TransparentView style={{ flexDirection: 'row' }}>
-                  {img ? (
-                    <Image source={{ uri: img }} style={styles.img} />
+                  {plant['img'] ? (
+                    <Image source={{ uri: plant['img'] }} style={styles.img} />
                   ) : (
                     <Image source={require('../assets/images/1-op.jpg')} style={styles.img} />
                   )}
-                  <Text style={{ paddingLeft: 10, alignSelf: 'center', fontSize: 15 }}>{nickname}</Text>
+                  <Text style={{ paddingLeft: 10, alignSelf: 'center', fontSize: 15 }}>{plant['nickname']}</Text>
                 </TransparentView>
                 <TransparentView style={{ alignSelf: 'center', flexDirection: 'row' }}>
                   <Fontisto style={{ paddingTop: 2.5 }} name='blood-drop' size={15} color={Colors.text} />
@@ -107,7 +109,7 @@ export default function PlantsScreen({ navigation, route }: PlantsScreenNavigati
                 </TransparentView>
               </TouchableOpacity>
             ))}
-            {!filteredPlants && <Text>There are currently none!</Text>}
+            {(!filteredPlants || !filteredPlants.length) && <Text>There are currently none!</Text>}
           </TransparentView>
         </ScrollView>
       </TransparentView>

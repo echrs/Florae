@@ -22,7 +22,7 @@ export type TabsParamList = {
 
 export type HomeTabParamList = {
   Home: NO_PARAMS;
-  NewPlant: { plantId: string };
+  Plant: { plant: { nickname: string; name: string; _id: string; notes: string } };
 };
 
 export type TasksTabParamList = {
@@ -33,6 +33,5 @@ export type TasksTabParamList = {
 
 export type PlantsTabParamList = {
   Plants: NO_PARAMS;
-  NewPlant: { plantId: string };
+  Plant: { plant: { nickname: string; name: string; _id: string; notes: string } };
 };
-
