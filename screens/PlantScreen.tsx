@@ -384,6 +384,14 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
                 <Text>{feedFieldDays && feedFieldTime ? 'Every ' + feedFieldDays + ' days @ ' + feedFieldTime + 'h' : ''}</Text>
               </CustomButton>
             </TouchableOpacity>
+            {mode !== Mode.view && (
+              <TouchableOpacity style={styles.buttonSection} onPress={() => {}}>
+                <CustomButton>
+                  <BoldText>ADD TASK</BoldText>
+                  <MaterialCommunityIcons name='plus' size={17} color={Colors.text} />
+                </CustomButton>
+              </TouchableOpacity>
+            )}
             <BoldText style={styles.headerText}>NOTES</BoldText>
             <TouchableOpacity
               disabled={mode === 2}
