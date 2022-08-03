@@ -28,9 +28,9 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
   const [multiline, setMultiline] = useState(false);
   const [notesField, setNotesField] = useState('');
   const [waterFieldDays, setWaterFieldDays] = useState(7);
-  const [waterFieldTime, setWaterFieldTime] = useState('');
+  const [waterFieldTime, setWaterFieldTime] = useState(12);
   const [feedFieldDays, setFeedFieldDays] = useState(28);
-  const [feedFieldTime, setFeedFieldTime] = useState('');
+  const [feedFieldTime, setFeedFieldTime] = useState(12);
   const { userCtx } = useContext(Context);
   const [user, setUser] = userCtx;
   const [plant, setPlant] = useState({} as any);
@@ -119,8 +119,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
   const setTimeAndDate = (days: any, time: any) => {
     var date = new Date();
     date.setDate(date.getDate() + parseInt(days));
-    if (time.length) date.setHours(parseInt(time), 0, 0);
-    else date.setHours(12, 0, 0);
+    date.setHours(parseInt(time), 0, 0);
     return date;
   };
 
@@ -202,17 +201,15 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
         break;
       case 'Water':
         let daysWater = getValues().WaterDays?.replace(/\D+/g, '');
-        if (daysWater) setWaterFieldDays(daysWater);
-        else setWaterFieldDays(7);
+        daysWater ? setWaterFieldDays(daysWater) : setWaterFieldDays(7);
         let timeWater = getValues().WaterTime?.replace(/\D+/g, '');
-        setWaterFieldTime(timeWater > 23 && timeWater > 0 ? 0 : timeWater);
+        timeWater ? setWaterFieldTime(timeWater) : setWaterFieldTime(12);
         break;
       case 'Feed':
         let daysFeed = getValues().FeedDays?.replace(/\D+/g, '');
-        if (daysFeed) setFeedFieldDays(daysFeed);
-        else setFeedFieldDays(28);
+        daysFeed ? setFeedFieldDays(daysFeed) : setFeedFieldDays(28);
         let timeFeed = getValues().FeedTime?.replace(/\D+/g, '');
-        setFeedFieldTime(timeFeed > 23 && timeFeed > 0 ? 0 : timeFeed);
+        timeFeed ? setFeedFieldTime(timeFeed) : setFeedFieldTime(12);
         break;
     }
   };
@@ -267,6 +264,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
                     name={fieldName + 'Time'}
                     render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                       <TextInput
+                        defaultValue={'12'}
                         selectionColor={Colors.button}
                         keyboardType='numeric'
                         style={styles.numInput}
@@ -369,10 +367,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
             >
               <CustomButton>
                 <BoldText>WATER</BoldText>
-                <Text>
-                  {waterFieldDays && waterFieldTime ? 'Every ' + waterFieldDays + ' days @ ' + waterFieldTime + 'h' : ''}
-                  {waterFieldDays && !waterFieldTime ? 'Every ' + waterFieldDays + ' days' : ''}{' '}
-                </Text>
+                <Text>{waterFieldDays && waterFieldTime ? 'Every ' + waterFieldDays + ' days @ ' + waterFieldTime + 'h' : ''}</Text>
               </CustomButton>
             </TouchableOpacity>
             <TouchableOpacity
@@ -386,10 +381,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
             >
               <CustomButton>
                 <BoldText>FEED</BoldText>
-                <Text>
-                  {feedFieldDays && feedFieldTime ? 'Every ' + feedFieldDays + ' days @ ' + feedFieldTime + 'h' : ''}
-                  {feedFieldDays && !feedFieldTime ? 'Every ' + feedFieldDays + ' days' : ''}
-                </Text>
+                <Text>{feedFieldDays && feedFieldTime ? 'Every ' + feedFieldDays + ' days @ ' + feedFieldTime + 'h' : ''}</Text>
               </CustomButton>
             </TouchableOpacity>
             <BoldText style={styles.headerText}>NOTES</BoldText>
