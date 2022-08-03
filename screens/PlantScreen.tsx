@@ -116,7 +116,20 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
     );
   };
 
+  const setTimeAndDate = (days: any, time: any) => {
+    var date = new Date();
+    date.setDate(date.getDate() + parseInt(days));
+    if (time.length) date.setHours(parseInt(time), 0, 0);
+    else date.setHours(12, 0, 0);
+    return date;
+  };
+
   const onSubmit = () => {
+    var daysWater = getValues().WaterDays ? getValues().WaterDays : waterFieldDays;
+    var timeWater = getValues().WaterTime ? getValues().WaterTime : waterFieldTime;
+    var daysFeed = getValues().FeedDays ? getValues().FeedDays : feedFieldDays;
+    var timeFeed = getValues().FeedTime ? getValues().FeedTime : feedFieldTime;
+
     var obj = {
       nickname: getValues().Nickname ? getValues().Nickname : nicknameField,
       name: getValues().Name ? getValues().Name : nameField,
@@ -124,13 +137,15 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
       tasks: [
         {
           name: 'Water',
-          repeatDays: getValues().WaterDays ? getValues().WaterDays : waterFieldDays,
-          time: getValues().WaterTime ? getValues().WaterTime : waterFieldTime,
+          repeatDays: parseInt(daysWater),
+          time: parseInt(timeWater),
+          taskDate: setTimeAndDate(daysWater, timeWater),
         },
         {
           name: 'Feed',
-          repeatDays: getValues().FeedDays ? getValues().FeedDays : feedFieldDays,
-          time: getValues().FeedTime ? getValues().FeedTime : feedFieldTime,
+          repeatDays: parseInt(daysFeed),
+          time: parseInt(timeFeed),
+          taskDate: setTimeAndDate(daysFeed, timeFeed),
         },
       ],
       img: getValues().img,
