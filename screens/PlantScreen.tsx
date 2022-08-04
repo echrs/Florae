@@ -14,6 +14,7 @@ import { deletePlant, editPlant, savePlant } from '../api';
 import { Context } from '../Context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { PickImage } from '../components/ImagePicker';
+import TasksScreen from './TasksScreen';
 
 type PlantScreenNavigationProp = CompositeScreenProps<NativeStackScreenProps<HomeTabParamList, 'Plant'>, BottomTabScreenProps<TabsParamList>>;
 
@@ -29,13 +30,19 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
   const [notesField, setNotesField] = useState('');
   const [waterFieldDays, setWaterFieldDays] = useState(7);
   const [waterFieldTime, setWaterFieldTime] = useState(12);
-  const [feedFieldDays, setFeedFieldDays] = useState(28);
-  const [feedFieldTime, setFeedFieldTime] = useState(12);
   const { userCtx } = useContext(Context);
   const [user, setUser] = userCtx;
   const [plant, setPlant] = useState({} as any);
   const [mode, setMode] = useState(0);
   const [viewImg, setViewImg] = useState('');
+  const [taskList, setTaskList] = useState<{ taskFieldName: string; taskName: any; taskDays: any; taskTime: any }[]>([]);
+  const [counter, setCounter] = useState(0);
+  const [isNewTask, setIsNewTask] = useState(false);
+  const [taskName, setTaskName] = useState(false);
+
+  useEffect(() => {
+    console.log(taskList);
+  }, [taskList]);
 
   useEffect(() => {
     if (route.params?.plant) {
@@ -49,9 +56,6 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
         let waterInfo = plant.tasks.find((task: any) => task.name === 'Water');
         setWaterFieldDays(waterInfo.repeatDays);
         setWaterFieldTime(waterInfo.time);
-        let feedInfo = plant.tasks.find((task: any) => task.name === 'Feed');
-        setFeedFieldDays(feedInfo.repeatDays);
-        setFeedFieldTime(feedInfo.time);
         setViewImg(plant.img);
       }
     } else {
@@ -116,6 +120,41 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
     );
   };
 
+  const saveNewTaskInput = (fieldName?: string) => {
+    let task = taskList.find((x) => x.taskFieldName === fieldName);
+    let nt = task?.taskFieldName;
+    if (nt?.length) {
+      let name = nt + 'Name';
+      let days = nt + 'Days';
+      let time = nt + 'Time';
+      let uTaskList = [...taskList];
+      let idx = taskList.findIndex((el) => el.taskFieldName === nt);
+      uTaskList[idx] = {
+        taskFieldName: nt,
+        taskName: getValues(name) ? getValues(name) : task?.taskName,
+        taskDays: getValues(days) ? getValues(days).replace(/\D+/g, '') : '7',
+        taskTime: getValues(time) ? getValues(time).replace(/\D+/g, '') : '12',
+      };
+      setTaskList(uTaskList);
+    } else if (fieldName?.includes('NewTask')) {
+      nt = fieldName;
+      let name = nt + 'Name';
+      let days = nt + 'Days';
+      let time = nt + 'Time';
+      setTaskList([
+        ...taskList,
+        {
+          taskFieldName: nt,
+          taskName: getValues(name),
+          taskDays: getValues(days) ? getValues(days).replace(/\D+/g, '') : '7',
+          taskTime: getValues(time) ? getValues(time).replace(/\D+/g, '') : '12',
+        },
+      ]);
+      setCounter(counter + 1);
+      setIsNewTask(false);
+    }
+  };
+
   const setTimeAndDate = (days: any, time: any) => {
     var date = new Date();
     date.setDate(date.getDate() + parseInt(days));
@@ -126,8 +165,6 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
   const onSubmit = () => {
     var daysWater = getValues().WaterDays ? getValues().WaterDays : waterFieldDays;
     var timeWater = getValues().WaterTime ? getValues().WaterTime : waterFieldTime;
-    var daysFeed = getValues().FeedDays ? getValues().FeedDays : feedFieldDays;
-    var timeFeed = getValues().FeedTime ? getValues().FeedTime : feedFieldTime;
 
     var obj = {
       nickname: getValues().Nickname ? getValues().Nickname : nicknameField,
@@ -135,16 +172,10 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
       notes: getValues().Notes ? getValues().Notes : notesField,
       tasks: [
         {
-          name: 'Water',
-          repeatDays: parseInt(daysWater),
-          time: parseInt(timeWater),
+          taskName: 'Water',
+          taskDays: parseInt(daysWater),
+          taskTime: parseInt(timeWater),
           taskDate: setTimeAndDate(daysWater, timeWater),
-        },
-        {
-          name: 'Feed',
-          repeatDays: parseInt(daysFeed),
-          time: parseInt(timeFeed),
-          taskDate: setTimeAndDate(daysFeed, timeFeed),
         },
       ],
       img: getValues().img,
@@ -188,7 +219,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
     }
   };
 
-  const checkInput = (fieldName: string) => {
+  const saveInput = (fieldName: string) => {
     switch (fieldName) {
       case 'Nickname':
         if (getValues().Nickname) setNicknameField(getValues().Nickname);
@@ -204,12 +235,6 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
         daysWater ? setWaterFieldDays(daysWater) : setWaterFieldDays(7);
         let timeWater = getValues().WaterTime?.replace(/\D+/g, '');
         timeWater ? setWaterFieldTime(timeWater) : setWaterFieldTime(12);
-        break;
-      case 'Feed':
-        let daysFeed = getValues().FeedDays?.replace(/\D+/g, '');
-        daysFeed ? setFeedFieldDays(daysFeed) : setFeedFieldDays(28);
-        let timeFeed = getValues().FeedTime?.replace(/\D+/g, '');
-        timeFeed ? setFeedFieldTime(timeFeed) : setFeedFieldTime(12);
         break;
     }
   };
@@ -237,9 +262,26 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
               borderRadius: 15,
             }}
           >
-            <BoldText style={{ textTransform: 'uppercase' }}>{fieldName}</BoldText>
+            {!fieldName.includes('NewTask') && <BoldText style={{ textTransform: 'uppercase' }}>{fieldName}</BoldText>}
+            {fieldName.includes('NewTask') && !isNewTask && <BoldText style={{ textTransform: 'uppercase' }}>{taskName}</BoldText>}
+            {isNewTask && (
+              <Controller
+                control={control}
+                name={fieldName + 'Name'}
+                render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                  <TextInput
+                    multiline={multiline}
+                    selectionColor={Colors.button}
+                    style={styles.textInput}
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    value={value}
+                  />
+                )}
+              />
+            )}
             <TransparentView style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-              {fieldName === 'Water' || fieldName === 'Feed' ? (
+              {fieldName === 'Water' || fieldName.includes('NewTask') ? (
                 <TransparentView style={{ flexDirection: 'row' }}>
                   <Text style={{ marginTop: 10, marginRight: 10 }}>Every</Text>
                   <Controller
@@ -247,7 +289,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
                     name={fieldName + 'Days'}
                     render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                       <TextInput
-                        defaultValue={fieldName === 'Water' ? '7' : '28'}
+                        defaultValue={'7'}
                         selectionColor={Colors.button}
                         keyboardType='numeric'
                         style={styles.numInput}
@@ -296,8 +338,9 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
               <TouchableOpacity
                 style={{ alignSelf: 'center' }}
                 onPress={() => {
-                  checkInput(fieldName);
+                  saveInput(fieldName);
                   setModalVisible(false);
+                  saveNewTaskInput(fieldName);
                 }}
               >
                 <MaterialCommunityIcons name='content-save-outline' size={30} color='white' />
@@ -367,25 +410,42 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
             >
               <CustomButton>
                 <BoldText>WATER</BoldText>
-                <Text>{waterFieldDays && waterFieldTime ? 'Every ' + waterFieldDays + ' days @ ' + waterFieldTime + 'h' : ''}</Text>
+                <Text>
+                  Every {waterFieldDays} days @ {waterFieldTime}h
+                </Text>
               </CustomButton>
             </TouchableOpacity>
-            <TouchableOpacity
-              disabled={mode === 2}
-              style={styles.section}
-              onPress={() => {
-                setModalVisible(true);
-                setFieldName('Feed');
-                setMultiline(false);
-              }}
-            >
-              <CustomButton>
-                <BoldText>FEED</BoldText>
-                <Text>{feedFieldDays && feedFieldTime ? 'Every ' + feedFieldDays + ' days @ ' + feedFieldTime + 'h' : ''}</Text>
-              </CustomButton>
-            </TouchableOpacity>
+            {taskList &&
+              taskList?.map((task) => (
+                <TouchableOpacity
+                  key={task.taskFieldName}
+                  disabled={mode === 2}
+                  style={styles.section}
+                  onPress={() => {
+                    setModalVisible(true);
+                    setFieldName(task.taskFieldName);
+                    setTaskName(task.taskName);
+                    setMultiline(false);
+                  }}
+                >
+                  <CustomButton>
+                    <BoldText style={{ textTransform: 'uppercase' }}>{task.taskName}</BoldText>
+                    <Text>
+                      Every {task.taskDays} days @ {task.taskTime}h
+                    </Text>
+                  </CustomButton>
+                </TouchableOpacity>
+              ))}
             {mode !== Mode.view && (
-              <TouchableOpacity style={styles.buttonSection} onPress={() => {}}>
+              <TouchableOpacity
+                style={styles.buttonSection}
+                onPress={() => {
+                  setModalVisible(true);
+                  setMultiline(false);
+                  setFieldName('NewTask' + counter);
+                  setIsNewTask(true);
+                }}
+              >
                 <CustomButton>
                   <BoldText>ADD TASK</BoldText>
                   <MaterialCommunityIcons name='plus' size={17} color={Colors.text} />
