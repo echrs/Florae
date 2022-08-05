@@ -1,5 +1,5 @@
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, TouchableOpacity, useWindowDimensions, TextInput, KeyboardAvoidingView } from 'react-native';
 import { BoldText, Text, View, TransparentView, CustomButton } from '../components/CustomStyled';
 import { Colors, Mode } from '../constants/Constants';
@@ -30,6 +30,8 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
   const [notesField, setNotesField] = useState('');
   const [waterFieldDays, setWaterFieldDays] = useState(7);
   const [waterFieldTime, setWaterFieldTime] = useState(12);
+  const [feedFieldDays, setFeedFieldDays] = useState(28);
+  const [feedFieldTime, setFeedFieldTime] = useState(12);
   const { userCtx } = useContext(Context);
   const [user, setUser] = userCtx;
   const [plant, setPlant] = useState({} as any);
@@ -39,10 +41,8 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
   const [counter, setCounter] = useState(0);
   const [isNewTask, setIsNewTask] = useState(false);
   const [taskName, setTaskName] = useState(false);
-
-  useEffect(() => {
-    console.log(taskList);
-  }, [taskList]);
+  const taskListRef = useRef<{ taskFieldName: string; taskName: any; taskDays: any; taskTime: any }[]>([]);
+  taskListRef.current = taskList;
 
   useEffect(() => {
     if (route.params?.plant) {
@@ -53,10 +53,15 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
         setNicknameField(plant.nickname);
         setNameField(plant.name);
         setNotesField(plant.notes);
-        let waterInfo = plant.tasks.find((task: any) => task.name === 'Water');
-        setWaterFieldDays(waterInfo.repeatDays);
-        setWaterFieldTime(waterInfo.time);
+        let waterInfo = plant.tasks.find((task: any) => task.taskName === 'Water');
+        setWaterFieldDays(waterInfo.taskDays);
+        setWaterFieldTime(waterInfo.taskTime);
+        let feedInfo = plant.tasks.find((task: any) => task.taskName === 'Feed');
+        setFeedFieldDays(feedInfo.taskDays);
+        setFeedFieldTime(feedInfo.taskTime);
         setViewImg(plant.img);
+        let tasks = plant.tasks.filter((task: any) => task.taskFieldName.includes("NewTask"));
+        setTaskList(tasks);
       }
     } else {
       setMode(Mode.new);
@@ -120,42 +125,34 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
     );
   };
 
-  const saveNewTaskInput = (fieldName?: string) => {
+  const saveNewTaskInput = (fieldName: string) => {
     let task = taskList.find((x) => x.taskFieldName === fieldName);
-    let nt = task?.taskFieldName;
-    if (nt?.length) {
-      let name = nt + 'Name';
-      let days = nt + 'Days';
-      let time = nt + 'Time';
+    let nt = fieldName;
+    let name = nt + 'Name';
+    let days = nt + 'Days';
+    let time = nt + 'Time';
+    let taskDays = getValues(days) ? parseInt(getValues(days).replace(/\D+/g, '')) : 7;
+    let taskTime = parseInt(getValues(time)) >= 0 && parseInt(getValues(time)) <= 23 ? parseInt(getValues(time).replace(/\D+/g, '')) : 12;
+    let obj = {
+      taskFieldName: nt,
+      taskName: getValues(name) ? getValues(name).replace(/[^a-zA-Z ]/g, '') : task ? task.taskName : 'Task',
+      taskDays: taskDays,
+      taskTime: taskTime,
+      taskDate: setDaysAndTime(taskDays, taskTime),
+    };
+    if (task) {
       let uTaskList = [...taskList];
       let idx = taskList.findIndex((el) => el.taskFieldName === nt);
-      uTaskList[idx] = {
-        taskFieldName: nt,
-        taskName: getValues(name) ? getValues(name) : task?.taskName,
-        taskDays: getValues(days) ? getValues(days).replace(/\D+/g, '') : '7',
-        taskTime: getValues(time) ? getValues(time).replace(/\D+/g, '') : '12',
-      };
+      uTaskList[idx] = obj;
       setTaskList(uTaskList);
-    } else if (fieldName?.includes('NewTask')) {
-      nt = fieldName;
-      let name = nt + 'Name';
-      let days = nt + 'Days';
-      let time = nt + 'Time';
-      setTaskList([
-        ...taskList,
-        {
-          taskFieldName: nt,
-          taskName: getValues(name),
-          taskDays: getValues(days) ? getValues(days).replace(/\D+/g, '') : '7',
-          taskTime: getValues(time) ? getValues(time).replace(/\D+/g, '') : '12',
-        },
-      ]);
+    } else if (fieldName.includes('NewTask')) {
+      setTaskList([...taskList, obj]);
       setCounter(counter + 1);
       setIsNewTask(false);
     }
   };
 
-  const setTimeAndDate = (days: any, time: any) => {
+  const setDaysAndTime = (days: any, time: any) => {
     var date = new Date();
     date.setDate(date.getDate() + parseInt(days));
     date.setHours(parseInt(time), 0, 0);
@@ -165,19 +162,32 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
   const onSubmit = () => {
     var daysWater = getValues().WaterDays ? getValues().WaterDays : waterFieldDays;
     var timeWater = getValues().WaterTime ? getValues().WaterTime : waterFieldTime;
+    var daysFeed = getValues().FeedDays ? getValues().FeedDays : feedFieldDays;
+    var timeFeed = getValues().FeedTime ? getValues().FeedTime : feedFieldTime;
+
+    var taskArr = [
+      {
+        taskName: 'Water',
+        taskDays: daysWater,
+        taskTime: timeWater,
+        taskDate: setDaysAndTime(daysWater, timeWater),
+        taskFieldName: 'Water',
+      },
+      {
+        taskName: 'Feed',
+        taskDays: parseInt(daysFeed),
+        taskTime: parseInt(timeFeed),
+        taskDate: setDaysAndTime(daysFeed, timeFeed),
+        taskFieldName: 'Feed',
+      },
+      ...taskListRef.current,
+    ];
 
     var obj = {
       nickname: getValues().Nickname ? getValues().Nickname : nicknameField,
       name: getValues().Name ? getValues().Name : nameField,
       notes: getValues().Notes ? getValues().Notes : notesField,
-      tasks: [
-        {
-          taskName: 'Water',
-          taskDays: parseInt(daysWater),
-          taskTime: parseInt(timeWater),
-          taskDate: setTimeAndDate(daysWater, timeWater),
-        },
-      ],
+      tasks: taskArr,
       img: getValues().img,
     };
 
@@ -219,6 +229,11 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
     }
   };
 
+  const getTimeVal = (time: any) => {
+    let timeInt = parseInt(time?.replace(/\D+/g, ''));
+    return timeInt >= 0 && timeInt <= 23 ? timeInt : 12;
+  };
+
   const saveInput = (fieldName: string) => {
     switch (fieldName) {
       case 'Nickname':
@@ -231,10 +246,14 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
         setNotesField(getValues().Notes);
         break;
       case 'Water':
-        let daysWater = getValues().WaterDays?.replace(/\D+/g, '');
+        let daysWater = parseInt(getValues().WaterDays?.replace(/\D+/g, ''));
         daysWater ? setWaterFieldDays(daysWater) : setWaterFieldDays(7);
-        let timeWater = getValues().WaterTime?.replace(/\D+/g, '');
-        timeWater ? setWaterFieldTime(timeWater) : setWaterFieldTime(12);
+        setWaterFieldDays(getTimeVal(getValues().WaterDays));
+        break;
+      case 'Feed':
+        let daysFeed = parseInt(getValues().FeedDays?.replace(/\D+/g, ''));
+        daysFeed ? setFeedFieldDays(daysFeed) : setFeedFieldDays(28);
+        setFeedFieldTime(getTimeVal(getValues().FeedDays));
         break;
     }
   };
@@ -281,7 +300,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
               />
             )}
             <TransparentView style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-              {fieldName === 'Water' || fieldName.includes('NewTask') ? (
+              {fieldName === 'Water' || fieldName === 'Feed' || fieldName.includes('NewTask') ? (
                 <TransparentView style={{ flexDirection: 'row' }}>
                   <Text style={{ marginTop: 10, marginRight: 10 }}>Every</Text>
                   <Controller
@@ -289,7 +308,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
                     name={fieldName + 'Days'}
                     render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                       <TextInput
-                        defaultValue={'7'}
+                        defaultValue={fieldName === 'Water' ? '7' : '28'}
                         selectionColor={Colors.button}
                         keyboardType='numeric'
                         style={styles.numInput}
@@ -412,6 +431,22 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
                 <BoldText>WATER</BoldText>
                 <Text>
                   Every {waterFieldDays} days @ {waterFieldTime}h
+                </Text>
+              </CustomButton>
+            </TouchableOpacity>
+            <TouchableOpacity
+              disabled={mode === 2}
+              style={styles.section}
+              onPress={() => {
+                setModalVisible(true);
+                setFieldName('Feed');
+                setMultiline(false);
+              }}
+            >
+              <CustomButton>
+                <BoldText>FEED</BoldText>
+                <Text>
+                  Every {feedFieldDays} days @ {feedFieldTime}h
                 </Text>
               </CustomButton>
             </TouchableOpacity>
