@@ -59,7 +59,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
         setFeedFieldDays(feedInfo.taskDays);
         setFeedFieldTime(feedInfo.taskTime);
         setViewImg(plant.img);
-        let tasks = plant.tasks.filter((task: any) => task.taskFieldName.includes("NewTask"));
+        let tasks = plant.tasks.filter((task: any) => task.taskFieldName.includes('NewTask'));
         setTaskList(tasks);
       }
     } else {
@@ -124,7 +124,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
     );
   };
 
-  const saveNewTaskInput = (fieldName: string) => {
+  const saveCustomTaskInput = (fieldName: string) => {
     let task = taskList.find((x) => x.taskFieldName === fieldName);
     let nt = fieldName;
     let name = nt + 'Name';
@@ -149,6 +149,11 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
       setIsNewTask(false);
     }
   };
+
+  const deleteCustomTask = (fieldName: string) => {
+    let filteredTL = taskList.filter(x => x.taskFieldName !== fieldName);
+    setTaskList(filteredTL);
+  }
 
   const setDaysAndTime = (days: any, time: any) => {
     var date = new Date();
@@ -353,15 +358,26 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
                 />
               )}
               <TouchableOpacity
-                style={{ alignSelf: 'center' }}
+                style={{ alignSelf: 'center', marginLeft: 50 }}
                 onPress={() => {
                   saveInput(fieldName);
                   setModalVisible(false);
-                  saveNewTaskInput(fieldName);
+                  saveCustomTaskInput(fieldName);
                 }}
               >
                 <MaterialCommunityIcons name='content-save-outline' size={30} color='white' />
               </TouchableOpacity>
+              {fieldName.includes('NewTask') && (
+                <TouchableOpacity
+                  style={{ alignSelf: 'center' }}
+                  onPress={() => {
+                    deleteCustomTask(fieldName);
+                    setModalVisible(false);
+                  }}
+                >
+                  <MaterialIcons name='clear' size={30} color='white' />
+                </TouchableOpacity>
+              )}
             </TransparentView>
           </TransparentView>
         </KeyboardAvoidingView>
