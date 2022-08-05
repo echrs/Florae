@@ -38,7 +38,6 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
   const [mode, setMode] = useState(0);
   const [viewImg, setViewImg] = useState('');
   const [taskList, setTaskList] = useState<{ taskFieldName: string; taskName: any; taskDays: any; taskTime: any }[]>([]);
-  const [counter, setCounter] = useState(0);
   const [isNewTask, setIsNewTask] = useState(false);
   const [taskName, setTaskName] = useState(false);
   const taskListRef = useRef<{ taskFieldName: string; taskName: any; taskDays: any; taskTime: any }[]>([]);
@@ -147,7 +146,6 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
       setTaskList(uTaskList);
     } else if (fieldName.includes('NewTask')) {
       setTaskList([...taskList, obj]);
-      setCounter(counter + 1);
       setIsNewTask(false);
     }
   };
@@ -477,7 +475,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
                 onPress={() => {
                   setModalVisible(true);
                   setMultiline(false);
-                  setFieldName('NewTask' + counter);
+                  setFieldName('NewTask' + taskListRef.current.length);
                   setIsNewTask(true);
                 }}
               >
