@@ -96,14 +96,25 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
     } else if (mode === Mode.edit || mode === Mode.new) {
       +navigation.setOptions({
         headerRight: () => (
-          <Pressable
-            onPress={handleSubmit(onSubmit)}
-            style={({ pressed }) => ({
-              opacity: pressed ? 0.5 : 1,
-            })}
-          >
-            <BoldText>SAVE</BoldText>
-          </Pressable>
+          <>
+            <Pressable
+              onPress={() => setMode(Mode.view)}
+              style={({ pressed }) => ({
+                opacity: pressed ? 0.5 : 1,
+              })}
+            >
+              <BoldText>CANCEL</BoldText>
+            </Pressable>
+            <Pressable
+              onPress={handleSubmit(onSubmit)}
+              style={({ pressed }) => ({
+                opacity: pressed ? 0.5 : 1,
+                marginLeft: 15,
+              })}
+            >
+              <BoldText>SAVE</BoldText>
+            </Pressable>
+          </>
         ),
       });
     }
@@ -151,9 +162,9 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
   };
 
   const deleteCustomTask = (fieldName: string) => {
-    let filteredTL = taskList.filter(x => x.taskFieldName !== fieldName);
+    let filteredTL = taskList.filter((x) => x.taskFieldName !== fieldName);
     setTaskList(filteredTL);
-  }
+  };
 
   const setDaysAndTime = (days: any, time: any) => {
     var date = new Date();
