@@ -5,6 +5,7 @@ export const Colors = {
   tint: '#1D1D47',
   other: '#333333',
   buttonShade: '#c7eae6',
+  modal: '#333333',
 };
  
 export const Fonts = {

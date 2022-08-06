@@ -1,6 +1,6 @@
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, TouchableOpacity, useWindowDimensions, TextInput, KeyboardAvoidingView } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, TouchableOpacity, useWindowDimensions, TextInput, KeyboardAvoidingView, Button } from 'react-native';
 import { BoldText, Text, View, TransparentView, CustomButton } from '../components/CustomStyled';
 import { Colors, Mode } from '../constants/Constants';
 import Modal from 'react-native-modal';
@@ -14,7 +14,6 @@ import { deletePlant, editPlant, savePlant } from '../api';
 import { Context } from '../Context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { PickImage } from '../components/ImagePicker';
-import TasksScreen from './TasksScreen';
 
 type PlantScreenNavigationProp = CompositeScreenProps<NativeStackScreenProps<HomeTabParamList, 'Plant'>, BottomTabScreenProps<TabsParamList>>;
 
@@ -30,8 +29,10 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
   const [notesField, setNotesField] = useState('');
   const [waterFieldDays, setWaterFieldDays] = useState(7);
   const [waterFieldTime, setWaterFieldTime] = useState(12);
+  const [waterFieldDaysLeft, setWaterFieldDaysLeft] = useState(0);
   const [feedFieldDays, setFeedFieldDays] = useState(28);
   const [feedFieldTime, setFeedFieldTime] = useState(12);
+  const [feedFieldDaysLeft, setFeedFieldDaysLeft] = useState(0);
   const { userCtx } = useContext(Context);
   const [user, setUser] = userCtx;
   const [plant, setPlant] = useState({} as any);
@@ -55,9 +56,11 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
         let waterInfo = plant.tasks.find((task: any) => task.taskName === 'Water');
         setWaterFieldDays(waterInfo.taskDays);
         setWaterFieldTime(waterInfo.taskTime);
+        setWaterFieldDaysLeft(getDaysLeft(waterInfo.taskDate));
         let feedInfo = plant.tasks.find((task: any) => task.taskName === 'Feed');
         setFeedFieldDays(feedInfo.taskDays);
         setFeedFieldTime(feedInfo.taskTime);
+        setFeedFieldDaysLeft(getDaysLeft(feedInfo.taskDate));
         setViewImg(plant.img);
         let tasks = plant.tasks.filter((task: any) => task.taskFieldName.includes('NewTask'));
         setTaskList(tasks);
@@ -120,6 +123,20 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
     }
   }, [mode]);
 
+  const getDaysLeft = (date: string) => {
+    let taskDate = new Date(date);
+    let today = new Date();
+    return Math.round((taskDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+  };
+
+  const setTaskDone = (fieldName: string) => {
+    let task = plant.tasks.find((task: any) => task.taskFieldName === fieldName);
+    if (task) {
+      //update prop
+      //db call
+    }
+  };
+
   const deleteCurrPlant = () => {
     return deletePlant(plant._id, user.token).then(
       async (response) => {
@@ -141,11 +158,14 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
     let name = nt + 'Name';
     let days = nt + 'Days';
     let time = nt + 'Time';
+    let taskName = getValues(name)
+      .replace(/[^a-zA-Z0-9 ]/g, '')
+      .trim();
     let taskDays = getValues(days) ? parseInt(getValues(days).replace(/\D+/g, '')) : 7;
     let taskTime = parseInt(getValues(time)) >= 0 && parseInt(getValues(time)) <= 23 ? parseInt(getValues(time).replace(/\D+/g, '')) : 12;
     let obj = {
       taskFieldName: nt,
-      taskName: getValues(name) ? getValues(name).replace(/[^a-zA-Z ]/g, '') : task ? task.taskName : 'Task',
+      taskName: taskName ? taskName : task ? task.taskName : 'Task',
       taskDays: taskDays,
       taskTime: taskTime,
       taskDate: setDaysAndTime(taskDays, taskTime),
@@ -164,6 +184,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
   const deleteCustomTask = (fieldName: string) => {
     let filteredTL = taskList.filter((x) => x.taskFieldName !== fieldName);
     setTaskList(filteredTL);
+    //missing db call
   };
 
   const setDaysAndTime = (days: any, time: any) => {
@@ -279,7 +300,10 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
         statusBarTranslucent
         deviceHeight={height + statusBarHeight + 5}
         isVisible={modalVisible}
-        onBackButtonPress={() => setModalVisible(false)}
+        onBackButtonPress={() => {
+          setModalVisible(false);
+          setIsNewTask(false);
+        }}
         hideModalContentWhileAnimating={true}
         backdropOpacity={0.5}
         useNativeDriver
@@ -289,7 +313,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
           <TransparentView
             style={{
               alignSelf: 'center',
-              backgroundColor: Colors.background,
+              backgroundColor: Colors.modal,
               width: '100%',
               padding: 30,
               borderRadius: 15,
@@ -368,27 +392,28 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
                   )}
                 />
               )}
-              <TouchableOpacity
-                style={{ alignSelf: 'center', marginLeft: 50 }}
-                onPress={() => {
-                  saveInput(fieldName);
-                  setModalVisible(false);
-                  saveCustomTaskInput(fieldName);
-                }}
-              >
-                <MaterialCommunityIcons name='content-save-outline' size={30} color='white' />
-              </TouchableOpacity>
-              {fieldName.includes('NewTask') && (
+              <TransparentView style={{ flexDirection: 'row' }}>
                 <TouchableOpacity
-                  style={{ alignSelf: 'center' }}
                   onPress={() => {
-                    deleteCustomTask(fieldName);
+                    saveInput(fieldName);
                     setModalVisible(false);
+                    saveCustomTaskInput(fieldName);
                   }}
                 >
-                  <MaterialIcons name='clear' size={30} color='white' />
+                  <MaterialCommunityIcons name='content-save-outline' size={30} color='white' />
                 </TouchableOpacity>
-              )}
+                {fieldName.includes('NewTask') && (
+                  <TouchableOpacity
+                    style={{ marginLeft: 10 }}
+                    onPress={() => {
+                      deleteCustomTask(fieldName);
+                      setModalVisible(false);
+                    }}
+                  >
+                    <MaterialIcons name='clear' size={30} color='white' />
+                  </TouchableOpacity>
+                )}
+              </TransparentView>
             </TransparentView>
           </TransparentView>
         </KeyboardAvoidingView>
@@ -443,74 +468,143 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
               </CustomButton>
             </TouchableOpacity>
             <BoldText style={styles.headerText}>TASKS</BoldText>
-            <TouchableOpacity
-              disabled={mode === 2}
-              style={styles.section}
-              onPress={() => {
-                setModalVisible(true);
-                setFieldName('Water');
-                setMultiline(false);
-              }}
-            >
-              <CustomButton>
-                <BoldText>WATER</BoldText>
-                <Text>
-                  Every {waterFieldDays} days @ {waterFieldTime}h
-                </Text>
-              </CustomButton>
-            </TouchableOpacity>
-            <TouchableOpacity
-              disabled={mode === 2}
-              style={styles.section}
-              onPress={() => {
-                setModalVisible(true);
-                setFieldName('Feed');
-                setMultiline(false);
-              }}
-            >
-              <CustomButton>
-                <BoldText>FEED</BoldText>
-                <Text>
-                  Every {feedFieldDays} days @ {feedFieldTime}h
-                </Text>
-              </CustomButton>
-            </TouchableOpacity>
-            {taskList &&
-              taskList?.map((task) => (
+            {mode === Mode.view && (
+              <>
+                <TransparentView style={styles.viewSection}>
+                  <TransparentView style={{ flexDirection: 'row' }}>
+                    <BoldText style={{ paddingLeft: 5 }}>WATER</BoldText>
+                  </TransparentView>
+                  <TransparentView style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    {waterFieldDaysLeft === 0 ? (
+                      <Text style={{ marginRight: 5 }}>Now</Text>
+                    ) : (
+                      <Text style={{ marginRight: 5 }}>In {waterFieldDaysLeft} days</Text>
+                    )}
+                    <TouchableOpacity
+                      style={{ marginLeft: 5 }}
+                      onPress={() => {
+                        setTaskDone('Water');
+                      }}
+                    >
+                      <MaterialIcons name='check-circle' size={25} color='white' />
+                    </TouchableOpacity>
+                  </TransparentView>
+                </TransparentView>
+                <TransparentView style={styles.viewSection}>
+                  <TransparentView style={{ flexDirection: 'row' }}>
+                    <BoldText style={{ paddingLeft: 5 }}>FEED</BoldText>
+                  </TransparentView>
+                  <TransparentView style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    {feedFieldDaysLeft === 0 ? (
+                      <Text style={{ marginRight: 5 }}>Now</Text>
+                    ) : (
+                      <Text style={{ marginRight: 5 }}>In {feedFieldDaysLeft} days</Text>
+                    )}
+                    <TouchableOpacity
+                      style={{ marginLeft: 5 }}
+                      onPress={() => {
+                        setTaskDone('Feed');
+                      }}
+                    >
+                      <MaterialIcons name='check-circle' size={25} color={Colors.text} />
+                    </TouchableOpacity>
+                  </TransparentView>
+                </TransparentView>
+                {taskList &&
+                  taskList?.map((task) => (
+                    <TransparentView key={task.taskFieldName} style={styles.viewSection}>
+                      <TransparentView style={{ flexDirection: 'row' }}>
+                        <BoldText style={{ paddingLeft: 5, textTransform: 'uppercase' }}>{task.taskName}</BoldText>
+                      </TransparentView>
+                      <TransparentView style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        {getDaysLeft(task.taskDate) === 0 ? (
+                          <Text style={{ marginRight: 5 }}>Now</Text>
+                        ) : (
+                          <Text style={{ marginRight: 5 }}>In {getDaysLeft(task.taskDate)} days</Text>
+                        )}
+                        <TouchableOpacity
+                          style={{ marginLeft: 5 }}
+                          onPress={() => {
+                            setTaskDone(task.taskFieldName);
+                          }}
+                        >
+                          <MaterialIcons name='check-circle' size={25} color='white' />
+                        </TouchableOpacity>
+                      </TransparentView>
+                    </TransparentView>
+                  ))}
+              </>
+            )}
+            {mode !== Mode.view && (
+              <>
                 <TouchableOpacity
-                  key={task.taskFieldName}
-                  disabled={mode === 2}
                   style={styles.section}
                   onPress={() => {
                     setModalVisible(true);
-                    setFieldName(task.taskFieldName);
-                    setTaskName(task.taskName);
+                    setFieldName('Water');
                     setMultiline(false);
                   }}
                 >
                   <CustomButton>
-                    <BoldText style={{ textTransform: 'uppercase' }}>{task.taskName}</BoldText>
+                    <BoldText>WATER</BoldText>
                     <Text>
-                      Every {task.taskDays} days @ {task.taskTime}h
+                      Every {waterFieldDays} days @ {waterFieldTime}h
                     </Text>
                   </CustomButton>
                 </TouchableOpacity>
-              ))}
-            {mode !== Mode.view && (
-              <TouchableOpacity
-                style={styles.buttonSection}
-                onPress={() => {
-                  setModalVisible(true);
-                  setMultiline(false);
-                  setFieldName('NewTask' + taskListRef.current.length);
-                  setIsNewTask(true);
-                }}
-              >
-                <CustomButton>
-                  <BoldText>ADD TASK</BoldText>
-                  <MaterialCommunityIcons name='plus' size={17} color={Colors.text} />
-                </CustomButton>
-              </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.section}
+                  onPress={() => {
+                    setModalVisible(true);
+                    setFieldName('Feed');
+                    setMultiline(false);
+                  }}
+                >
+                  <CustomButton>
+                    <BoldText>FEED</BoldText>
+                    <Text>
+                      Every {feedFieldDays} days @ {feedFieldTime}h
+                    </Text>
+                  </CustomButton>
+                </TouchableOpacity>
+
+                {taskList &&
+                  taskList?.map((task) => (
+                    <TouchableOpacity
+                      key={task.taskFieldName}
+                      style={styles.section}
+                      onPress={() => {
+                        setModalVisible(true);
+                        setFieldName(task.taskFieldName);
+                        setTaskName(task.taskName);
+                        setMultiline(false);
+                      }}
+                    >
+                      <CustomButton>
+                        <BoldText style={{ textTransform: 'uppercase' }}>{task.taskName}</BoldText>
+                        <Text>
+                          Every {task.taskDays} days @ {task.taskTime}h
+                        </Text>
+                      </CustomButton>
+                    </TouchableOpacity>
+                  ))}
+                {mode !== Mode.view && (
+                  <TouchableOpacity
+                    style={styles.buttonSection}
+                    onPress={() => {
+                      setModalVisible(true);
+                      setMultiline(false);
+                      setFieldName('NewTask' + taskListRef.current.length);
+                      setIsNewTask(true);
+                    }}
+                  >
+                    <CustomButton>
+                      <BoldText>ADD TASK</BoldText>
+                      <MaterialCommunityIcons name='plus' size={17} color={Colors.text} />
+                    </CustomButton>
+                  </TouchableOpacity>
+                )}
+              </>
             )}
             <BoldText style={styles.headerText}>NOTES</BoldText>
             <TouchableOpacity
@@ -565,6 +659,15 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 15,
     marginBottom: 5,
+  },
+  viewSection: {
+    backgroundColor: '#333333',
+    padding: 10,
+    borderRadius: 15,
+    marginBottom: 5,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   buttonSection: {
     backgroundColor: '#1D4D47',

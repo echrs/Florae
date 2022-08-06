@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useEffect, useRef, useState } from 'react';
 import { getPlants } from './api';
 
 export const Context = createContext({});
@@ -8,7 +8,9 @@ export const Provider = (props: any) => {
   const [user, setUser] = useState('');
   const [tasks, setTasks] = useState([]);
   const [plants, setPlants] = useState([]);
-
+  const userRef = useRef('');
+  userRef.current = user;
+  
   useEffect(() => {
     fetchUser();
     fetchPlants();
@@ -24,15 +26,14 @@ export const Provider = (props: any) => {
   const fetchPlants = async () => {
     var plants = await AsyncStorage.getItem('plants');
     if (!plants) {
-      // return getPlants(token).then(
-      //   async (response) => {
-      //     console.log(response);
-      //     await AsyncStorage.setItem('plants', JSON.stringify(response));
-      //   },
-      //   (error) => {
-      //     console.log(error);
-      //   }
-      // );
+      return getPlants(userRef.current.token).then(
+        async (response) => {
+          await AsyncStorage.setItem('plants', JSON.stringify(response.data));
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
     }
   };
 
