@@ -17,9 +17,9 @@ export default function PlantsScreen({ navigation, route }: PlantsScreenNavigati
   const [filteredPlants, setFilteredPlants] = useState([]);
   const [search, setSearch] = useState('');
 
-  const updateSearch = (search) => {
+  const updateSearch = (search: any) => {
     if (search) {
-      let filteredItems = plants.filter((item) => {
+      let filteredItems = plants.filter((item: any) => {
         let nickname = item.nickname ? item.nickname.toLowerCase() : ''.toLowerCase();
         return nickname.indexOf(search.toLowerCase()) > -1;
       });
@@ -29,6 +29,19 @@ export default function PlantsScreen({ navigation, route }: PlantsScreenNavigati
       setFilteredPlants(plants);
       setSearch(search);
     }
+  };
+
+  const getDaysLeft = (plantId: string, taskFieldName: string) => {
+    let plant = plants.find((x: any) => x._id === plantId);
+    if (plant) {
+      let task = plant.tasks.find((x: any) => x.taskFieldName.includes(taskFieldName));
+      if (task) {
+        let taskDate = new Date(task.taskDate);
+        let today = new Date();
+        return Math.round((taskDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+      }
+    }
+    return 1;
   };
 
   useEffect(() => {
@@ -85,26 +98,26 @@ export default function PlantsScreen({ navigation, route }: PlantsScreenNavigati
                 </TouchableOpacity>
               </TransparentView>
             </TransparentView>
-            {filteredPlants?.map((plant) => (
+            {filteredPlants?.map((plant: any) => (
               <TouchableOpacity
-                key={plant['_id']}
+                key={plant._id}
                 style={styles.plant}
                 onPress={() => {
                   navigation.navigate('Plant', { plant: plant });
                 }}
               >
                 <TransparentView style={{ flexDirection: 'row' }}>
-                  {plant['img'] ? (
-                    <Image source={{ uri: plant['img'] }} style={styles.img} />
+                  {plant.img ? (
+                    <Image source={{ uri: plant.img }} style={styles.img} />
                   ) : (
                     <Image source={require('../assets/images/1-op.jpg')} style={styles.img} />
                   )}
-                  <Text style={{ paddingLeft: 10, alignSelf: 'center', fontSize: 15 }}>{plant['nickname']}</Text>
+                  <Text style={{ paddingLeft: 10, alignSelf: 'center', fontSize: 15 }}>{plant.nickname}</Text>
                 </TransparentView>
                 <TransparentView style={{ alignSelf: 'center', flexDirection: 'row' }}>
-                  <Fontisto style={{ paddingTop: 2.5 }} name='blood-drop' size={15} color={Colors.text} />
-                  <MaterialIcons name='bolt' size={20} color={Colors.text} />
-                  <Fontisto style={{ paddingTop: 2.5 }} name='asterisk' size={15} color={Colors.text} />
+                  {getDaysLeft(plant._id, 'Water') <= 0 && <Fontisto style={{ paddingTop: 2.5 }} name='blood-drop' size={15} color={Colors.text} />}
+                  {getDaysLeft(plant._id, 'Feed') <= 0 && <MaterialIcons name='bolt' size={20} color={Colors.text} />}
+                  {getDaysLeft(plant._id, 'NewTask') <= 0 && <Fontisto style={{ paddingTop: 2.5 }} name='asterisk' size={15} color={Colors.text} />}
                 </TransparentView>
               </TouchableOpacity>
             ))}
