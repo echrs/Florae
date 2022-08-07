@@ -166,16 +166,16 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
     let taskName = '';
     if (fieldName.includes('NewTask')) {
       taskName = getValues(name)
-        .replace(/[^a-zA-Z0-9 ]/g, '')
+        ?.replace(/[^a-zA-Z0-9 ]/g, '')
         .trim();
     }
     let days = nt + 'Days';
     let time = nt + 'Time';
-    let taskDays = getValues(days) ? parseInt(getValues(days).replace(/\D+/g, '')) : 7;
-    let taskTime = parseInt(getValues(time)) >= 0 && parseInt(getValues(time)) <= 23 ? parseInt(getValues(time).replace(/\D+/g, '')) : 12;
+    let taskDays = parseInt(getValues(days)) > 0 ? parseInt(getValues(days)) : 7;
+    let taskTime = parseInt(getValues(time)) >= 0 && parseInt(getValues(time)) <= 23 ? parseInt(getValues(time)) : 12;
     let obj = {
       taskFieldName: nt,
-      taskName: taskName.length ? taskName : task ? task.taskName : 'Task',
+      taskName: taskName?.length ? taskName : task ? task.taskName : 'Task',
       taskDays: taskDays,
       taskTime: taskTime,
       taskDate: setDaysAndTime(taskDays, taskTime),
@@ -252,11 +252,6 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
     }
   };
 
-  const getTimeVal = (time: any) => {
-    let timeInt = parseInt(time?.replace(/\D+/g, ''));
-    return timeInt >= 0 && timeInt <= 23 ? timeInt : 12;
-  };
-
   const saveInput = (fieldName: string) => {
     switch (fieldName) {
       case 'Nickname':
@@ -316,60 +311,44 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
               />
             )}
             <TransparentView style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-              {fieldName === 'Water' || fieldName === 'Feed' || fieldName.includes('NewTask') ? (
-                <TransparentView style={{ flexDirection: 'row' }}>
-                  <Text style={{ marginTop: 10, marginRight: 10 }}>Every</Text>
-                  <Controller
-                    control={control}
-                    name={fieldName + 'Days'}
-                    render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-                      <TextInput
-                        defaultValue={fieldName === 'Feed' ? '28' : '7'}
-                        selectionColor={Colors.button}
-                        keyboardType='numeric'
-                        style={styles.numInput}
-                        onBlur={onBlur}
-                        onChangeText={onChange}
-                        value={value}
-                        maxLength={2}
-                      />
-                    )}
-                  />
-                  <Text style={{ marginTop: 10, marginRight: 10, marginLeft: 10 }}>days @ </Text>
-                  <Controller
-                    control={control}
-                    name={fieldName + 'Time'}
-                    render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-                      <TextInput
-                        defaultValue={'12'}
-                        selectionColor={Colors.button}
-                        keyboardType='numeric'
-                        style={styles.numInput}
-                        onBlur={onBlur}
-                        onChangeText={onChange}
-                        value={value}
-                        maxLength={2}
-                      />
-                    )}
-                  />
-                  <Text style={{ marginTop: 10, marginRight: 10, marginLeft: 10 }}> h </Text>
-                </TransparentView>
-              ) : (
+              <TransparentView style={{ flexDirection: 'row' }}>
+                <Text style={{ marginTop: 10, marginRight: 10 }}>Every</Text>
                 <Controller
                   control={control}
-                  name={fieldName}
+                  name={fieldName + 'Days'}
                   render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                     <TextInput
-                      multiline={multiline}
+                      defaultValue={fieldName === 'Feed' ? '28' : '7'}
                       selectionColor={Colors.button}
-                      style={styles.textInput}
+                      keyboardType='numeric'
+                      style={styles.numInput}
                       onBlur={onBlur}
                       onChangeText={onChange}
                       value={value}
+                      maxLength={2}
                     />
                   )}
                 />
-              )}
+                <Text style={{ marginTop: 10, marginRight: 10, marginLeft: 10 }}>days @ </Text>
+                <Controller
+                  control={control}
+                  name={fieldName + 'Time'}
+                  render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                    <TextInput
+                      defaultValue={'12'}
+                      selectionColor={Colors.button}
+                      keyboardType='numeric'
+                      style={styles.numInput}
+                      onBlur={onBlur}
+                      onChangeText={onChange}
+                      value={value}
+                      maxLength={2}
+                    />
+                  )}
+                />
+                <Text style={{ marginTop: 10, marginRight: 10, marginLeft: 10 }}> h </Text>
+              </TransparentView>
+
               <TransparentView style={{ flexDirection: 'row' }}>
                 <TouchableOpacity
                   onPress={() => {
@@ -469,7 +448,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
                           </>
                         ) : (
                           <>
-                            <Text style={{  marginRight: 5 }}>In {getDaysLeft(task.taskDate)} days</Text>
+                            <Text style={{ marginRight: 5 }}>In {getDaysLeft(task.taskDate)} days</Text>
                             <MaterialIcons style={{ marginLeft: 5 }} name='check-circle' size={25} color='#474747' />
                           </>
                         )}

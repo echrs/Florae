@@ -81,24 +81,27 @@ export default function HomeScreen({ navigation, route }: HomeScreenNavigationPr
               )}
               <TransparentView style={{ flexDirection: 'row', paddingTop: 10, flexWrap: 'wrap' }}>
                 {plants &&
-                  plants?.slice(Math.max(plants.length - 4, 0)).reverse().map((plant) => (
-                    <TouchableOpacity
-                      key={plant['_id']}
-                      style={styles.plant}
-                      onPress={() => {
-                        navigation.navigate('Plant', { plant: plant });
-                      }}
-                    >
-                      <TransparentView style={{}}>
-                        {plant['img'] ? (
-                          <Image source={{ uri: plant['img'] }} style={styles.img} />
-                        ) : (
-                          <Image source={require('../assets/images/1-op.jpg')} style={styles.img} />
-                        )}
-                        <Text style={{ fontSize: 15 }}>{plant['nickname']}</Text>
-                      </TransparentView>
-                    </TouchableOpacity>
-                  ))}
+                  plants
+                    ?.slice(Math.max(plants.length - 4, 0))
+                    .reverse()
+                    .map((plant: any) => (
+                      <TouchableOpacity
+                        key={plant._id}
+                        style={styles.plant}
+                        onPress={() => {
+                          navigation.navigate('Plant', { plant: plant });
+                        }}
+                      >
+                        <TransparentView style={{}}>
+                          {plant.img ? (
+                            <Image source={{ uri: plant.img }} style={styles.img} />
+                          ) : (
+                            <Image source={require('../assets/images/1-op.jpg')} style={styles.img} />
+                          )}
+                          <Text style={{ fontSize: 15 }}>{plant.nickname}</Text>
+                        </TransparentView>
+                      </TouchableOpacity>
+                    ))}
               </TransparentView>
             </TransparentView>
           </ScrollView>
