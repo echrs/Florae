@@ -27,21 +27,15 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
   const [nicknameField, setNicknameField] = useState('Plant' + Math.floor(Math.random() * 1000) + 1);
   const [multiline, setMultiline] = useState(false);
   const [notesField, setNotesField] = useState('');
-  const [waterFieldDays, setWaterFieldDays] = useState(7);
-  const [waterFieldTime, setWaterFieldTime] = useState(12);
-  const [waterFieldDaysLeft, setWaterFieldDaysLeft] = useState(0);
-  const [feedFieldDays, setFeedFieldDays] = useState(28);
-  const [feedFieldTime, setFeedFieldTime] = useState(12);
-  const [feedFieldDaysLeft, setFeedFieldDaysLeft] = useState(0);
   const { userCtx } = useContext(Context);
   const [user, setUser] = userCtx;
   const [plant, setPlant] = useState({} as any);
   const [mode, setMode] = useState(0);
   const [viewImg, setViewImg] = useState('');
-  const [taskList, setTaskList] = useState<{ taskFieldName: string; taskName: any; taskDays: any; taskTime: any }[]>([]);
+  const [taskList, setTaskList] = useState<{ taskFieldName: string; taskName: any; taskDays: number; taskTime: number; taskDate: any }[]>([]);
   const [isNewTask, setIsNewTask] = useState(false);
   const [taskName, setTaskName] = useState(false);
-  const taskListRef = useRef<{ taskFieldName: string; taskName: any; taskDays: any; taskTime: any }[]>([]);
+  const taskListRef = useRef<{ taskFieldName: string; taskName: any; taskDays: number; taskTime: number; taskDate: any }[]>([]);
   taskListRef.current = taskList;
 
   useEffect(() => {
@@ -53,20 +47,30 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
         setNicknameField(plant.nickname);
         setNameField(plant.name);
         setNotesField(plant.notes);
-        let waterInfo = plant.tasks.find((task: any) => task.taskName === 'Water');
-        setWaterFieldDays(waterInfo.taskDays);
-        setWaterFieldTime(waterInfo.taskTime);
-        setWaterFieldDaysLeft(getDaysLeft(waterInfo.taskDate));
-        let feedInfo = plant.tasks.find((task: any) => task.taskName === 'Feed');
-        setFeedFieldDays(feedInfo.taskDays);
-        setFeedFieldTime(feedInfo.taskTime);
-        setFeedFieldDaysLeft(getDaysLeft(feedInfo.taskDate));
         setViewImg(plant.img);
-        let tasks = plant.tasks.filter((task: any) => task.taskFieldName.includes('NewTask'));
+        let tasks = plant.tasks;
         setTaskList(tasks);
       }
     } else {
       setMode(Mode.new);
+      if (taskListRef.current.length <= 0) {
+        setTaskList([
+          {
+            taskName: 'Water',
+            taskDays: 7,
+            taskTime: 12,
+            taskDate: setDaysAndTime(7, 12),
+            taskFieldName: 'Water',
+          },
+          {
+            taskName: 'Feed',
+            taskDays: 28,
+            taskTime: 12,
+            taskDate: setDaysAndTime(28, 12),
+            taskFieldName: 'Feed',
+          },
+        ]);
+      }
     }
   }, []);
 
@@ -130,9 +134,12 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
   };
 
   const setTaskDone = (fieldName: string) => {
-    let task = plant.tasks.find((task: any) => task.taskFieldName === fieldName);
+    let uTaskList = [...taskList];
+    let idx = taskList.findIndex((task: any) => task.taskFieldName === fieldName);
+    let task = uTaskList[idx];
     if (task) {
-      //update prop
+      uTaskList[idx] = { ...task, taskDate: setDaysAndTime(task.taskDays, task.taskTime) };
+      setTaskList(uTaskList);
       //db call
     }
   };
@@ -156,16 +163,19 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
     let task = taskList.find((x) => x.taskFieldName === fieldName);
     let nt = fieldName;
     let name = nt + 'Name';
+    let taskName = '';
+    if (fieldName.includes('NewTask')) {
+      taskName = getValues(name)
+        .replace(/[^a-zA-Z0-9 ]/g, '')
+        .trim();
+    }
     let days = nt + 'Days';
     let time = nt + 'Time';
-    let taskName = getValues(name)
-      .replace(/[^a-zA-Z0-9 ]/g, '')
-      .trim();
     let taskDays = getValues(days) ? parseInt(getValues(days).replace(/\D+/g, '')) : 7;
     let taskTime = parseInt(getValues(time)) >= 0 && parseInt(getValues(time)) <= 23 ? parseInt(getValues(time).replace(/\D+/g, '')) : 12;
     let obj = {
       taskFieldName: nt,
-      taskName: taskName ? taskName : task ? task.taskName : 'Task',
+      taskName: taskName.length ? taskName : task ? task.taskName : 'Task',
       taskDays: taskDays,
       taskTime: taskTime,
       taskDate: setDaysAndTime(taskDays, taskTime),
@@ -195,29 +205,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
   };
 
   const onSubmit = () => {
-    var daysWater = getValues().WaterDays ? getValues().WaterDays : waterFieldDays;
-    var timeWater = getValues().WaterTime ? getValues().WaterTime : waterFieldTime;
-    var daysFeed = getValues().FeedDays ? getValues().FeedDays : feedFieldDays;
-    var timeFeed = getValues().FeedTime ? getValues().FeedTime : feedFieldTime;
-
-    var taskArr = [
-      {
-        taskName: 'Water',
-        taskDays: daysWater,
-        taskTime: timeWater,
-        taskDate: setDaysAndTime(daysWater, timeWater),
-        taskFieldName: 'Water',
-      },
-      {
-        taskName: 'Feed',
-        taskDays: parseInt(daysFeed),
-        taskTime: parseInt(timeFeed),
-        taskDate: setDaysAndTime(daysFeed, timeFeed),
-        taskFieldName: 'Feed',
-      },
-      ...taskListRef.current,
-    ];
-
+    var taskArr = [...taskListRef.current];
     var obj = {
       nickname: getValues().Nickname ? getValues().Nickname : nicknameField,
       name: getValues().Name ? getValues().Name : nameField,
@@ -244,7 +232,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
         async (response) => {
           let plants = await AsyncStorage.getItem('plants');
           let p = JSON.parse(plants);
-          let idx = p.findIndex((el) => el._id === plant._id);
+          let idx = p.findIndex((el: any) => el._id === plant._id);
           p[idx] = {
             __v: 0,
             _id: plant._id,
@@ -279,16 +267,6 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
         break;
       case 'Notes':
         setNotesField(getValues().Notes);
-        break;
-      case 'Water':
-        let daysWater = parseInt(getValues().WaterDays?.replace(/\D+/g, ''));
-        daysWater ? setWaterFieldDays(daysWater) : setWaterFieldDays(7);
-        setWaterFieldDays(getTimeVal(getValues().WaterDays));
-        break;
-      case 'Feed':
-        let daysFeed = parseInt(getValues().FeedDays?.replace(/\D+/g, ''));
-        daysFeed ? setFeedFieldDays(daysFeed) : setFeedFieldDays(28);
-        setFeedFieldTime(getTimeVal(getValues().FeedDays));
         break;
     }
   };
@@ -346,7 +324,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
                     name={fieldName + 'Days'}
                     render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                       <TextInput
-                        defaultValue={fieldName === 'Water' ? '7' : '28'}
+                        defaultValue={fieldName === 'Feed' ? '28' : '7'}
                         selectionColor={Colors.button}
                         keyboardType='numeric'
                         style={styles.numInput}
@@ -396,8 +374,8 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
                 <TouchableOpacity
                   onPress={() => {
                     saveInput(fieldName);
-                    setModalVisible(false);
                     saveCustomTaskInput(fieldName);
+                    setModalVisible(false);
                   }}
                 >
                   <MaterialCommunityIcons name='content-save-outline' size={30} color='white' />
@@ -470,46 +448,6 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
             <BoldText style={styles.headerText}>TASKS</BoldText>
             {mode === Mode.view && (
               <>
-                <TransparentView style={styles.viewSection}>
-                  <TransparentView style={{ flexDirection: 'row' }}>
-                    <BoldText style={{ paddingLeft: 5 }}>WATER</BoldText>
-                  </TransparentView>
-                  <TransparentView style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    {waterFieldDaysLeft === 0 ? (
-                      <Text style={{ marginRight: 5 }}>Now</Text>
-                    ) : (
-                      <Text style={{ marginRight: 5 }}>In {waterFieldDaysLeft} days</Text>
-                    )}
-                    <TouchableOpacity
-                      style={{ marginLeft: 5 }}
-                      onPress={() => {
-                        setTaskDone('Water');
-                      }}
-                    >
-                      <MaterialIcons name='check-circle' size={25} color='white' />
-                    </TouchableOpacity>
-                  </TransparentView>
-                </TransparentView>
-                <TransparentView style={styles.viewSection}>
-                  <TransparentView style={{ flexDirection: 'row' }}>
-                    <BoldText style={{ paddingLeft: 5 }}>FEED</BoldText>
-                  </TransparentView>
-                  <TransparentView style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    {feedFieldDaysLeft === 0 ? (
-                      <Text style={{ marginRight: 5 }}>Now</Text>
-                    ) : (
-                      <Text style={{ marginRight: 5 }}>In {feedFieldDaysLeft} days</Text>
-                    )}
-                    <TouchableOpacity
-                      style={{ marginLeft: 5 }}
-                      onPress={() => {
-                        setTaskDone('Feed');
-                      }}
-                    >
-                      <MaterialIcons name='check-circle' size={25} color={Colors.text} />
-                    </TouchableOpacity>
-                  </TransparentView>
-                </TransparentView>
                 {taskList &&
                   taskList?.map((task) => (
                     <TransparentView key={task.taskFieldName} style={styles.viewSection}>
@@ -517,19 +455,24 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
                         <BoldText style={{ paddingLeft: 5, textTransform: 'uppercase' }}>{task.taskName}</BoldText>
                       </TransparentView>
                       <TransparentView style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        {getDaysLeft(task.taskDate) === 0 ? (
-                          <Text style={{ marginRight: 5 }}>Now</Text>
+                        {getDaysLeft(task.taskDate) <= 0 ? (
+                          <>
+                            <Text style={{ marginRight: 5 }}>Now</Text>
+                            <TouchableOpacity
+                              style={{ marginLeft: 5 }}
+                              onPress={() => {
+                                setTaskDone(task.taskFieldName);
+                              }}
+                            >
+                              <MaterialIcons name='check-circle' size={25} color={Colors.text} />
+                            </TouchableOpacity>
+                          </>
                         ) : (
-                          <Text style={{ marginRight: 5 }}>In {getDaysLeft(task.taskDate)} days</Text>
+                          <>
+                            <Text style={{  marginRight: 5 }}>In {getDaysLeft(task.taskDate)} days</Text>
+                            <MaterialIcons style={{ marginLeft: 5 }} name='check-circle' size={25} color='#474747' />
+                          </>
                         )}
-                        <TouchableOpacity
-                          style={{ marginLeft: 5 }}
-                          onPress={() => {
-                            setTaskDone(task.taskFieldName);
-                          }}
-                        >
-                          <MaterialIcons name='check-circle' size={25} color='white' />
-                        </TouchableOpacity>
                       </TransparentView>
                     </TransparentView>
                   ))}
@@ -537,37 +480,6 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
             )}
             {mode !== Mode.view && (
               <>
-                <TouchableOpacity
-                  style={styles.section}
-                  onPress={() => {
-                    setModalVisible(true);
-                    setFieldName('Water');
-                    setMultiline(false);
-                  }}
-                >
-                  <CustomButton>
-                    <BoldText>WATER</BoldText>
-                    <Text>
-                      Every {waterFieldDays} days @ {waterFieldTime}h
-                    </Text>
-                  </CustomButton>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.section}
-                  onPress={() => {
-                    setModalVisible(true);
-                    setFieldName('Feed');
-                    setMultiline(false);
-                  }}
-                >
-                  <CustomButton>
-                    <BoldText>FEED</BoldText>
-                    <Text>
-                      Every {feedFieldDays} days @ {feedFieldTime}h
-                    </Text>
-                  </CustomButton>
-                </TouchableOpacity>
-
                 {taskList &&
                   taskList?.map((task) => (
                     <TouchableOpacity

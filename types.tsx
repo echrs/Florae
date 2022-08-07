@@ -22,7 +22,7 @@ export type TabsParamList = {
 
 export type HomeTabParamList = {
   Home: NO_PARAMS;
-  Plant: { plant: { nickname: string; name: string; _id: string; notes: string } };
+  Plant: { plant: { nickname: string; name: string; _id: string; notes: string, img: string, tasks: any } };
 };
 
 export type TasksTabParamList = {
