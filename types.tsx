@@ -33,5 +33,5 @@ export type TasksTabParamList = {
 
 export type PlantsTabParamList = {
   Plants: NO_PARAMS;
-  Plant: { plant: { nickname: string; name: string; _id: string; notes: string } };
+  Plant: { plant: { nickname: string; name: string; _id: string; notes: string, img: string, tasks: any  } };
 };

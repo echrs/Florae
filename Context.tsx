@@ -6,15 +6,23 @@ export const Context = createContext({});
 
 export const Provider = (props: any) => {
   const [user, setUser] = useState('');
-  const [tasks, setTasks] = useState([]);
   const [plants, setPlants] = useState([]);
   const userRef = useRef('');
   userRef.current = user;
-  
+
   useEffect(() => {
     fetchUser();
     fetchPlants();
   }, []);
+
+  useEffect(() => {
+    console.log('plants have changed!');
+    if (plants.length) saveToStorage(); console.log(plants);
+
+    async function saveToStorage() {
+      await AsyncStorage.setItem('plants', JSON.stringify(plants));
+    }
+  }, [plants]);
 
   const fetchUser = async () => {
     var credentials = await AsyncStorage.getItem('userCredentials');
@@ -24,11 +32,17 @@ export const Provider = (props: any) => {
   };
 
   const fetchPlants = async () => {
+    //sync local storage i baze
+    //u context
     var plants = await AsyncStorage.getItem('plants');
-    if (!plants) {
+
+    if (plants?.length) {
+      setPlants(JSON.parse(plants));
+    } else {
       return getPlants(userRef.current.token).then(
         async (response) => {
           await AsyncStorage.setItem('plants', JSON.stringify(response.data));
+          setPlants(response.data);
         },
         (error) => {
           console.log(error);
@@ -41,8 +55,7 @@ export const Provider = (props: any) => {
     <Context.Provider
       value={{
         userCtx: [user, setUser],
-        taskCtx: [tasks, setTasks],
-        plantCtx: [plants, setPlants],
+        plantsCtx: [plants, setPlants],
       }}
     >
       {props.children}

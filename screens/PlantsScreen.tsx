@@ -1,19 +1,20 @@
-import { Fontisto, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { CompositeScreenProps } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
 import { BoldText, SafeAreaView, TransparentView, Text } from '../components/CustomStyled';
 import { Colors } from '../constants/Constants';
 import { PlantsTabParamList, TabsParamList } from '../types';
 import { SearchBar } from '@rneui/themed';
+import { Context } from '../Context';
 
 type PlantsScreenNavigationProp = CompositeScreenProps<NativeStackScreenProps<PlantsTabParamList, 'Plants'>, BottomTabScreenProps<TabsParamList>>;
 
 export default function PlantsScreen({ navigation, route }: PlantsScreenNavigationProp) {
-  const [plants, setPlants] = useState([]);
+  const { plantsCtx } = useContext(Context);
+  const [plants] = plantsCtx;
   const [filteredPlants, setFilteredPlants] = useState([]);
   const [search, setSearch] = useState('');
 
@@ -38,11 +39,9 @@ export default function PlantsScreen({ navigation, route }: PlantsScreenNavigati
     });
 
     async function getAndSetPlants() {
-      let plantsStorage = await AsyncStorage.getItem('plants');
-      setPlants(JSON.parse(plantsStorage));
-      setFilteredPlants(JSON.parse(plantsStorage));
+      setFilteredPlants(plants);
     }
-  }, []);
+  }, [plants]);
 
   return (
     <SafeAreaView style={styles.container}>

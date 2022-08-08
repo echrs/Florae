@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Image, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { BoldText, TransparentView, Text, SafeAreaView } from '../components/CustomStyled';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -7,18 +7,18 @@ import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { CompositeScreenProps } from '@react-navigation/native';
 import { ProgressBar } from 'react-native-paper';
 import { Colors } from '../constants/Constants';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Context } from '../Context';
 
 type HomeScreenNavigationProp = CompositeScreenProps<NativeStackScreenProps<HomeTabParamList, 'Home'>, BottomTabScreenProps<TabsParamList>>;
 
 export default function HomeScreen({ navigation, route }: HomeScreenNavigationProp) {
   const [timeStr, setTimeStr] = useState('');
-  const [plants, setPlants] = useState([]);
+  const { plantsCtx } = useContext(Context);
+  const [plants] = plantsCtx;
 
   useEffect(() => {
     navigation.addListener('focus', () => {
       getTime();
-      getAndSetPlants();
     });
 
     async function getTime() {
@@ -41,10 +41,6 @@ export default function HomeScreen({ navigation, route }: HomeScreenNavigationPr
           setTimeStr('night');
           break;
       }
-    }
-    async function getAndSetPlants() {
-      let plantsStorage = await AsyncStorage.getItem('plants');
-      setPlants(JSON.parse(plantsStorage));
     }
   }, []);
 

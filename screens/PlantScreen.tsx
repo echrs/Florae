@@ -12,14 +12,13 @@ import type { CompositeScreenProps } from '@react-navigation/native';
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { deletePlant, editPlant, savePlant } from '../api';
 import { Context } from '../Context';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { PickImage } from '../components/ImagePicker';
 
 type PlantScreenNavigationProp = CompositeScreenProps<NativeStackScreenProps<HomeTabParamList, 'Plant'>, BottomTabScreenProps<TabsParamList>>;
 
 export default function PlantScreen({ navigation, route }: PlantScreenNavigationProp) {
   const [modalVisible, setModalVisible] = useState(false);
-  const { height, width } = useWindowDimensions();
+  const { height } = useWindowDimensions();
   const statusBarHeight = Constants.statusBarHeight;
   const { control, handleSubmit, getValues } = useForm();
   const [fieldName, setFieldName] = useState('');
@@ -28,7 +27,9 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
   const [multiline, setMultiline] = useState(false);
   const [notesField, setNotesField] = useState('');
   const { userCtx } = useContext(Context);
-  const [user, setUser] = userCtx;
+  const [user] = userCtx;
+  const { plantsCtx } = useContext(Context);
+  const [plants, setPlants] = plantsCtx;
   const [plant, setPlant] = useState({} as any);
   const [mode, setMode] = useState(0);
   const [viewImg, setViewImg] = useState('');
@@ -140,17 +141,15 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
     if (task) {
       uTaskList[idx] = { ...task, taskDate: setDaysAndTime(task.taskDays, task.taskTime) };
       setTaskList(uTaskList);
-      //db call
     }
   };
 
   const deleteCurrPlant = () => {
     return deletePlant(plant._id, user.token).then(
       async (response) => {
-        let plants = await AsyncStorage.getItem('plants');
-        let p = JSON.parse(plants);
-        p = p.filter((x) => x._id !== plant._id);
-        await AsyncStorage.setItem('plants', JSON.stringify(p));
+        let p = plants;
+        p = p.filter((x: any) => x._id !== plant._id);
+        setPlants([...p]);
         navigation.pop();
       },
       (error) => {
@@ -194,7 +193,6 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
   const deleteCustomTask = (fieldName: string) => {
     let filteredTL = taskList.filter((x) => x.taskFieldName !== fieldName);
     setTaskList(filteredTL);
-    //missing db call
   };
 
   const setDaysAndTime = (days: any, time: any) => {
@@ -217,10 +215,9 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
     if (mode === Mode.new) {
       return savePlant(obj, user.token).then(
         async (response) => {
-          let plants = await AsyncStorage.getItem('plants');
-          const p = plants ? JSON.parse(plants) : [];
+          const p = plants ? plants : [];
           p.push(response.data);
-          await AsyncStorage.setItem('plants', JSON.stringify(p));
+          setPlants([...p]);
           navigation.pop();
         },
         (error) => {
@@ -230,8 +227,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
     } else if (mode === Mode.edit) {
       return editPlant(plant._id, obj, user.token).then(
         async (response) => {
-          let plants = await AsyncStorage.getItem('plants');
-          let p = JSON.parse(plants);
+          let p = plants;
           let idx = p.findIndex((el: any) => el._id === plant._id);
           p[idx] = {
             __v: 0,
@@ -242,7 +238,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
             tasks: obj.tasks,
             img: obj.img ? obj.img : p[idx].img,
           };
-          await AsyncStorage.setItem('plants', JSON.stringify(p));
+          setPlants([...p]);
           setMode(Mode.view);
         },
         (error) => {
@@ -311,44 +307,60 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
               />
             )}
             <TransparentView style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-              <TransparentView style={{ flexDirection: 'row' }}>
-                <Text style={{ marginTop: 10, marginRight: 10 }}>Every</Text>
+              {fieldName === 'Water' || fieldName === 'Feed' || fieldName.includes('NewTask') ? (
+                <TransparentView style={{ flexDirection: 'row' }}>
+                  <Text style={{ marginTop: 10, marginRight: 10 }}>Every</Text>
+                  <Controller
+                    control={control}
+                    name={fieldName + 'Days'}
+                    render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                      <TextInput
+                        defaultValue={fieldName === 'Water' ? '7' : '28'}
+                        selectionColor={Colors.button}
+                        keyboardType='numeric'
+                        style={styles.numInput}
+                        onBlur={onBlur}
+                        onChangeText={onChange}
+                        value={value}
+                        maxLength={2}
+                      />
+                    )}
+                  />
+                  <Text style={{ marginTop: 10, marginRight: 10, marginLeft: 10 }}>days @ </Text>
+                  <Controller
+                    control={control}
+                    name={fieldName + 'Time'}
+                    render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                      <TextInput
+                        defaultValue={'12'}
+                        selectionColor={Colors.button}
+                        keyboardType='numeric'
+                        style={styles.numInput}
+                        onBlur={onBlur}
+                        onChangeText={onChange}
+                        value={value}
+                        maxLength={2}
+                      />
+                    )}
+                  />
+                  <Text style={{ marginTop: 10, marginRight: 10, marginLeft: 10 }}> h </Text>
+                </TransparentView>
+              ) : (
                 <Controller
                   control={control}
-                  name={fieldName + 'Days'}
+                  name={fieldName}
                   render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                     <TextInput
-                      defaultValue={fieldName === 'Feed' ? '28' : '7'}
+                      multiline={multiline}
                       selectionColor={Colors.button}
-                      keyboardType='numeric'
-                      style={styles.numInput}
+                      style={styles.textInput}
                       onBlur={onBlur}
                       onChangeText={onChange}
                       value={value}
-                      maxLength={2}
                     />
                   )}
                 />
-                <Text style={{ marginTop: 10, marginRight: 10, marginLeft: 10 }}>days @ </Text>
-                <Controller
-                  control={control}
-                  name={fieldName + 'Time'}
-                  render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-                    <TextInput
-                      defaultValue={'12'}
-                      selectionColor={Colors.button}
-                      keyboardType='numeric'
-                      style={styles.numInput}
-                      onBlur={onBlur}
-                      onChangeText={onChange}
-                      value={value}
-                      maxLength={2}
-                    />
-                  )}
-                />
-                <Text style={{ marginTop: 10, marginRight: 10, marginLeft: 10 }}> h </Text>
-              </TransparentView>
-
+              )}
               <TransparentView style={{ flexDirection: 'row' }}>
                 <TouchableOpacity
                   onPress={() => {
