@@ -31,19 +31,6 @@ export default function PlantsScreen({ navigation, route }: PlantsScreenNavigati
     }
   };
 
-  const getDaysLeft = (plantId: string, taskFieldName: string) => {
-    let plant = plants.find((x: any) => x._id === plantId);
-    if (plant) {
-      let task = plant.tasks.find((x: any) => x.taskFieldName.includes(taskFieldName));
-      if (task) {
-        let taskDate = new Date(task.taskDate);
-        let today = new Date();
-        return Math.round((taskDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-      }
-    }
-    return 1;
-  };
-
   useEffect(() => {
     navigation.addListener('focus', () => {
       getAndSetPlants();
@@ -113,11 +100,6 @@ export default function PlantsScreen({ navigation, route }: PlantsScreenNavigati
                     <Image source={require('../assets/images/1-op.jpg')} style={styles.img} />
                   )}
                   <Text style={{ paddingLeft: 10, alignSelf: 'center', fontSize: 15 }}>{plant.nickname}</Text>
-                </TransparentView>
-                <TransparentView style={{ alignSelf: 'center', flexDirection: 'row' }}>
-                  {getDaysLeft(plant._id, 'Water') <= 0 && <Fontisto style={{ paddingTop: 2.5 }} name='blood-drop' size={15} color={Colors.text} />}
-                  {getDaysLeft(plant._id, 'Feed') <= 0 && <MaterialIcons name='bolt' size={20} color={Colors.text} />}
-                  {getDaysLeft(plant._id, 'NewTask') <= 0 && <Fontisto style={{ paddingTop: 2.5 }} name='asterisk' size={15} color={Colors.text} />}
                 </TransparentView>
               </TouchableOpacity>
             ))}
