@@ -1,4 +1,6 @@
 import { FontAwesome } from '@expo/vector-icons';
+import { Asset } from 'expo-asset';
+import { Image } from 'react-native';
 import * as Font from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
@@ -6,22 +8,34 @@ import { useEffect, useState } from 'react';
 export default function useCachedResources() {
   const [isLoadingComplete, setLoadingComplete] = useState(false);
 
-  // Load any resources or data that we need prior to rendering the app
+  const cacheImages = (images: any) => {
+    return images.map((image: any) => {
+      if (typeof image === 'string') {
+        return Image.prefetch(image);
+      } else {
+        return Asset.fromModule(image).downloadAsync();
+      }
+    });
+  };
+
+  const cacheFonts = (fonts: any) => {
+    return fonts.map((font: any) => Font.loadAsync(font));
+  };
+
   useEffect(() => {
     async function loadResourcesAndDataAsync() {
       try {
         SplashScreen.preventAutoHideAsync();
-
-        // Load fonts
-        await Font.loadAsync({
-          ...FontAwesome.font,
-          'inter-bold': require('../assets/fonts/Inter-Bold.ttf'),
-          'inter-light': require('../assets/fonts/Inter-Light.ttf'),
-          'inter-regular': require('../assets/fonts/Inter-Regular.ttf'),
-          'inter-semibold': require('../assets/fonts/Inter-SemiBold.ttf'),
-        });
+        const imageAssets = cacheImages([require('../assets/images/1-op.jpg')]);
+        const fontAssets = cacheFonts([
+          FontAwesome.font,
+          { 'inter-bold': require('../assets/fonts/Inter-Bold.ttf') },
+          { 'inter-light': require('../assets/fonts/Inter-Light.ttf') },
+          { 'inter-regular': require('../assets/fonts/Inter-Regular.ttf') },
+          { 'inter-semibold': require('../assets/fonts/Inter-SemiBold.ttf') },
+        ]);
+        await Promise.all([...imageAssets, ...fontAssets]);
       } catch (e) {
-        // We might want to provide this error information to an error reporting service
         console.warn(e);
       } finally {
         setLoadingComplete(true);
