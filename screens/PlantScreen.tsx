@@ -10,13 +10,13 @@ import { HomeTabParamList, TabsParamList } from '../types';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { CompositeScreenProps } from '@react-navigation/native';
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
-import { deletePlant, editPlant, savePlant } from '../api';
 import { Context } from '../Context';
 import { PickImage } from '../components/ImagePicker';
 
 type PlantScreenNavigationProp = CompositeScreenProps<NativeStackScreenProps<HomeTabParamList, 'Plant'>, BottomTabScreenProps<TabsParamList>>;
 
 export default function PlantScreen({ navigation, route }: PlantScreenNavigationProp) {
+  var ObjectID = require('bson-objectid');
   const [modalVisible, setModalVisible] = useState(false);
   const { height } = useWindowDimensions();
   const statusBarHeight = Constants.statusBarHeight;
@@ -145,17 +145,10 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
   };
 
   const deleteCurrPlant = () => {
-    return deletePlant(plant._id, user.token).then(
-      async (response) => {
-        let p = plants;
-        p = p.filter((x: any) => x._id !== plant._id);
-        setPlants([...p]);
-        navigation.pop();
-      },
-      (error) => {
-        console.log(error);
-      }
-    );
+    let p = plants;
+    p = p.filter((x: any) => x._id !== plant._id);
+    setPlants([...p]);
+    navigation.pop();
   };
 
   const saveCustomTaskInput = (fieldName: string) => {
@@ -199,52 +192,40 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
     var date = new Date();
     date.setDate(date.getDate() + parseInt(days));
     date.setHours(parseInt(time), 0, 0);
-    return date;
+    return date.toISOString();
   };
 
   const onSubmit = () => {
     var taskArr = [...taskListRef.current];
     var obj = {
+      _id: ObjectID().toHexString(),
       nickname: getValues().Nickname ? getValues().Nickname : nicknameField,
       name: getValues().Name ? getValues().Name : nameField,
       notes: getValues().Notes ? getValues().Notes : notesField,
       tasks: taskArr,
       img: getValues().img,
+      userId: user.userId,
     };
 
     if (mode === Mode.new) {
-      return savePlant(obj, user.token).then(
-        async (response) => {
-          const p = plants ? plants : [];
-          p.push(response.data);
-          setPlants([...p]);
-          navigation.pop();
-        },
-        (error) => {
-          console.log(error);
-        }
-      );
+      let p = plants ? plants : [];
+      p.push(obj);
+      setPlants([...p]);
+      navigation.pop();
     } else if (mode === Mode.edit) {
-      return editPlant(plant._id, obj, user.token).then(
-        async (response) => {
-          let p = plants;
-          let idx = p.findIndex((el: any) => el._id === plant._id);
-          p[idx] = {
-            __v: 0,
-            _id: plant._id,
-            name: obj.name,
-            nickname: obj.nickname,
-            notes: obj.notes,
-            tasks: obj.tasks,
-            img: obj.img ? obj.img : p[idx].img,
-          };
-          setPlants([...p]);
-          setMode(Mode.view);
-        },
-        (error) => {
-          console.log(error);
-        }
-      );
+      let p = plants;
+      let idx = p.findIndex((el: any) => el._id === plant._id);
+      p[idx] = {
+        __v: 0,
+        _id: plant._id,
+        name: obj.name,
+        nickname: obj.nickname,
+        notes: obj.notes,
+        tasks: obj.tasks,
+        img: obj.img ? obj.img : p[idx].img,
+      };
+      setPlants([...p]);
+      setMode(Mode.view);
     }
   };
 

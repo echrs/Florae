@@ -84,7 +84,7 @@ export default function PlantsScreen({ navigation, route }: PlantsScreenNavigati
                 </TouchableOpacity>
               </TransparentView>
             </TransparentView>
-            {filteredPlants?.map((plant: any) => (
+            {filteredPlants?.reverse().map((plant: any) => (
               <TouchableOpacity
                 key={plant._id}
                 style={styles.plant}

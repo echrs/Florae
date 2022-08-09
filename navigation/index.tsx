@@ -79,6 +79,8 @@ const App = createNativeStackNavigator<AppStackParamList>();
 function AppNavigator() {
   const { userCtx } = useContext(Context);
   const [user, setUser] = userCtx;
+  const { plantsCtx } = useContext(Context);
+  const [plants, setPlants] = plantsCtx;
 
   return (
     <App.Navigator>
@@ -97,6 +99,7 @@ function AppNavigator() {
               onPress={() => {
                 logout();
                 setUser('');
+                setPlants('');
               }}
               style={({ pressed }) => ({
                 opacity: pressed ? 0.5 : 1,
