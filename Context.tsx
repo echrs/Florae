@@ -13,13 +13,20 @@ export const Provider = (props: any) => {
 
   useEffect(() => {
     fetchUser();
-    fetchPlants();
   }, []);
 
   useEffect(() => {
-    console.log('plants have changed!');
-    saveToStorage();
+    if (user) {
+      console.log('fetched user... now fetching plants!');
+      fetchPlants();
+    }
+  }, [user]);
 
+  useEffect(() => {
+    if (user) {
+      console.log('plants have changed!');
+      saveToStorage();
+    }
     async function saveToStorage() {
       await AsyncStorage.setItem('plants', JSON.stringify(plants));
       console.log('saved to storage');
@@ -59,7 +66,7 @@ export const Provider = (props: any) => {
       } else {
         return JSON.parse(plants);
       }
-    } else {
+    } else if (plants === null) {
       if (netInfo.isConnected) {
         return getPlants(userRef.current.token).then(
           async (response) => {

@@ -9,6 +9,7 @@ export const login = (formData: any) => api.post('/login', formData);
 export const logout = async () => {
   AsyncStorage.getAllKeys().then(async (keys) => await AsyncStorage.multiRemove(keys));
 };
+//plants
 export const getPlants = (token: string) => api.get('/plants', { headers: { Authorization: `Bearer ${token}` } });
 export const syncPlants = (plants: any, token: string) => api.post('/plants', plants, { headers: { Authorization: `Bearer ${token}` } });
 export const plantIdentify = (plant: any) => api.post('/plants/identify', {plant});
