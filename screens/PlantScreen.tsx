@@ -9,6 +9,7 @@ import {
   TextInput,
   KeyboardAvoidingView,
   ToastAndroid,
+  ActivityIndicator,
 } from 'react-native';
 import { BoldText, Text, View, TransparentView, CustomButton } from '../components/CustomStyled';
 import { Colors, Mode } from '../constants/Constants';
@@ -49,6 +50,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
   const [taskName, setTaskName] = useState(false);
   const taskListRef = useRef<{ taskFieldName: string; taskName: any; taskDays: number; taskTime: number; taskDate: any }[]>([]);
   taskListRef.current = taskList;
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (route.params?.plant) {
@@ -142,6 +144,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
   const identifyPlant = async () => {
     let uri = getValues().img || plant.img;
     if (uri) {
+      setIsLoading(true);
       const base64 = await FileSystem.readAsStringAsync(uri, { encoding: 'base64' });
       return plantIdentify(base64).then(
         async (response) => {
@@ -159,9 +162,11 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
           } else {
             ToastAndroid.show('Sorry, the plant cannot be identified.', ToastAndroid.SHORT);
           }
+          setIsLoading(false);
         },
         (error) => {
           console.log(error);
+          setIsLoading(false);
         }
       );
     } else {
@@ -422,12 +427,23 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
           />
           <TransparentView style={{ width: '90%', marginTop: 20 }}>
             {mode !== Mode.view && (
-              <TouchableOpacity style={styles.buttonSection} onPress={() => identifyPlant()}>
-                <CustomButton>
-                  <BoldText>IDENTIFY PLANT</BoldText>
-                  <MaterialIcons name='search' size={17} color={Colors.text} />
-                </CustomButton>
-              </TouchableOpacity>
+              <>
+                {!isLoading ? (
+                  <TouchableOpacity style={styles.buttonSection} onPress={() => identifyPlant()}>
+                    <CustomButton>
+                      <BoldText>IDENTIFY PLANT</BoldText>
+                      <MaterialIcons name='search' size={17} color={Colors.text} />
+                    </CustomButton>
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity style={styles.buttonSection} onPress={() => {}}>
+                    <CustomButton>
+                      <BoldText>IDENTIFY PLANT</BoldText>
+                      <ActivityIndicator size={17} color='white' />
+                    </CustomButton>
+                  </TouchableOpacity>
+                )}
+              </>
             )}
             <BoldText style={styles.headerText}>GENERAL INFO</BoldText>
             <TouchableOpacity
