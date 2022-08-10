@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, useEffect, useRef, useState } from 'react';
-import { syncPlants } from './api';
+import { getPlants, syncPlants } from './api';
 import NetInfo from '@react-native-community/netinfo';
 
 export const Context = createContext({});
@@ -23,6 +23,7 @@ export const Provider = (props: any) => {
     async function saveToStorage() {
       await AsyncStorage.setItem('plants', JSON.stringify(plants));
       console.log('saved to storage');
+      console.log(plants);
     }
   }, [plants]);
 
@@ -44,8 +45,8 @@ export const Provider = (props: any) => {
 
   const syncPlantsWDb = async () => {
     var plants = await AsyncStorage.getItem('plants');
+    let netInfo = await NetInfo.fetch();
     if (plants?.length) {
-      let netInfo = await NetInfo.fetch();
       if (netInfo.isConnected) {
         return syncPlants(JSON.parse(plants), userRef.current.token).then(
           async (response) => {
@@ -57,6 +58,18 @@ export const Provider = (props: any) => {
         );
       } else {
         return JSON.parse(plants);
+      }
+    } else {
+      if (netInfo.isConnected) {
+        return getPlants(userRef.current.token).then(
+          async (response) => {
+            await AsyncStorage.setItem('plants', JSON.stringify(response.data));
+            setPlants(response.data);
+          },
+          (error) => {
+            console.log(error);
+          }
+        );
       }
     }
   };

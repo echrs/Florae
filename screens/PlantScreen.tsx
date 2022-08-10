@@ -1,6 +1,15 @@
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, TouchableOpacity, useWindowDimensions, TextInput, KeyboardAvoidingView, Button } from 'react-native';
+import {
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  useWindowDimensions,
+  TextInput,
+  KeyboardAvoidingView,
+  ToastAndroid,
+} from 'react-native';
 import { BoldText, Text, View, TransparentView, CustomButton } from '../components/CustomStyled';
 import { Colors, Mode } from '../constants/Constants';
 import Modal from 'react-native-modal';
@@ -12,6 +21,8 @@ import type { CompositeScreenProps } from '@react-navigation/native';
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { Context } from '../Context';
 import { PickImage } from '../components/ImagePicker';
+import * as FileSystem from 'expo-file-system';
+import { plantIdentify } from '../api';
 
 type PlantScreenNavigationProp = CompositeScreenProps<NativeStackScreenProps<HomeTabParamList, 'Plant'>, BottomTabScreenProps<TabsParamList>>;
 
@@ -20,7 +31,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
   const [modalVisible, setModalVisible] = useState(false);
   const { height } = useWindowDimensions();
   const statusBarHeight = Constants.statusBarHeight;
-  const { control, handleSubmit, getValues } = useForm();
+  const { control, handleSubmit, getValues, setValue } = useForm();
   const [fieldName, setFieldName] = useState('');
   const [nameField, setNameField] = useState('');
   const [nicknameField, setNicknameField] = useState('Plant' + Math.floor(Math.random() * 1000) + 1);
@@ -127,6 +138,36 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
       });
     }
   }, [mode]);
+
+  const identifyPlant = async () => {
+    let uri = getValues().img || plant.img;
+    if (uri) {
+      const base64 = await FileSystem.readAsStringAsync(uri, { encoding: 'base64' });
+      return plantIdentify(base64).then(
+        async (response) => {
+          let identifiedPlant = response.data.suggestions[0];
+          if (identifiedPlant.probability >= 0.9) {
+            let plantName = identifiedPlant.plant_name;
+            let plantNickname = identifiedPlant.plant_details.common_names[0];
+            let plantDesc = identifiedPlant.plant_details.wiki_description.value;
+            setNicknameField(plantNickname);
+            setValue('Nickname', plantName);
+            setNameField(plantName);
+            setValue('Name', plantName);
+            setNotesField(plantDesc);
+            setValue('Notes', plantDesc);
+          } else {
+            ToastAndroid.show('Sorry, the plant cannot be identified.', ToastAndroid.SHORT);
+          }
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
+    } else {
+      ToastAndroid.show("There's nothing to identify!", ToastAndroid.SHORT);
+    }
+  };
 
   const getDaysLeft = (date: string) => {
     let taskDate = new Date(date);
@@ -381,7 +422,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
           />
           <TransparentView style={{ width: '90%', marginTop: 20 }}>
             {mode !== Mode.view && (
-              <TouchableOpacity style={styles.buttonSection} onPress={() => {}}>
+              <TouchableOpacity style={styles.buttonSection} onPress={() => identifyPlant()}>
                 <CustomButton>
                   <BoldText>IDENTIFY PLANT</BoldText>
                   <MaterialIcons name='search' size={17} color={Colors.text} />
