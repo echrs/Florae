@@ -187,6 +187,10 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
     if (task) {
       uTaskList[idx] = { ...task, taskDate: setDaysAndTime(task.taskDays, task.taskTime) };
       setTaskList(uTaskList);
+      let p = plants;
+      let pIdx = p.findIndex((x: any) => x._id === plant._id);
+      p[pIdx] = { ...p[pIdx], tasks: uTaskList };
+      setPlants([...p]);
     }
   };
 
@@ -342,7 +346,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
                     name={fieldName + 'Days'}
                     render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                       <TextInput
-                        defaultValue={fieldName === 'Water' ? '7' : '28'}
+                        defaultValue={fieldName.includes('NewTask') && isNewTask ? '7' : ''}
                         selectionColor={Colors.button}
                         keyboardType='numeric'
                         style={styles.numInput}
@@ -359,7 +363,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
                     name={fieldName + 'Time'}
                     render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                       <TextInput
-                        defaultValue={'12'}
+                        defaultValue={fieldName.includes('NewTask') && isNewTask ? '12' : ''}
                         selectionColor={Colors.button}
                         keyboardType='numeric'
                         style={styles.numInput}
@@ -573,10 +577,10 @@ const styles = StyleSheet.create({
   },
   textInput: {
     color: '#ffffff',
-    width: '85%',
+    width: '70%',
     borderColor: '#ffffff',
     borderBottomWidth: 1,
-    marginVertical: 5,
+    fontFamily: 'inter-bold'
   },
   numInput: {
     color: '#ffffff',
