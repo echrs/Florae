@@ -20,3 +20,8 @@ export const Mode = {
   edit: 1,
   view: 2
 }
+
+export const Tab = {
+  today: 0,
+  upcoming: 1,
+};

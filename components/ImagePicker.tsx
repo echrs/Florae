@@ -20,7 +20,7 @@ export const PickImage = ({ disabled, viewImg, onChange, value }: any) => {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3],
-      quality: 1,
+      quality: 0.7,
       base64: true,
     });
 
@@ -38,7 +38,7 @@ export const PickImage = ({ disabled, viewImg, onChange, value }: any) => {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3],
-      quality: 1,
+      quality: 0.7,
       base64: true,
     });
 

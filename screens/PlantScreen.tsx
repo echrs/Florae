@@ -119,14 +119,6 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
         headerRight: () => (
           <>
             <Pressable
-              onPress={() => setMode(Mode.view)}
-              style={({ pressed }) => ({
-                opacity: pressed ? 0.5 : 1,
-              })}
-            >
-              <BoldText>CANCEL</BoldText>
-            </Pressable>
-            <Pressable
               onPress={handleSubmit(onSubmit)}
               style={({ pressed }) => ({
                 opacity: pressed ? 0.5 : 1,
@@ -580,7 +572,7 @@ const styles = StyleSheet.create({
     width: '70%',
     borderColor: '#ffffff',
     borderBottomWidth: 1,
-    fontFamily: 'inter-bold'
+    fontFamily: 'inter-bold',
   },
   numInput: {
     color: '#ffffff',
