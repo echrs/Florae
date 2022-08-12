@@ -1,13 +1,8 @@
-import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
-import { CompositeScreenProps } from '@react-navigation/native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import React, { useContext, useEffect, useState } from 'react';
-import { StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
-import { BoldText, SafeAreaView, TransparentView, Text } from '../components/CustomStyled';
-import { Context } from '../Context';
-import { TabsParamList, TasksTabParamList } from '../types';
-import { Colors, Tab } from '../constants/Constants';
-import { Fontisto, Foundation, MaterialCommunityIcons, MaterialIcons, SimpleLineIcons } from '@expo/vector-icons';
+import React from 'react';
+import { StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { BoldText, TransparentView, Text } from '../components/CustomStyled';
+import { Colors } from '../constants/Constants';
+import { Foundation, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 
 export const TaskSection = ({ taskArr, taskName }: any) => {
   const getDaysLeft = (date: string) => {
@@ -15,6 +10,8 @@ export const TaskSection = ({ taskArr, taskName }: any) => {
     let today = new Date();
     return Math.round((taskDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
   };
+
+  const setTaskDone = (fieldName: string) => {};
 
   return (
     <TransparentView style={styles.taskSection}>
@@ -26,28 +23,37 @@ export const TaskSection = ({ taskArr, taskName }: any) => {
       </TransparentView>
       <TransparentView>
         {taskArr?.map((task: any) => (
-          <TouchableOpacity
+          <TransparentView
             style={{ marginBottom: 5, flexDirection: 'row', justifyContent: 'space-between' }}
-            key={taskName === 'Custom' ? task.taskFieldname : task.plantId}
-            onPress={() => {}}
+            key={task.taskFieldname + task.plantId}
           >
-            <TransparentView style={{ flexDirection: 'row' }}>
-              {task.plantImg ? (
-                <Image source={{ uri: task.plantImg }} style={styles.img} />
-              ) : (
-                <Image source={require('../assets/images/1-op.jpg')} style={styles.img} />
-              )}
-              <Text style={{ paddingLeft: 10, alignSelf: 'center', fontSize: 15 }}>{task.plantName}</Text>
-              <Text style={{ paddingLeft: 2, alignSelf: 'center', fontSize: 15, color: '#5a5a5a' }}>
-                {'(in ' + getDaysLeft(task.taskDate) + ' days)'}
-              </Text>
-            </TransparentView>
+            <TouchableOpacity onPress={() => {}}>
+              <TransparentView style={{ flexDirection: 'row' }}>
+                {task.plantImg ? (
+                  <Image source={{ uri: task.plantImg }} style={styles.img} />
+                ) : (
+                  <Image source={require('../assets/images/1-op.jpg')} style={styles.img} />
+                )}
+                <Text style={{ paddingLeft: 5, alignSelf: 'center', fontSize: 15 }}>{task.plantName}</Text>
+                {getDaysLeft(task.taskDate) > 0 && (
+                  <Text style={{ paddingLeft: 2, alignSelf: 'center', fontSize: 15, color: '#5a5a5a' }}>
+                    {'(in ' + getDaysLeft(task.taskDate) + ' days)'}
+                  </Text>
+                )}
+              </TransparentView>
+            </TouchableOpacity>
             <TransparentView style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <TouchableOpacity style={{ marginLeft: 5 }} onPress={() => {}}>
-                <MaterialIcons name='check-circle' size={25} color='#5a5a5a' />
-              </TouchableOpacity>
+              {getDaysLeft(task.taskDate) > 0 ? (
+                <TouchableOpacity style={{ marginLeft: 5 }} onPress={() => {}}>
+                  <MaterialIcons name='check-circle' size={25} color='#5a5a5a' />
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity style={{ marginLeft: 5 }} onPress={() => {}}>
+                  <MaterialIcons name='check-circle' size={25} color='#ffffff' />
+                </TouchableOpacity>
+              )}
             </TransparentView>
-          </TouchableOpacity>
+          </TransparentView>
         ))}
       </TransparentView>
     </TransparentView>
@@ -64,6 +70,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#3D3D3D',
     padding: 10,
     borderRadius: 15,
-    marginBottom: 5,
+    marginBottom: 10,
   },
 });

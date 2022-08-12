@@ -28,9 +28,11 @@ export default function TasksScreen({ navigation, route }: TasksScreenNavigation
   useEffect(() => {
     navigation.addListener('focus', () => {
       setActiveTab(Tab.today);
-      getAndSetAllTasks();
-      console.log('here');
     });
+  }, []);
+
+  useEffect(() => {
+    getAndSetAllTasks();
 
     function getAndSetAllTasks() {
       let allTasks = plants.flatMap((plant: any) => {
@@ -56,11 +58,7 @@ export default function TasksScreen({ navigation, route }: TasksScreenNavigation
       setUpcomingCustomTasks(upcomingCustomTasks);
       console.log(upcomingCustomTasks);
     }
-  }, []);
-
-  useEffect(() => {
-    console.log(activeTab);
-  }, [activeTab]);
+  }, [plants]);
 
   const getDaysLeft = (date: string) => {
     let taskDate = new Date(date);
@@ -68,22 +66,24 @@ export default function TasksScreen({ navigation, route }: TasksScreenNavigation
     return Math.round((taskDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
   };
 
-  const setTaskDone = (fieldName: string) => {};
-
   return (
     <SafeAreaView style={styles.container}>
       <TransparentView style={{ width: '90%' }}>
         <ScrollView>
           <TransparentView style={styles.section}>
-            <TransparentView style={{ flexDirection: 'row', marginBottom: 10 }}>
-              <TouchableOpacity onPress={() => setActiveTab(Tab.today)}>
-                <BoldText style={[{ fontSize: 20 }, activeTab === Tab.today ? styles.active : styles.inactive]}>Today's tasks</BoldText>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => setActiveTab(Tab.upcoming)}>
-                <BoldText style={[{ fontSize: 20, paddingLeft: 5 }, activeTab === Tab.upcoming ? styles.active : styles.inactive]}>
-                  Upcoming tasks
-                </BoldText>
-              </TouchableOpacity>
+            <TransparentView style={{ flexDirection: 'row', paddingBottom: 10, justifyContent: 'space-between' }}>
+              <TransparentView style={{ flexDirection: 'row' }}>
+                <TouchableOpacity onPress={() => setActiveTab(Tab.today)}>
+                  <BoldText style={[{ fontSize: 20 }, activeTab === Tab.today ? styles.active : styles.inactive]}>Today</BoldText>
+                </TouchableOpacity>
+                <BoldText style={{fontSize: 20}}> / </BoldText>
+                <TouchableOpacity onPress={() => setActiveTab(Tab.upcoming)}>
+                  <BoldText style={[{ fontSize: 20 }, activeTab === Tab.upcoming ? styles.active : styles.inactive]}>Soon</BoldText>
+                </TouchableOpacity>
+              </TransparentView>
+              <TransparentView style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <MaterialCommunityIcons name='calendar-month-outline' size={25} color={Colors.text} />
+              </TransparentView>
             </TransparentView>
             {activeTab === Tab.today && (
               <TransparentView>
