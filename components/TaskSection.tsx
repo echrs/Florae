@@ -3,14 +3,9 @@ import { StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { BoldText, TransparentView, Text } from '../components/CustomStyled';
 import { Colors } from '../constants/Constants';
 import { Foundation, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import { getDaysLeft } from '../utils';
 
 export const TaskSection = ({ taskArr, taskName, onChange }: any) => {
-  const getDaysLeft = (date: string) => {
-    let taskDate = new Date(date);
-    let today = new Date();
-    return Math.round((taskDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-  };
-
   const setTaskDone = (task: any) => {
     onChange(task);
   };

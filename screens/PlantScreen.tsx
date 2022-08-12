@@ -24,6 +24,7 @@ import { Context } from '../Context';
 import { PickImage } from '../components/PickImage';
 import * as FileSystem from 'expo-file-system';
 import { plantIdentify } from '../api';
+import { getDaysLeft, setDaysAndTime } from '../utils';
 
 type PlantScreenNavigationProp = CompositeScreenProps<NativeStackScreenProps<HomeTabParamList, 'Plant'>, BottomTabScreenProps<TabsParamList>>;
 
@@ -166,12 +167,6 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
     }
   };
 
-  const getDaysLeft = (date: string) => {
-    let taskDate = new Date(date);
-    let today = new Date();
-    return Math.round((taskDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-  };
-
   const setTaskDone = (fieldName: string) => {
     let uTaskList = [...taskList];
     let idx = taskList.findIndex((task: any) => task.taskFieldName === fieldName);
@@ -228,13 +223,6 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
   const deleteCustomTask = (fieldName: string) => {
     let filteredTL = taskList.filter((x) => x.taskFieldName !== fieldName);
     setTaskList(filteredTL);
-  };
-
-  const setDaysAndTime = (days: any, time: any) => {
-    var date = new Date();
-    date.setDate(date.getDate() + parseInt(days));
-    date.setHours(parseInt(time), 0, 0);
-    return date.toISOString();
   };
 
   const onSubmit = () => {

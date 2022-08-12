@@ -9,6 +9,7 @@ import { TabsParamList, TasksTabParamList } from '../types';
 import { Colors, Tab } from '../constants/Constants';
 import { Foundation, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { TaskSection } from '../components/TaskSection';
+import { getDaysLeft, setDaysAndTime } from '../utils';
 
 type TasksScreenNavigationProp = CompositeScreenProps<NativeStackScreenProps<TasksTabParamList, 'Tasks'>, BottomTabScreenProps<TabsParamList>>;
 
@@ -58,19 +59,6 @@ export default function TasksScreen({ navigation, route }: TasksScreenNavigation
       setUpcomingCustomTasks(upcomingCustomTasks);
     }
   }, [plants]);
-
-  const getDaysLeft = (date: string) => {
-    let taskDate = new Date(date);
-    let today = new Date();
-    return Math.round((taskDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-  };
-
-  const setDaysAndTime = (days: any, time: any) => {
-    var date = new Date();
-    date.setDate(date.getDate() + parseInt(days));
-    date.setHours(parseInt(time), 0, 0);
-    return date.toISOString();
-  };
 
   const onChangeTask = (task: any) => {
     let p = plants;
