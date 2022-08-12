@@ -24,7 +24,7 @@ export const TaskSection = ({ taskArr, taskName, onChange }: any) => {
             style={{ marginTop: 7, flexDirection: 'row', justifyContent: 'space-between', overflow: 'hidden' }}
             key={task.taskFieldname + task.plantId}
           >
-            <TouchableOpacity onPress={() => {}}>
+            <>
               <TransparentView style={{ flexDirection: 'row' }}>
                 {task.plantImg ? (
                   <Image source={{ uri: task.plantImg }} style={styles.img} />
@@ -49,7 +49,7 @@ export const TaskSection = ({ taskArr, taskName, onChange }: any) => {
                   )}
                 </TransparentView>
               </TransparentView>
-            </TouchableOpacity>
+            </>
             <TransparentView style={{ flexDirection: 'row', alignItems: 'center' }}>
               {getDaysLeft(task.taskDate) > 0 ? (
                   <MaterialIcons name='check-circle' size={26} color='#5a5a5a' />

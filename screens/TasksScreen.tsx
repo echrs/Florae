@@ -2,12 +2,12 @@ import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { CompositeScreenProps } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useContext, useEffect, useState } from 'react';
-import { StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { BoldText, SafeAreaView, TransparentView, Text } from '../components/CustomStyled';
 import { Context } from '../Context';
 import { TabsParamList, TasksTabParamList } from '../types';
 import { Colors, Tab } from '../constants/Constants';
-import { Foundation, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { TaskSection } from '../components/TaskSection';
 import { getDaysLeft, setDaysAndTime } from '../utils';
 
@@ -89,7 +89,7 @@ export default function TasksScreen({ navigation, route }: TasksScreenNavigation
                 </TouchableOpacity>
               </TransparentView>
               <TransparentView style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <MaterialCommunityIcons name='calendar-month-outline' size={25} color={Colors.text} />
+                <MaterialCommunityIcons name='calendar-clock' size={25} color={Colors.text} />
               </TransparentView>
             </TransparentView>
             {activeTab === Tab.today && (
