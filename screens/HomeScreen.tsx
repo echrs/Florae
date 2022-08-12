@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    paddingTop: 70,
+    paddingTop: 60,
   },
   tasks: {
     backgroundColor: '#333333',

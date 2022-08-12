@@ -14,7 +14,7 @@ type TasksScreenNavigationProp = CompositeScreenProps<NativeStackScreenProps<Tas
 
 export default function TasksScreen({ navigation, route }: TasksScreenNavigationProp) {
   const { plantsCtx } = useContext(Context);
-  const [plants] = plantsCtx;
+  const [plants, setPlants] = plantsCtx;
   const [todayTasks, setTodayTasks] = useState([]);
   const [todayWaterTasks, setTodayWaterTasks] = useState([]);
   const [todayFeedTasks, setTodayFeedTasks] = useState([]);
@@ -48,7 +48,7 @@ export default function TasksScreen({ navigation, route }: TasksScreenNavigation
       setTodayFeedTasks(todayFeedTasks);
       let todayCustomTasks = todayTasks.filter((task: any) => task.taskFieldName.includes('NewTask'));
       setTodayCustomTasks(todayCustomTasks);
-      let upcomingTasks = allTasks.filter((task: any) => getDaysLeft(task.taskDate) != 0);
+      let upcomingTasks = allTasks.filter((task: any) => getDaysLeft(task.taskDate) > 0 && getDaysLeft(task.taskDate) <= 14);
       setUpcomingTasks(upcomingTasks);
       let upcomingWaterTasks = upcomingTasks.filter((task: any) => task.taskFieldName === 'Water');
       setUpcomingWaterTasks(upcomingWaterTasks);
@@ -56,7 +56,6 @@ export default function TasksScreen({ navigation, route }: TasksScreenNavigation
       setUpcomingFeedTasks(upcomingFeedTasks);
       let upcomingCustomTasks = upcomingTasks.filter((task: any) => task.taskFieldName.includes('NewTask'));
       setUpcomingCustomTasks(upcomingCustomTasks);
-      console.log(upcomingCustomTasks);
     }
   }, [plants]);
 
@@ -64,6 +63,26 @@ export default function TasksScreen({ navigation, route }: TasksScreenNavigation
     let taskDate = new Date(date);
     let today = new Date();
     return Math.round((taskDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+  };
+
+  const setDaysAndTime = (days: any, time: any) => {
+    var date = new Date();
+    date.setDate(date.getDate() + parseInt(days));
+    date.setHours(parseInt(time), 0, 0);
+    return date.toISOString();
+  };
+
+  const onChangeTask = (task: any) => {
+    let p = plants;
+    let plantIdx = p.findIndex((plant: any) => plant._id === task.plantId);
+    let taskIdx = p[plantIdx].tasks.findIndex((plantTask: any) => plantTask.taskFieldName === task.taskFieldName);
+    let plantTasks = p[plantIdx].tasks;
+    let plantTask = plantTasks[taskIdx];
+    if (plantTask) {
+      plantTasks[taskIdx] = { ...plantTask, taskDate: setDaysAndTime(task.taskDays, task.taskTime) };
+      p[plantIdx] = { ...p[plantIdx], tasks: plantTasks };
+      setPlants([...p]);
+    }
   };
 
   return (
@@ -76,7 +95,7 @@ export default function TasksScreen({ navigation, route }: TasksScreenNavigation
                 <TouchableOpacity onPress={() => setActiveTab(Tab.today)}>
                   <BoldText style={[{ fontSize: 20 }, activeTab === Tab.today ? styles.active : styles.inactive]}>Today</BoldText>
                 </TouchableOpacity>
-                <BoldText style={{fontSize: 20}}> / </BoldText>
+                <BoldText style={{ fontSize: 20 }}> / </BoldText>
                 <TouchableOpacity onPress={() => setActiveTab(Tab.upcoming)}>
                   <BoldText style={[{ fontSize: 20 }, activeTab === Tab.upcoming ? styles.active : styles.inactive]}>Soon</BoldText>
                 </TouchableOpacity>
@@ -87,16 +106,18 @@ export default function TasksScreen({ navigation, route }: TasksScreenNavigation
             </TransparentView>
             {activeTab === Tab.today && (
               <TransparentView>
-                {todayWaterTasks.length > 0 && <TaskSection taskArr={todayWaterTasks} taskName='Water'></TaskSection>}
-                {todayFeedTasks.length > 0 && <TaskSection taskArr={todayFeedTasks} taskName='Feed'></TaskSection>}
-                {todayCustomTasks.length > 0 && <TaskSection taskArr={todayCustomTasks} taskName='Custom'></TaskSection>}
+                {todayWaterTasks.length > 0 && <TaskSection onChange={onChangeTask} taskArr={todayWaterTasks} taskName='Water'></TaskSection>}
+                {todayFeedTasks.length > 0 && <TaskSection onChange={onChangeTask} taskArr={todayFeedTasks} taskName='Feed'></TaskSection>}
+                {todayCustomTasks.length > 0 && <TaskSection onChange={onChangeTask} taskArr={todayCustomTasks} taskName='Custom'></TaskSection>}
               </TransparentView>
             )}
             {activeTab === Tab.upcoming && (
               <TransparentView>
-                {upcomingWaterTasks.length > 0 && <TaskSection taskArr={upcomingWaterTasks} taskName='Water'></TaskSection>}
-                {upcomingFeedTasks.length > 0 && <TaskSection taskArr={upcomingFeedTasks} taskName='Feed'></TaskSection>}
-                {upcomingCustomTasks.length > 0 && <TaskSection taskArr={upcomingCustomTasks} taskName='Custom'></TaskSection>}
+                {upcomingWaterTasks.length > 0 && <TaskSection onChange={onChangeTask} taskArr={upcomingWaterTasks} taskName='Water'></TaskSection>}
+                {upcomingFeedTasks.length > 0 && <TaskSection onChange={onChangeTask} taskArr={upcomingFeedTasks} taskName='Feed'></TaskSection>}
+                {upcomingCustomTasks.length > 0 && (
+                  <TaskSection onChange={onChangeTask} taskArr={upcomingCustomTasks} taskName='Custom'></TaskSection>
+                )}
               </TransparentView>
             )}
             {todayTasks.length <= 0 && activeTab === Tab.today && <Text>Awesome! No tasks today.</Text>}
@@ -114,7 +135,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    paddingTop: 50,
+    paddingTop: 40,
   },
   section: {
     backgroundColor: '#333333',

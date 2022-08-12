@@ -54,6 +54,7 @@ export default function PlantsScreen({ navigation, route }: PlantsScreenNavigati
               padding: 0,
               backgroundColor: Colors.background,
             }}
+            placeholderTextColor='#919191'
             inputContainerStyle={{
               borderRadius: 15,
               backgroundColor: Colors.other,
@@ -119,7 +120,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    paddingTop: 70,
+    paddingTop: 60,
   },
   section: {
     backgroundColor: '#333333',

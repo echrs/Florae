@@ -21,7 +21,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { CompositeScreenProps } from '@react-navigation/native';
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { Context } from '../Context';
-import { PickImage } from '../components/ImagePicker';
+import { PickImage } from '../components/PickImage';
 import * as FileSystem from 'expo-file-system';
 import { plantIdentify } from '../api';
 
@@ -146,7 +146,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
             let plantNickname = identifiedPlant.plant_details.common_names[0];
             let plantDesc = identifiedPlant.plant_details.wiki_description.value;
             setNicknameField(plantNickname);
-            setValue('Nickname', plantName);
+            setValue('Nickname', plantNickname);
             setNameField(plantName);
             setValue('Name', plantName);
             setNotesField(plantDesc);
