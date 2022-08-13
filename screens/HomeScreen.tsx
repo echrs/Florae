@@ -54,10 +54,10 @@ export default function HomeScreen({ navigation, route }: HomeScreenNavigationPr
         return plant.tasks.filter((task: any) => getDaysLeft(task.taskDate) <= 0 || getDaysLeft(task.lastTaskDate) === 0);
       });
       let todayUndoneTasks = plants.flatMap((plant: any) => {
-        return plant.tasks.filter((task: any) => getDaysLeft(task.taskDate) <= 0 || getDaysLeft(task.lastTaskDate) === 0);
+        return plant.tasks.filter((task: any) => getDaysLeft(task.lastTaskDate) === 0);
       });
-      setPercentage((todayUndoneTasks.length / todayTotalTasks.length));
-    };
+      setPercentage(todayUndoneTasks.length / todayTotalTasks.length);
+    }
   }, [plants]);
 
   return (
@@ -74,8 +74,8 @@ export default function HomeScreen({ navigation, route }: HomeScreenNavigationPr
             >
               <BoldText style={{ fontSize: 20 }}>Plant tasks</BoldText>
               <Text style={{ paddingTop: 5 }}>Are your plants happy?</Text>
-              <BoldText style={{ paddingTop: 30 }}>{percentage ? percentage * 100 : 100}%</BoldText>
-              <ProgressBar style={{ marginBottom: 5 }} progress={percentage ? percentage : 1} color={Colors.button} />
+              <BoldText style={{ paddingTop: 30 }}>{percentage === 0 ? 0 : (percentage * 100).toFixed(0) || 100}%</BoldText>
+              <ProgressBar style={{ marginBottom: 5 }} progress={percentage === 0 ? 0 : percentage || 1} color={Colors.button} />
             </TouchableOpacity>
             <TransparentView style={styles.plants}>
               <BoldText style={{ fontSize: 20 }}>Latest plants</BoldText>
@@ -145,6 +145,7 @@ const styles = StyleSheet.create({
   img: {
     width: '100%',
     height: 100,
+    borderRadius: 5
   },
   plants: {
     backgroundColor: '#333333',
@@ -152,14 +153,5 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     marginTop: 20,
     marginBottom: 50,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
   },
 });
