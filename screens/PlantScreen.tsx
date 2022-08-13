@@ -46,10 +46,10 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
   const [plant, setPlant] = useState({} as any);
   const [mode, setMode] = useState(0);
   const [viewImg, setViewImg] = useState('');
-  const [taskList, setTaskList] = useState<{ taskFieldName: string; taskName: any; taskDays: number; taskTime: number; taskDate: any }[]>([]);
+  const [taskList, setTaskList] = useState<{ taskFieldName: string; taskName: any; taskDays: number; taskTime: number; taskDate: any, lastTaskDate: any }[]>([]);
   const [isNewTask, setIsNewTask] = useState(false);
   const [taskName, setTaskName] = useState(false);
-  const taskListRef = useRef<{ taskFieldName: string; taskName: any; taskDays: number; taskTime: number; taskDate: any }[]>([]);
+  const taskListRef = useRef<{ taskFieldName: string; taskName: any; taskDays: number; taskTime: number; taskDate: any, lastTaskDate: any }[]>([]);
   taskListRef.current = taskList;
   const [isLoading, setIsLoading] = useState(false);
 
@@ -75,6 +75,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
             taskDays: 7,
             taskTime: 12,
             taskDate: setDaysAndTime(7, 12),
+            lastTaskDate: '',
             taskFieldName: 'Water',
           },
           {
@@ -82,6 +83,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
             taskDays: 28,
             taskTime: 12,
             taskDate: setDaysAndTime(28, 12),
+            lastTaskDate: '',
             taskFieldName: 'Feed',
           },
         ]);
@@ -172,7 +174,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
     let idx = taskList.findIndex((task: any) => task.taskFieldName === fieldName);
     let task = uTaskList[idx];
     if (task) {
-      uTaskList[idx] = { ...task, taskDate: setDaysAndTime(task.taskDays, task.taskTime) };
+      uTaskList[idx] = { ...task, lastTaskDate: task.taskDate, taskDate: setDaysAndTime(task.taskDays, task.taskTime) };
       setTaskList(uTaskList);
       let p = plants;
       let pIdx = p.findIndex((x: any) => x._id === plant._id);
@@ -208,6 +210,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
       taskDays: taskDays,
       taskTime: taskTime,
       taskDate: setDaysAndTime(taskDays, taskTime),
+      lastTaskDate: '',
     };
     if (task) {
       let uTaskList = [...taskList];
@@ -229,8 +232,8 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
     var taskArr = [...taskListRef.current];
     var obj = {
       _id: ObjectID().toHexString(),
-      nickname: getValues().Nickname ? getValues().Nickname : nicknameField,
       name: getValues().Name ? getValues().Name : nameField,
+      nickname: getValues().Nickname ? getValues().Nickname : nicknameField,
       notes: getValues().Notes ? getValues().Notes : notesField,
       tasks: taskArr,
       img: getValues().img,
@@ -253,6 +256,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
         notes: obj.notes,
         tasks: obj.tasks,
         img: obj.img ? obj.img : p[idx].img,
+        userId: obj.userId
       };
       setPlants([...p]);
       setMode(Mode.view);
@@ -309,7 +313,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
                   <TextInput
                     multiline={multiline}
                     selectionColor={Colors.button}
-                    style={styles.textInput}
+                    style={styles.textInputNew}
                     onBlur={onBlur}
                     onChangeText={onChange}
                     value={value}
@@ -555,12 +559,18 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     margin: 0,
   },
-  textInput: {
+  textInputNew: {
     color: '#ffffff',
     width: '70%',
     borderColor: '#ffffff',
     borderBottomWidth: 1,
     fontFamily: 'inter-bold',
+  },
+  textInput: {
+    color: '#ffffff',
+    width: '80%',
+    borderColor: '#ffffff',
+    borderBottomWidth: 1,
   },
   numInput: {
     color: '#ffffff',

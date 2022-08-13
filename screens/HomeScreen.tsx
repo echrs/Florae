@@ -8,6 +8,7 @@ import type { CompositeScreenProps } from '@react-navigation/native';
 import { ProgressBar } from 'react-native-paper';
 import { Colors } from '../constants/Constants';
 import { Context } from '../Context';
+import { getDaysLeft } from '../utils';
 
 type HomeScreenNavigationProp = CompositeScreenProps<NativeStackScreenProps<HomeTabParamList, 'Home'>, BottomTabScreenProps<TabsParamList>>;
 
@@ -15,6 +16,7 @@ export default function HomeScreen({ navigation, route }: HomeScreenNavigationPr
   const [timeStr, setTimeStr] = useState('');
   const { plantsCtx } = useContext(Context);
   const [plants] = plantsCtx;
+  const [percentage, setPercentage] = useState(0);
 
   useEffect(() => {
     navigation.addListener('focus', () => {
@@ -44,6 +46,20 @@ export default function HomeScreen({ navigation, route }: HomeScreenNavigationPr
     }
   }, []);
 
+  useEffect(() => {
+    calcPercentage();
+
+    function calcPercentage() {
+      let todayTotalTasks = plants.flatMap((plant: any) => {
+        return plant.tasks.filter((task: any) => getDaysLeft(task.taskDate) <= 0 || getDaysLeft(task.lastTaskDate) === 0);
+      });
+      let todayUndoneTasks = plants.flatMap((plant: any) => {
+        return plant.tasks.filter((task: any) => getDaysLeft(task.taskDate) <= 0 || getDaysLeft(task.lastTaskDate) === 0);
+      });
+      setPercentage((todayUndoneTasks.length / todayTotalTasks.length));
+    };
+  }, [plants]);
+
   return (
     <>
       <SafeAreaView style={styles.container}>
@@ -58,8 +74,8 @@ export default function HomeScreen({ navigation, route }: HomeScreenNavigationPr
             >
               <BoldText style={{ fontSize: 20 }}>Plant tasks</BoldText>
               <Text style={{ paddingTop: 5 }}>Are your plants happy?</Text>
-              <BoldText style={{ paddingTop: 30 }}>100%</BoldText>
-              <ProgressBar style={{ marginBottom: 5 }} progress={1} color={Colors.button} />
+              <BoldText style={{ paddingTop: 30 }}>{percentage ? percentage * 100 : 100}%</BoldText>
+              <ProgressBar style={{ marginBottom: 5 }} progress={percentage ? percentage : 1} color={Colors.button} />
             </TouchableOpacity>
             <TransparentView style={styles.plants}>
               <BoldText style={{ fontSize: 20 }}>Latest plants</BoldText>
