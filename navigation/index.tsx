@@ -54,7 +54,7 @@ function RootNavigator() {
               headerTitle: '',
               headerTransparent: true,
               headerShadowVisible: false,
-              headerTintColor: '#ffffff',
+              headerTintColor: Colors.text,
             }}
           />
           <Root.Screen
@@ -64,7 +64,7 @@ function RootNavigator() {
               headerTitle: '',
               headerTransparent: true,
               headerShadowVisible: false,
-              headerTintColor: '#ffffff',
+              headerTintColor: Colors.text,
             }}
           />
         </>
@@ -87,7 +87,7 @@ function AppNavigator() {
           headerShown: true,
           headerTransparent: true,
           headerShadowVisible: false,
-          headerTintColor: '#ffffff'
+          headerTintColor: Colors.text,
         }}
       />
     </App.Navigator>
@@ -180,7 +180,7 @@ function HomeTabNavigator() {
           headerShown: true,
           headerTransparent: true,
           headerShadowVisible: false,
-          headerTintColor: '#ffffff',
+          headerTintColor: Colors.text,
         })}
       />
     </HomeTab.Navigator>
@@ -247,7 +247,7 @@ function PlantsTabNavigator() {
           headerShown: true,
           headerTransparent: true,
           headerShadowVisible: false,
-          headerTintColor: '#ffffff',
+          headerTintColor: Colors.text,
         })}
       />
     </PlantsTab.Navigator>

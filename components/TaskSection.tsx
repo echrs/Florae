@@ -55,7 +55,7 @@ export const TaskSection = ({ taskArr, taskName, onChange }: any) => {
                   <MaterialIcons name='check-circle' size={26} color='#5a5a5a' />
               ) : (
                 <TouchableOpacity style={{ marginLeft: 5 }} onPress={() => setTaskDone(task)}>
-                  <MaterialIcons name='check-circle' size={26} color='#ffffff' />
+                  <MaterialIcons name='check-circle' size={26} color={Colors.text} />
                 </TouchableOpacity>
               )}
             </TransparentView>
