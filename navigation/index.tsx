@@ -6,7 +6,7 @@ import { Colors, Fonts } from '../constants/Constants';
 import HomeScreen from '../screens/HomeScreen';
 import PlantsScreen from '../screens/PlantsScreen';
 import ProfileScreen from '../screens/ProfileScreen';
-import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { AppStackParamList, HomeTabParamList, PlantsTabParamList, RootStackParamList, TabsParamList, TasksTabParamList } from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
 import { Pressable } from 'react-native';
@@ -16,7 +16,6 @@ import SignUpScreen from '../screens/SignUpScreen';
 import TasksScreen from '../screens/TasksScreen';
 import { useContext } from 'react';
 import { Context } from '../Context';
-import { logout } from '../api';
 import PlantScreen from '../screens/PlantScreen';
 
 export default function Navigation() {
@@ -77,11 +76,6 @@ function RootNavigator() {
 const App = createNativeStackNavigator<AppStackParamList>();
 
 function AppNavigator() {
-  const { userCtx } = useContext(Context);
-  const [user, setUser] = userCtx;
-  const { plantsCtx } = useContext(Context);
-  const [plants, setPlants] = plantsCtx;
-
   return (
     <App.Navigator>
       <App.Screen name='Tabs' component={TabNavigator} options={{ headerShown: false }} />
@@ -93,21 +87,7 @@ function AppNavigator() {
           headerShown: true,
           headerTransparent: true,
           headerShadowVisible: false,
-          headerTintColor: '#ffffff',
-          headerRight: () => (
-            <Pressable
-              onPress={() => {
-                logout();
-                setUser('');
-                setPlants('');
-              }}
-              style={({ pressed }) => ({
-                opacity: pressed ? 0.5 : 1,
-              })}
-            >
-              <MaterialIcons name='logout' size={25} color={Colors.text} />
-            </Pressable>
-          ),
+          headerTintColor: '#ffffff'
         }}
       />
     </App.Navigator>
