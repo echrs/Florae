@@ -12,7 +12,7 @@ import {
   useWindowDimensions,
   ActivityIndicator,
 } from 'react-native';
-import { logout, syncPlants } from '../api';
+import { editUser, logout, syncPlants } from '../api';
 import { BoldText, SafeAreaView, TransparentView, Text } from '../components/CustomStyled';
 import { Colors } from '../constants/Constants';
 import { Context } from '../Context';
@@ -67,18 +67,31 @@ export default function ProfileScreen() {
     }
   };
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     if (passChange) {
       let pass = getValues().Password;
       let confirmPass = getValues().ConfirmPassword;
-      //Db call
+      if (pass && confirmPass) {
+        let netInfo = await NetInfo.fetch();
+        if (netInfo.isConnected) {
+          return editUser(user.userId, {password: confirmPass}, user.token).then(
+            async (response) => {
+              setModalVisible(false);
+              return response.data;
+            },
+            (error) => {
+              console.log(error);
+            }
+          );
+        }
+      }
     } else {
       let name = getValues().Name || user.name;
       let email = getValues().Email || user.email;
       setUser({ ...user, name: name, email: email });
+      setModalVisible(false);
     }
     reset();
-    setModalVisible(false);
   };
 
   return (

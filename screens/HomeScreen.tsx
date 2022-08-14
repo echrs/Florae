@@ -16,7 +16,7 @@ export default function HomeScreen({ navigation, route }: HomeScreenNavigationPr
   const [timeStr, setTimeStr] = useState('');
   const { plantsCtx } = useContext(Context);
   const [plants] = plantsCtx;
-  const [percentage, setPercentage] = useState(0);
+  const [percentage, setPercentage] = useState(1);
 
   useEffect(() => {
     navigation.addListener('focus', () => {
@@ -56,7 +56,7 @@ export default function HomeScreen({ navigation, route }: HomeScreenNavigationPr
       let todayUndoneTasks = plants.flatMap((plant: any) => {
         return plant.tasks.filter((task: any) => getDaysLeft(task.lastTaskDate) === 0);
       });
-      setPercentage(todayUndoneTasks.length / todayTotalTasks.length);
+      if(todayTotalTasks > 0 && todayUndoneTasks > 0) setPercentage(todayUndoneTasks.length / todayTotalTasks.length);
     }
   }, [plants]);
 
