@@ -1,7 +1,19 @@
 import React, { useContext, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { useWindowDimensions, StyleSheet, ScrollView, ImageBackground, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { BoldText, SignInUpButton, FieldWrapper, FormInput, FormView, IconWrapper, LightText, SemiBoldText, Text, TransparentView, View } from '../components/CustomStyled';
+import { useWindowDimensions, StyleSheet, ScrollView, ImageBackground, TouchableOpacity, ActivityIndicator, ToastAndroid } from 'react-native';
+import {
+  BoldText,
+  SignInUpButton,
+  FieldWrapper,
+  FormInput,
+  FormView,
+  IconWrapper,
+  LightText,
+  SemiBoldText,
+  Text,
+  TransparentView,
+  View,
+} from '../components/CustomStyled';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types';
 import Constants from 'expo-constants';
@@ -11,6 +23,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Context } from '../Context';
 import { Colors } from '../constants/Constants';
 import { EMAIL_REGEX } from '../utils';
+import NetInfo from '@react-native-community/netinfo';
 
 type SignInScreenNavigationProp = NativeStackScreenProps<RootStackParamList, 'SignUp'>;
 
@@ -28,16 +41,21 @@ export default function SignUpScreen({ navigation, route }: SignInScreenNavigati
   const pass = watch('password');
   const [valMsg, setValMsg] = useState('');
 
-  const onSubmit = (formData: any) => {
-    return register(formData).then(
-      async (response) => {
-        await AsyncStorage.setItem('userCredentials', JSON.stringify(response.data));
-        setUser(response.data);
-      },
-      (error) => {
-        setValMsg('Error: ' + error.response.data);
-      }
-    );
+  const onSubmit = async (formData: any) => {
+    let netInfo = await NetInfo.fetch();
+    if (netInfo.isConnected) {
+      return register(formData).then(
+        async (response) => {
+          await AsyncStorage.setItem('userCredentials', JSON.stringify(response.data));
+          setUser(response.data);
+        },
+        (error) => {
+          setValMsg('Error: ' + error.response.data);
+        }
+      );
+    } else {
+      ToastAndroid.show('There is no internet connection.', ToastAndroid.SHORT);
+    }
   };
 
   return (

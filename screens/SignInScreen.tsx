@@ -1,7 +1,19 @@
 import React, { useContext, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { useWindowDimensions, StyleSheet, ScrollView, ImageBackground, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { BoldText, FieldWrapper, FormInput, FormView, IconWrapper, LightText, TransparentView, View, Text, SemiBoldText, SignInUpButton } from '../components/CustomStyled';
+import { useWindowDimensions, StyleSheet, ScrollView, ImageBackground, TouchableOpacity, ActivityIndicator, ToastAndroid } from 'react-native';
+import {
+  BoldText,
+  FieldWrapper,
+  FormInput,
+  FormView,
+  IconWrapper,
+  LightText,
+  TransparentView,
+  View,
+  Text,
+  SemiBoldText,
+  SignInUpButton,
+} from '../components/CustomStyled';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types';
 import Constants from 'expo-constants';
@@ -10,6 +22,7 @@ import { login } from '../api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Context } from '../Context';
 import { Colors } from '../constants/Constants';
+import NetInfo from '@react-native-community/netinfo';
 
 type SignInScreenNavigationProp = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
 
@@ -25,16 +38,21 @@ export default function SignInScreen({ navigation, route }: SignInScreenNavigati
   } = useForm();
   const [valMsg, setValMsg] = useState('');
 
-  const onSubmit = (formData: any) => {
-    return login(formData).then(
-      async (response) => {
-        await AsyncStorage.setItem('userCredentials', JSON.stringify(response.data));
-        setUser(response.data);
-      },
-      (error) => {
-        setValMsg('Error: ' + error.response.data);
-      }
-    );
+  const onSubmit = async (formData: any) => {
+    let netInfo = await NetInfo.fetch();
+    if (netInfo.isConnected) {
+      return login(formData).then(
+        async (response) => {
+          await AsyncStorage.setItem('userCredentials', JSON.stringify(response.data));
+          setUser(response.data);
+        },
+        (error) => {
+          setValMsg('Error: ' + error.response.data);
+        }
+      );
+    } else {
+      ToastAndroid.show('There is no internet connection.', ToastAndroid.SHORT);
+    }
   };
 
   return (
@@ -77,7 +95,14 @@ export default function SignInScreen({ navigation, route }: SignInScreenNavigati
                     <IconWrapper>
                       <MaterialIcons name='lock-outline' size={22} color='#999' />
                     </IconWrapper>
-                    <FormInput selectionColor={Colors.buttonShade} secureTextEntry placeholder='Password' onBlur={onBlur} onChangeText={onChange} value={value} />
+                    <FormInput
+                      selectionColor={Colors.buttonShade}
+                      secureTextEntry
+                      placeholder='Password'
+                      onBlur={onBlur}
+                      onChangeText={onChange}
+                      value={value}
+                    />
                     {error && <Text style={{ fontSize: 11 }}>{error.message || 'Error'}</Text>}
                   </TransparentView>
                 )}
