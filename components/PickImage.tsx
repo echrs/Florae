@@ -1,14 +1,13 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import { BoldText, TransparentView } from './CustomStyled';
-import { Image, TouchableOpacity, useWindowDimensions, StyleSheet } from 'react-native';
+import { Image, TouchableOpacity, useWindowDimensions, StyleSheet, ActivityIndicator } from 'react-native';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { Colors } from '../constants/Constants';
 import Constants from 'expo-constants';
 import Modal from 'react-native-modal';
 import * as FileSystem from 'expo-file-system';
 import uuid from 'react-native-uuid';
-import { setStatusBarNetworkActivityIndicatorVisible } from 'expo-status-bar';
 import { Context } from '../Context';
 
 export const PickImage = ({ disabled, viewImg, isProfile, onChange, value }: any) => {
@@ -18,8 +17,10 @@ export const PickImage = ({ disabled, viewImg, isProfile, onChange, value }: any
   const [img, setImg] = useState(null);
   const { userCtx } = useContext(Context);
   const [user, setUser] = userCtx;
+  const [isLoading, setIsLoading] = useState(false);
 
   const selectPicture = async () => {
+    setIsLoading(true);
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
@@ -36,11 +37,13 @@ export const PickImage = ({ disabled, viewImg, isProfile, onChange, value }: any
       }
       onChange(uri);
     }
+    setIsLoading(false);
     setImgModalVisible(false);
   };
 
   const takePicture = async () => {
     await ImagePicker.requestCameraPermissionsAsync();
+    setIsLoading(true);
     let result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
@@ -54,6 +57,7 @@ export const PickImage = ({ disabled, viewImg, isProfile, onChange, value }: any
       setImg(uri);
       onChange(uri);
     }
+    setIsLoading(false);
     setImgModalVisible(false);
   };
 
@@ -88,12 +92,18 @@ export const PickImage = ({ disabled, viewImg, isProfile, onChange, value }: any
         <TransparentView style={{ alignSelf: 'center', backgroundColor: Colors.modal, width: '100%', padding: 30, borderRadius: 15 }}>
           <BoldText style={{ paddingBottom: 20 }}>SELECT IMAGE FROM</BoldText>
           <TransparentView style={{ flexDirection: 'row', justifyContent: 'space-evenly' }}>
-            <TouchableOpacity onPress={selectPicture}>
-              <MaterialIcons name='insert-photo' size={40} color={Colors.text} />
-            </TouchableOpacity>
-            <TouchableOpacity style={{ paddingLeft: 20 }} onPress={takePicture}>
-              <MaterialCommunityIcons name='camera-outline' size={40} color={Colors.text} />
-            </TouchableOpacity>
+            {isLoading ? (
+              <ActivityIndicator size={40} color='white' />
+            ) : (
+              <>
+                <TouchableOpacity onPress={selectPicture}>
+                  <MaterialIcons name='insert-photo' size={40} color={Colors.text} />
+                </TouchableOpacity>
+                <TouchableOpacity style={{ paddingLeft: 20 }} onPress={takePicture}>
+                  <MaterialCommunityIcons name='camera-outline' size={40} color={Colors.text} />
+                </TouchableOpacity>
+              </>
+            )}
           </TransparentView>
         </TransparentView>
       </Modal>
