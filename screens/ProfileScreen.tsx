@@ -20,6 +20,7 @@ import NetInfo from '@react-native-community/netinfo';
 import { Controller, useForm } from 'react-hook-form';
 import Modal from 'react-native-modal';
 import Constants from 'expo-constants';
+import { EMAIL_REGEX } from '../utils';
 
 export default function ProfileScreen() {
   const { plantsCtx } = useContext(Context);
@@ -28,12 +29,13 @@ export default function ProfileScreen() {
   const [user, setUser] = userCtx;
   const [enableDarkTheme, setEnableDarkTheme] = useState(false);
   const [enableNotif, setEnableNotif] = useState(false);
-  const { control, handleSubmit, getValues, setValue, reset } = useForm();
+  const { control, handleSubmit, getValues, watch, reset } = useForm();
   const { height } = useWindowDimensions();
   const statusBarHeight = Constants.statusBarHeight;
   const [modalVisible, setModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [passChange, setPassChange] = useState(false);
+  const pass = watch('password');
 
   const toggleTheme = () => setEnableDarkTheme((previousState) => !previousState);
   const toggleNotifications = () => setEnableNotif((previousState) => !previousState);
@@ -74,7 +76,7 @@ export default function ProfileScreen() {
       if (pass && confirmPass) {
         let netInfo = await NetInfo.fetch();
         if (netInfo.isConnected) {
-          return editUser(user.userId, {password: confirmPass}, user.token).then(
+          return editUser(user.userId, { password: confirmPass }, user.token).then(
             async (response) => {
               setModalVisible(false);
               return response.data;
@@ -103,6 +105,7 @@ export default function ProfileScreen() {
         isVisible={modalVisible}
         onBackButtonPress={() => {
           setModalVisible(false);
+          reset();
         }}
         hideModalContentWhileAnimating={true}
         backdropOpacity={0.5}
@@ -127,34 +130,55 @@ export default function ProfileScreen() {
                     <Controller
                       control={control}
                       name='Password'
+                      rules={{
+                        required: 'Please enter a password.',
+                        minLength: {
+                          value: 6,
+                          message: 'Password should be at least 6 characters long.',
+                        },
+                        maxLength: {
+                          value: 24,
+                          message: 'Password should be max 24 characters long.',
+                        },
+                      }}
                       render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-                        <TextInput
-                          secureTextEntry
-                          placeholder='Enter your new password'
-                          placeholderTextColor='#919191'
-                          selectionColor={Colors.button}
-                          style={styles.textInput}
-                          onBlur={onBlur}
-                          onChangeText={onChange}
-                          value={value}
-                        />
+                        <>
+                          <TextInput
+                            secureTextEntry
+                            placeholder='Enter your new password'
+                            placeholderTextColor='#919191'
+                            selectionColor={Colors.button}
+                            style={styles.textInput}
+                            onBlur={onBlur}
+                            onChangeText={onChange}
+                            value={value}
+                          />
+                          {error && <Text style={{ fontSize: 11 }}>{error.message || 'Error'}</Text>}
+                        </>
                       )}
                     />
                     <BoldText style={{ textTransform: 'uppercase', paddingTop: 10 }}>Confirm password</BoldText>
                     <Controller
                       control={control}
                       name='ConfirmPassword'
+                      rules={{
+                        required: 'Please confirm your password.',
+                        validate: (value) => value === pass || 'Passwords do not match.',
+                      }}
                       render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-                        <TextInput
-                          secureTextEntry
-                          placeholder='Confirm your password'
-                          placeholderTextColor='#919191'
-                          selectionColor={Colors.button}
-                          style={styles.textInput}
-                          onBlur={onBlur}
-                          onChangeText={onChange}
-                          value={value}
-                        />
+                        <>
+                          <TextInput
+                            secureTextEntry
+                            placeholder='Confirm your password'
+                            placeholderTextColor='#919191'
+                            selectionColor={Colors.button}
+                            style={styles.textInput}
+                            onBlur={onBlur}
+                            onChangeText={onChange}
+                            value={value}
+                          />
+                          {error && <Text style={{ fontSize: 11 }}>{error.message || 'Error'}</Text>}
+                        </>
                       )}
                     />
                   </>
@@ -162,32 +186,41 @@ export default function ProfileScreen() {
                   <>
                     <BoldText style={{ textTransform: 'uppercase' }}>Name</BoldText>
                     <Controller
+                      defaultValue={user.name}
                       control={control}
                       name='Name'
+                      rules={{
+                        required: 'Please enter a name.',
+                        minLength: {
+                          value: 2,
+                          message: 'Name should be at least 2 characters long.',
+                        },
+                        maxLength: {
+                          value: 15,
+                          message: 'Name should be max 15 characters long.',
+                        },
+                      }}
                       render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-                        <TextInput
-                          defaultValue={user.name}
-                          selectionColor={Colors.button}
-                          style={styles.textInput}
-                          onBlur={onBlur}
-                          onChangeText={onChange}
-                          value={value}
-                        />
+                        <>
+                          <TextInput selectionColor={Colors.button} style={styles.textInput} onBlur={onBlur} onChangeText={onChange} value={value} />
+                          {error && <Text style={{ fontSize: 11 }}>{error.message || 'Error'}</Text>}
+                        </>
                       )}
                     />
                     <BoldText style={{ textTransform: 'uppercase', paddingTop: 10 }}>Email</BoldText>
                     <Controller
+                      defaultValue={user.email}
                       control={control}
                       name='Email'
+                      rules={{
+                        required: 'Please enter a valid email address.',
+                        pattern: { value: EMAIL_REGEX, message: 'Email is invalid.' },
+                      }}
                       render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-                        <TextInput
-                          defaultValue={user.email}
-                          selectionColor={Colors.button}
-                          style={styles.textInput}
-                          onBlur={onBlur}
-                          onChangeText={onChange}
-                          value={value}
-                        />
+                        <>
+                          <TextInput selectionColor={Colors.button} style={styles.textInput} onBlur={onBlur} onChangeText={onChange} value={value} />
+                          {error && <Text style={{ fontSize: 11 }}>{error.message || 'Error'}</Text>}
+                        </>
                       )}
                     />
                   </>

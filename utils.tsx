@@ -10,3 +10,5 @@ export const setDaysAndTime = (days: any, time: any) => {
   date.setHours(parseInt(time), 0, 0);
   return date.toISOString();
 };
+
+export const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;

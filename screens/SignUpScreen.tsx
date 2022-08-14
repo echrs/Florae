@@ -10,6 +10,7 @@ import { register } from '../api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Context } from '../Context';
 import { Colors } from '../constants/Constants';
+import { EMAIL_REGEX } from '../utils';
 
 type SignInScreenNavigationProp = NativeStackScreenProps<RootStackParamList, 'SignUp'>;
 
@@ -18,7 +19,6 @@ export default function SignUpScreen({ navigation, route }: SignInScreenNavigati
   const { height, width } = useWindowDimensions();
   const { userCtx } = useContext(Context);
   const [user, setUser] = userCtx;
-  const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
   const {
     control,
     handleSubmit,
@@ -55,6 +55,10 @@ export default function SignUpScreen({ navigation, route }: SignInScreenNavigati
                 control={control}
                 rules={{
                   required: 'Please enter a name.',
+                  minLength: {
+                    value: 2,
+                    message: 'Name should be at least 2 characters long.',
+                  },
                   maxLength: {
                     value: 15,
                     message: 'Name should be max 15 characters long.',
@@ -111,7 +115,14 @@ export default function SignUpScreen({ navigation, route }: SignInScreenNavigati
                     <IconWrapper>
                       <MaterialIcons name='lock-outline' size={22} color='#999' />
                     </IconWrapper>
-                    <FormInput selectionColor={Colors.buttonShade} secureTextEntry placeholder='Password' onBlur={onBlur} onChangeText={onChange} value={value} />
+                    <FormInput
+                      selectionColor={Colors.buttonShade}
+                      secureTextEntry
+                      placeholder='Password'
+                      onBlur={onBlur}
+                      onChangeText={onChange}
+                      value={value}
+                    />
                     {error && <Text style={{ fontSize: 11 }}>{error.message || 'Error'}</Text>}
                   </TransparentView>
                 )}
@@ -130,7 +141,14 @@ export default function SignUpScreen({ navigation, route }: SignInScreenNavigati
                     <IconWrapper>
                       <MaterialIcons name='lock-outline' size={22} color='#999' />
                     </IconWrapper>
-                    <FormInput selectionColor={Colors.buttonShade} secureTextEntry placeholder='Confirm password' onBlur={onBlur} onChangeText={onChange} value={value} />
+                    <FormInput
+                      selectionColor={Colors.buttonShade}
+                      secureTextEntry
+                      placeholder='Confirm password'
+                      onBlur={onBlur}
+                      onChangeText={onChange}
+                      value={value}
+                    />
                     {error && <Text style={{ fontSize: 11 }}>{error.message || 'Error'}</Text>}
                   </TransparentView>
                 )}
