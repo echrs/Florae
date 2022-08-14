@@ -141,7 +141,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
     if (uri) {
       setIsLoading(true);
       const base64 = await FileSystem.readAsStringAsync(uri, { encoding: 'base64' });
-      return plantIdentify(base64).then(
+      return plantIdentify(base64, user.token).then(
         async (response) => {
           let identifiedPlant = response.data.suggestions[0];
           if (identifiedPlant.probability >= 0.9) {

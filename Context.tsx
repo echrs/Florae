@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, useEffect, useRef, useState } from 'react';
-import { getPlants, syncPlants } from './api';
+import { editUser, getPlants, syncPlants } from './api';
 import NetInfo from '@react-native-community/netinfo';
 
 export const Context = createContext({});
@@ -8,8 +8,6 @@ export const Context = createContext({});
 export const Provider = (props: any) => {
   const [user, setUser] = useState('');
   const [plants, setPlants] = useState([]);
-  const userRef = useRef('');
-  userRef.current = user;
 
   useEffect(() => {
     fetchUser();
@@ -17,10 +15,32 @@ export const Provider = (props: any) => {
 
   useEffect(() => {
     if (user) {
-      console.log('fetched user... now fetching plants!');
       fetchPlants();
     }
-  }, [user]);
+  }, [user.token]);
+
+  useEffect(() => {
+    if (user) {
+      saveUserToStorage();
+      syncUserWDb();
+    }
+    async function saveUserToStorage() {
+      await AsyncStorage.setItem('userCredentials', JSON.stringify(user));
+    }
+    async function syncUserWDb() {
+      let netInfo = await NetInfo.fetch();
+      if (netInfo.isConnected) {
+        return editUser(user.userId, { name: user.name, email: user.email }, user.token).then(
+          async (response) => {
+            return response.data;
+          },
+          (error) => {
+            console.log(error);
+          }
+        );
+      }
+    }
+  }, [user.name, user.email]);
 
   useEffect(() => {
     if (user) {
@@ -29,7 +49,7 @@ export const Provider = (props: any) => {
     }
     async function saveToStorage() {
       await AsyncStorage.setItem('plants', JSON.stringify(plants));
-      console.log('saved to storage');
+      console.log('saved plants to storage');
       console.log(plants);
     }
   }, [plants]);
@@ -55,7 +75,7 @@ export const Provider = (props: any) => {
     let netInfo = await NetInfo.fetch();
     if (plants?.length) {
       if (netInfo.isConnected) {
-        return syncPlants(JSON.parse(plants), userRef.current.token).then(
+        return syncPlants(JSON.parse(plants), user.token).then(
           async (response) => {
             return response.data;
           },
@@ -68,7 +88,7 @@ export const Provider = (props: any) => {
       }
     } else if (plants === null) {
       if (netInfo.isConnected) {
-        return getPlants(userRef.current.token).then(
+        return getPlants(user.token).then(
           async (response) => {
             await AsyncStorage.setItem('plants', JSON.stringify(response.data));
             setPlants(response.data);

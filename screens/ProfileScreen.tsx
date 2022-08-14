@@ -1,6 +1,6 @@
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -28,7 +28,7 @@ export default function ProfileScreen() {
   const [user, setUser] = userCtx;
   const [enableDarkTheme, setEnableDarkTheme] = useState(false);
   const [enableNotif, setEnableNotif] = useState(false);
-  const { control, handleSubmit, getValues, setValue } = useForm();
+  const { control, handleSubmit, getValues, setValue, reset } = useForm();
   const { height } = useWindowDimensions();
   const statusBarHeight = Constants.statusBarHeight;
   const [modalVisible, setModalVisible] = useState(false);
@@ -37,7 +37,8 @@ export default function ProfileScreen() {
 
   const toggleTheme = () => setEnableDarkTheme((previousState) => !previousState);
   const toggleNotifications = () => setEnableNotif((previousState) => !previousState);
-
+  const userRef = useRef('');
+  userRef.current = user;
   const signOut = () => {
     logout();
     setUser('');
@@ -64,6 +65,20 @@ export default function ProfileScreen() {
         return JSON.parse(plants);
       }
     }
+  };
+
+  const onSubmit = () => {
+    if (passChange) {
+      let pass = getValues().Password;
+      let confirmPass = getValues().ConfirmPassword;
+      //Db call
+    } else {
+      let name = getValues().Name || user.name;
+      let email = getValues().Email || user.email;
+      setUser({ ...user, name: name, email: email });
+    }
+    reset();
+    setModalVisible(false);
   };
 
   return (
@@ -98,7 +113,7 @@ export default function ProfileScreen() {
                     <BoldText style={{ textTransform: 'uppercase' }}>Password</BoldText>
                     <Controller
                       control={control}
-                      name='password'
+                      name='Password'
                       render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                         <TextInput
                           secureTextEntry
@@ -115,7 +130,7 @@ export default function ProfileScreen() {
                     <BoldText style={{ textTransform: 'uppercase', paddingTop: 10 }}>Confirm password</BoldText>
                     <Controller
                       control={control}
-                      name='confirmPassword'
+                      name='ConfirmPassword'
                       render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                         <TextInput
                           secureTextEntry
@@ -135,7 +150,7 @@ export default function ProfileScreen() {
                     <BoldText style={{ textTransform: 'uppercase' }}>Name</BoldText>
                     <Controller
                       control={control}
-                      name='name'
+                      name='Name'
                       render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                         <TextInput
                           defaultValue={user.name}
@@ -150,7 +165,7 @@ export default function ProfileScreen() {
                     <BoldText style={{ textTransform: 'uppercase', paddingTop: 10 }}>Email</BoldText>
                     <Controller
                       control={control}
-                      name='email'
+                      name='Email'
                       render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                         <TextInput
                           defaultValue={user.email}
@@ -166,12 +181,7 @@ export default function ProfileScreen() {
                 )}
               </TransparentView>
               <TransparentView style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <TouchableOpacity
-                  onPress={() => {
-                    // saveInput(fieldName);
-                    setModalVisible(false);
-                  }}
-                >
+                <TouchableOpacity onPress={handleSubmit(onSubmit)}>
                   <MaterialCommunityIcons name='content-save-outline' size={30} color='white' />
                 </TouchableOpacity>
               </TransparentView>
