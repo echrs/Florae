@@ -25,12 +25,14 @@ export const Provider = (props: any) => {
       syncUserWDb();
     }
     async function saveUserToStorage() {
+      console.log('saved user to storage');
+      console.log(user);
       await AsyncStorage.setItem('userCredentials', JSON.stringify(user));
     }
     async function syncUserWDb() {
       let netInfo = await NetInfo.fetch();
       if (netInfo.isConnected) {
-        return editUser(user.userId, { name: user.name, email: user.email }, user.token).then(
+        return editUser(user.userId, { name: user.name, email: user.email, img: user.img }, user.token).then(
           async (response) => {
             return response.data;
           },
@@ -40,7 +42,7 @@ export const Provider = (props: any) => {
         );
       }
     }
-  }, [user.name, user.email]);
+  }, [user.name, user.email, user.img]);
 
   useEffect(() => {
     if (user) {

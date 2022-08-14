@@ -1,6 +1,6 @@
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, { useContext, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -21,6 +21,7 @@ import { Controller, useForm } from 'react-hook-form';
 import Modal from 'react-native-modal';
 import Constants from 'expo-constants';
 import { EMAIL_REGEX } from '../utils';
+import { PickImage } from '../components/PickImage';
 
 export default function ProfileScreen() {
   const { plantsCtx } = useContext(Context);
@@ -36,11 +37,18 @@ export default function ProfileScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [passChange, setPassChange] = useState(false);
   const pass = watch('password');
-
+  const [viewImg, setViewImg] = useState('');
   const toggleTheme = () => setEnableDarkTheme((previousState) => !previousState);
   const toggleNotifications = () => setEnableNotif((previousState) => !previousState);
   const userRef = useRef('');
   userRef.current = user;
+
+  useEffect(() => {
+    if (user.img) {
+      setViewImg(user.img);
+    }
+  }, []);
+
   const signOut = () => {
     logout();
     setUser('');
@@ -239,7 +247,11 @@ export default function ProfileScreen() {
         <TransparentView style={{ width: '90%' }}>
           <ScrollView>
             <TransparentView style={{ alignItems: 'center', marginBottom: 5 }}>
-              <Image source={require('../assets/images/2.jpg')} style={styles.img} />
+              <Controller
+                control={control}
+                name='img'
+                render={({ field: { onChange, value } }) => <PickImage viewImg={viewImg} isProfile={true} onChange={onChange} value={value} />}
+              />
             </TransparentView>
             <TransparentView style={{ alignItems: 'center', marginBottom: 17 }}>
               <BoldText style={{ textTransform: 'capitalize', fontSize: 36 }}>{user.name}</BoldText>
@@ -332,11 +344,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     paddingTop: 60,
-  },
-  img: {
-    width: 160,
-    height: 160,
-    borderRadius: 100,
   },
   section: {
     borderRadius: 15,

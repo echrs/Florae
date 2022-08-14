@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import { BoldText, TransparentView } from './CustomStyled';
 import { Image, TouchableOpacity, useWindowDimensions, StyleSheet } from 'react-native';
@@ -8,12 +8,16 @@ import Constants from 'expo-constants';
 import Modal from 'react-native-modal';
 import * as FileSystem from 'expo-file-system';
 import uuid from 'react-native-uuid';
+import { setStatusBarNetworkActivityIndicatorVisible } from 'expo-status-bar';
+import { Context } from '../Context';
 
-export const PickImage = ({ disabled, viewImg, onChange, value }: any) => {
+export const PickImage = ({ disabled, viewImg, isProfile, onChange, value }: any) => {
   const { height, width } = useWindowDimensions();
   const statusBarHeight = Constants.statusBarHeight;
   const [imgModalVisible, setImgModalVisible] = useState(false);
   const [img, setImg] = useState(null);
+  const { userCtx } = useContext(Context);
+  const [user, setUser] = userCtx;
 
   const selectPicture = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -27,6 +31,9 @@ export const PickImage = ({ disabled, viewImg, onChange, value }: any) => {
     if (!result.cancelled) {
       let uri = await saveImage(result);
       setImg(uri);
+      if (isProfile) {
+        setUser({ ...user, img: uri });
+      }
       onChange(uri);
     }
     setImgModalVisible(false);
@@ -50,18 +57,16 @@ export const PickImage = ({ disabled, viewImg, onChange, value }: any) => {
     setImgModalVisible(false);
   };
 
-  
   const saveImage = async (image: any) => {
     let file = await FileSystem.getInfoAsync(FileSystem.documentDirectory + 'images/');
     let uuidStr = uuid.v4();
 
-    !file.exists &&
-      (await FileSystem.makeDirectoryAsync(FileSystem.documentDirectory + 'images/', { intermediates: true }))
+    !file.exists && (await FileSystem.makeDirectoryAsync(FileSystem.documentDirectory + 'images/', { intermediates: true }));
 
     await FileSystem.writeAsStringAsync(FileSystem.documentDirectory + `images/${uuidStr}.jpg`, image.base64, {
       encoding: FileSystem.EncodingType.Base64,
     });
-    
+
     return FileSystem.documentDirectory + `images/${uuidStr}.jpg`;
   };
 
@@ -92,14 +97,30 @@ export const PickImage = ({ disabled, viewImg, onChange, value }: any) => {
           </TransparentView>
         </TransparentView>
       </Modal>
-      {img || viewImg ? (
-        <TouchableOpacity disabled={disabled} onPress={() => setImgModalVisible(true)}>
-          <Image source={{ uri: img || viewImg }} style={{ width: width, height: height * 0.4 }} />
-        </TouchableOpacity>
+      {!isProfile ? (
+        <>
+          {img || viewImg ? (
+            <TouchableOpacity disabled={disabled} onPress={() => setImgModalVisible(true)}>
+              <Image source={{ uri: img || viewImg }} style={{ width: width, height: height * 0.4 }} />
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity disabled={disabled} style={{}} onPress={() => setImgModalVisible(true)}>
+              <Image source={require('../assets/images/1-op.jpg')} style={{ width: width, height: height * 0.4 }} />
+            </TouchableOpacity>
+          )}
+        </>
       ) : (
-        <TouchableOpacity disabled={disabled} style={{}} onPress={() => setImgModalVisible(true)}>
-          <Image source={require('../assets/images/1-op.jpg')} style={{ width: width, height: height * 0.4 }} />
-        </TouchableOpacity>
+        <>
+          {img || viewImg ? (
+            <TouchableOpacity disabled={disabled} onPress={() => setImgModalVisible(true)}>
+              <Image source={{ uri: img || viewImg }} style={styles.img} />
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity disabled={disabled} style={{}} onPress={() => setImgModalVisible(true)}>
+              <Image source={require('../assets/images/2.jpg')} style={styles.img} />
+            </TouchableOpacity>
+          )}
+        </>
       )}
     </>
   );
@@ -109,5 +130,10 @@ const styles = StyleSheet.create({
   view: {
     justifyContent: 'flex-end',
     margin: 0,
+  },
+  img: {
+    width: 160,
+    height: 160,
+    borderRadius: 100,
   },
 });

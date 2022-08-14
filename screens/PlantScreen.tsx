@@ -411,7 +411,9 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
           <Controller
             control={control}
             name='img'
-            render={({ field: { onChange, value } }) => <PickImage disabled={mode === 2} viewImg={viewImg} onChange={onChange} value={value} />}
+            render={({ field: { onChange, value } }) => (
+              <PickImage disabled={mode === 2} viewImg={viewImg} isProfile={false} onChange={onChange} value={value} />
+            )}
           />
           <TransparentView style={{ width: '90%', marginTop: 20 }}>
             {mode !== Mode.view && (
