@@ -89,11 +89,11 @@ export const PickImage = ({ disabled, viewImg, isProfile, onChange, value }: any
         backdropOpacity={0.5}
         useNativeDriver
       >
-        <TransparentView style={{ alignSelf: 'center', backgroundColor: Colors.modal, width: '100%', padding: 30, borderRadius: 15 }}>
+        <TransparentView style={{ alignSelf: 'center', backgroundColor: Colors.section, width: '100%', padding: 30, borderRadius: 15 }}>
           <BoldText style={{ paddingBottom: 20 }}>SELECT IMAGE FROM</BoldText>
           <TransparentView style={{ flexDirection: 'row', justifyContent: 'space-evenly' }}>
             {isLoading ? (
-              <ActivityIndicator size={40} color='white' />
+              <ActivityIndicator size={40} color={Colors.text} />
             ) : (
               <>
                 <TouchableOpacity onPress={selectPicture}>

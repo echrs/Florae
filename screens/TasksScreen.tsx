@@ -118,15 +118,15 @@ export default function TasksScreen({ navigation, route }: TasksScreenNavigation
 }
 
 const styles = StyleSheet.create({
-  active: { color: '#ffffff' },
-  inactive: { color: '#919191' },
+  active: { color: Colors.text },
+  inactive: { color: Colors.placeholder },
   container: {
     flex: 1,
     alignItems: 'center',
     paddingTop: 40,
   },
   section: {
-    backgroundColor: '#333333',
+    backgroundColor: Colors.section,
     padding: 20,
     borderRadius: 15,
     marginTop: 20,

@@ -54,10 +54,10 @@ export default function PlantsScreen({ navigation, route }: PlantsScreenNavigati
               padding: 0,
               backgroundColor: Colors.background,
             }}
-            placeholderTextColor='#919191'
+            placeholderTextColor={Colors.placeholder}
             inputContainerStyle={{
               borderRadius: 15,
-              backgroundColor: Colors.other,
+              backgroundColor: Colors.section,
             }}
             inputStyle={{
               color: Colors.text,
@@ -123,14 +123,14 @@ const styles = StyleSheet.create({
     paddingTop: 60,
   },
   section: {
-    backgroundColor: '#333333',
+    backgroundColor: Colors.section,
     padding: 20,
     borderRadius: 15,
     marginTop: 20,
     marginBottom: 50,
   },
   plant: {
-    backgroundColor: '#3D3D3D',
+    backgroundColor: Colors.innerSection,
     padding: 10,
     borderRadius: 15,
     marginBottom: 5,

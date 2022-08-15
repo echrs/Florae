@@ -130,12 +130,12 @@ const styles = StyleSheet.create({
     paddingTop: 60,
   },
   tasks: {
-    backgroundColor: '#333333',
+    backgroundColor: Colors.section,
     padding: 20,
     borderRadius: 15,
   },
   plant: {
-    backgroundColor: '#3D3D3D',
+    backgroundColor: Colors.innerSection,
     padding: 10,
     borderRadius: 15,
     marginBottom: 5,
@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   plants: {
-    backgroundColor: '#333333',
+    backgroundColor: Colors.section,
     padding: 20,
     borderRadius: 15,
     marginTop: 20,

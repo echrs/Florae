@@ -297,7 +297,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
           <TransparentView
             style={{
               alignSelf: 'center',
-              backgroundColor: Colors.modal,
+              backgroundColor: Colors.section,
               width: '100%',
               padding: 30,
               borderRadius: 15,
@@ -384,7 +384,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
                     setModalVisible(false);
                   }}
                 >
-                  <MaterialCommunityIcons name='content-save-outline' size={30} color='white' />
+                  <MaterialCommunityIcons name='content-save-outline' size={30} color={Colors.text} />
                 </TouchableOpacity>
                 {fieldName.includes('NewTask') && (
                   <TouchableOpacity
@@ -394,7 +394,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
                       setModalVisible(false);
                     }}
                   >
-                    <MaterialIcons name='clear' size={30} color='white' />
+                    <MaterialIcons name='clear' size={30} color={Colors.text} />
                   </TouchableOpacity>
                 )}
               </TransparentView>
@@ -429,7 +429,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
                   <TouchableOpacity style={styles.buttonSection} onPress={() => {}}>
                     <CustomButton>
                       <BoldText>IDENTIFY PLANT</BoldText>
-                      <ActivityIndicator size={17} color='white' />
+                      <ActivityIndicator size={17} color={Colors.text} />
                     </CustomButton>
                   </TouchableOpacity>
                 )}
@@ -483,13 +483,13 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
                                 setTaskDone(task.taskFieldName);
                               }}
                             >
-                              <MaterialIcons name='check-circle' size={25} color={Colors.text} />
+                              <MaterialIcons name='check-circle' size={25} color={Colors.checkIconActive} />
                             </TouchableOpacity>
                           </>
                         ) : (
                           <>
                             <Text style={{ marginRight: 5 }}>In {getDaysLeft(task.taskDate)} days</Text>
-                            <MaterialIcons style={{ marginLeft: 5 }} name='check-circle' size={25} color='#474747' />
+                            <MaterialIcons style={{ marginLeft: 5 }} name='check-circle' size={25} color={Colors.checkIconInactive} />
                           </>
                         )}
                       </TransparentView>
@@ -562,22 +562,22 @@ const styles = StyleSheet.create({
     margin: 0,
   },
   textInputNew: {
-    color: '#ffffff',
+    color: Colors.text,
     width: '70%',
-    borderColor: '#ffffff',
+    borderColor: Colors.text,
     borderBottomWidth: 1,
     fontFamily: 'inter-bold',
   },
   textInput: {
-    color: '#ffffff',
+    color: Colors.text,
     width: '80%',
-    borderColor: '#ffffff',
+    borderColor: Colors.text,
     borderBottomWidth: 1,
   },
   numInput: {
-    color: '#ffffff',
+    color: Colors.text,
     width: '10%',
-    borderColor: '#ffffff',
+    borderColor: Colors.text,
     borderBottomWidth: 1,
     marginVertical: 5,
     textAlign: 'center',
@@ -592,13 +592,13 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
   },
   section: {
-    backgroundColor: '#333333',
+    backgroundColor: Colors.section,
     padding: 15,
     borderRadius: 15,
     marginBottom: 5,
   },
   viewSection: {
-    backgroundColor: '#333333',
+    backgroundColor: Colors.section,
     padding: 10,
     borderRadius: 15,
     marginBottom: 5,
@@ -607,7 +607,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonSection: {
-    backgroundColor: '#1D4D47',
+    backgroundColor: Colors.button,
     padding: 15,
     borderRadius: 15,
     marginBottom: 5,

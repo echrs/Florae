@@ -180,7 +180,7 @@ export default function SignUpScreen({ navigation, route }: SignInScreenNavigati
                 </SignInUpButton>
               ) : (
                 <SignInUpButton>
-                  <ActivityIndicator size={30} color='white' />
+                  <ActivityIndicator size={30} color={Colors.text} />
                 </SignInUpButton>
               )}
             </TransparentView>

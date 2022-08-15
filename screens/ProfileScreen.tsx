@@ -38,10 +38,13 @@ export default function ProfileScreen() {
   const [passChange, setPassChange] = useState(false);
   const pass = watch('password');
   const [viewImg, setViewImg] = useState('');
-  const toggleTheme = () => setEnableDarkTheme((previousState) => !previousState);
-  const toggleNotifications = () => setEnableNotif((previousState) => !previousState);
   const userRef = useRef('');
   userRef.current = user;
+
+  const toggleTheme = () => {
+    setEnableDarkTheme((previousState) => !previousState);
+  };
+  const toggleNotifications = () => setEnableNotif((previousState) => !previousState);
 
   useEffect(() => {
     if (user.img) {
@@ -124,7 +127,7 @@ export default function ProfileScreen() {
           <TransparentView
             style={{
               alignSelf: 'center',
-              backgroundColor: Colors.modal,
+              backgroundColor: Colors.section,
               width: '100%',
               padding: 30,
               borderRadius: 15,
@@ -154,7 +157,7 @@ export default function ProfileScreen() {
                           <TextInput
                             secureTextEntry
                             placeholder='Enter your new password'
-                            placeholderTextColor='#919191'
+                            placeholderTextColor={Colors.placeholder}
                             selectionColor={Colors.button}
                             style={styles.textInput}
                             onBlur={onBlur}
@@ -178,7 +181,7 @@ export default function ProfileScreen() {
                           <TextInput
                             secureTextEntry
                             placeholder='Confirm your password'
-                            placeholderTextColor='#919191'
+                            placeholderTextColor={Colors.placeholder}
                             selectionColor={Colors.button}
                             style={styles.textInput}
                             onBlur={onBlur}
@@ -236,7 +239,7 @@ export default function ProfileScreen() {
               </TransparentView>
               <TransparentView style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <TouchableOpacity onPress={handleSubmit(onSubmit)}>
-                  <MaterialCommunityIcons name='content-save-outline' size={30} color='white' />
+                  <MaterialCommunityIcons name='content-save-outline' size={30} color={Colors.text} />
                 </TouchableOpacity>
               </TransparentView>
             </TransparentView>
@@ -263,7 +266,7 @@ export default function ProfileScreen() {
                   setModalVisible(true);
                   setPassChange(false);
                 }}
-                style={[{ padding: 15, backgroundColor: Colors.other }, styles.section]}
+                style={[{ padding: 15, backgroundColor: Colors.section }, styles.section]}
               >
                 <TransparentView style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                   <BoldText>Edit profile</BoldText>
@@ -275,30 +278,30 @@ export default function ProfileScreen() {
                   setModalVisible(true);
                   setPassChange(true);
                 }}
-                style={[{ padding: 15, backgroundColor: Colors.other }, styles.section]}
+                style={[{ padding: 15, backgroundColor: Colors.section }, styles.section]}
               >
                 <TransparentView style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                   <BoldText>Change password</BoldText>
                   <MaterialIcons name='lock-outline' size={20} color={Colors.text} />
                 </TransparentView>
               </TouchableOpacity>
-              <TransparentView style={[{ paddingLeft: 15, backgroundColor: Colors.other }, styles.section]}>
+              <TransparentView style={[{ paddingLeft: 15, backgroundColor: Colors.section }, styles.section]}>
                 <TransparentView style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                   <BoldText>Notifications</BoldText>
                   <Switch
-                    trackColor={{ false: '#767577', true: '#515151' }}
-                    thumbColor={enableNotif ? '#3D3D3D' : '#f4f3f4'}
+                    trackColor={{ false: Colors.switchTrackIn, true: Colors.switchTrackAc }}
+                    thumbColor={enableNotif ? Colors.switchThumbAc : Colors.switchThumbIn}
                     onValueChange={toggleNotifications}
                     value={enableNotif}
                   />
                 </TransparentView>
               </TransparentView>
-              <TransparentView style={[{ paddingLeft: 15, backgroundColor: Colors.other }, styles.section]}>
+              <TransparentView style={[{ paddingLeft: 15, backgroundColor: Colors.section }, styles.section]}>
                 <TransparentView style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                   <BoldText>Dark mode</BoldText>
                   <Switch
-                    trackColor={{ false: '#767577', true: '#515151' }}
-                    thumbColor={enableDarkTheme ? '#3D3D3D' : '#f4f3f4'}
+                    trackColor={{ false: Colors.switchTrackIn, true: Colors.switchTrackAc }}
+                    thumbColor={enableDarkTheme ? Colors.switchThumbAc : Colors.switchThumbIn}
                     onValueChange={toggleTheme}
                     value={enableDarkTheme}
                   />
@@ -306,11 +309,11 @@ export default function ProfileScreen() {
               </TransparentView>
               <TouchableOpacity
                 onPress={() => syncWDB()}
-                style={[{ paddingHorizontal: 15, paddingVertical: 12, backgroundColor: Colors.other }, styles.section]}
+                style={[{ paddingHorizontal: 15, paddingVertical: 12, backgroundColor: Colors.section }, styles.section]}
               >
                 <TransparentView style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                   <BoldText>Sync now</BoldText>
-                  {isLoading ? <ActivityIndicator size={24} color='white' /> : <MaterialIcons name='sync' size={24} color={Colors.text} />}
+                  {isLoading ? <ActivityIndicator size={24} color={Colors.text} /> : <MaterialIcons name='sync' size={24} color={Colors.text} />}
                 </TransparentView>
               </TouchableOpacity>
               <TouchableOpacity
@@ -336,8 +339,8 @@ const styles = StyleSheet.create({
     margin: 0,
   },
   textInput: {
-    color: '#ffffff',
-    borderColor: '#ffffff',
+    color: Colors.text,
+    borderColor: Colors.text,
     borderBottomWidth: 1,
   },
   container: {
