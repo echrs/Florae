@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "849778419838",
+    "project_id": "expo-florae-356614",
+    "storage_bucket": "expo-florae-356614.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:849778419838:android:57193b60e484817656502f",
+        "android_client_info": {
+          "package_name": "com.primenum.florae"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "849778419838-4tll2s88gcn85vvvppibsjkjp3i5uaua.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBXWvOeyHHftjN0DztYpDdf6gJsfjtHtoQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "849778419838-4tll2s88gcn85vvvppibsjkjp3i5uaua.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
