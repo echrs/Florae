@@ -9,7 +9,7 @@ import { TabsParamList, TasksTabParamList } from '../types';
 import { Colors, Tab } from '../constants/Constants';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { TaskSection } from '../components/TaskSection';
-import { getDaysLeft, setDaysAndTime } from '../utils';
+import { getDaysLeft, getTodayDate, setDaysAndTime } from '../utils';
 
 type TasksScreenNavigationProp = CompositeScreenProps<NativeStackScreenProps<TasksTabParamList, 'Tasks'>, BottomTabScreenProps<TabsParamList>>;
 
@@ -67,7 +67,7 @@ export default function TasksScreen({ navigation, route }: TasksScreenNavigation
     let plantTasks = p[plantIdx].tasks;
     let plantTask = plantTasks[taskIdx];
     if (plantTask) {
-      plantTasks[taskIdx] = { ...plantTask, lastTaskDate: task.taskDate, taskDate: setDaysAndTime(task.taskDays, task.taskTime) };
+      plantTasks[taskIdx] = { ...plantTask, lastTaskDate: getTodayDate(), taskDate: setDaysAndTime(task.taskDays, task.taskTime) };
       p[plantIdx] = { ...p[plantIdx], tasks: plantTasks };
       setPlants([...p]);
     }

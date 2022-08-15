@@ -24,7 +24,7 @@ import { Context } from '../Context';
 import { PickImage } from '../components/PickImage';
 import * as FileSystem from 'expo-file-system';
 import { plantIdentify } from '../api';
-import { getDaysLeft, setDaysAndTime } from '../utils';
+import { getDaysLeft, getTodayDate, setDaysAndTime } from '../utils';
 
 type PlantScreenNavigationProp = CompositeScreenProps<NativeStackScreenProps<HomeTabParamList, 'Plant'>, BottomTabScreenProps<TabsParamList>>;
 
@@ -174,7 +174,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
     let idx = taskList.findIndex((task: any) => task.taskFieldName === fieldName);
     let task = uTaskList[idx];
     if (task) {
-      uTaskList[idx] = { ...task, lastTaskDate: task.taskDate, taskDate: setDaysAndTime(task.taskDays, task.taskTime) };
+      uTaskList[idx] = { ...task, lastTaskDate: getTodayDate(), taskDate: setDaysAndTime(task.taskDays, task.taskTime) };
       setTaskList(uTaskList);
       let p = plants;
       let pIdx = p.findIndex((x: any) => x._id === plant._id);

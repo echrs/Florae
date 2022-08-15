@@ -56,7 +56,7 @@ export default function HomeScreen({ navigation, route }: HomeScreenNavigationPr
       let todayUndoneTasks = plants.flatMap((plant: any) => {
         return plant.tasks.filter((task: any) => getDaysLeft(task.lastTaskDate) === 0);
       });
-      if(todayTotalTasks > 0 && todayUndoneTasks > 0) setPercentage(todayUndoneTasks.length / todayTotalTasks.length);
+      if (todayTotalTasks.length != 0 || todayUndoneTasks.length != 0) setPercentage(todayUndoneTasks.length / todayTotalTasks.length);
     }
   }, [plants]);
 
@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
   img: {
     width: '100%',
     height: 100,
-    borderRadius: 5
+    borderRadius: 5,
   },
   plants: {
     backgroundColor: '#333333',
