@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { BoldText, TransparentView, Text } from '../components/CustomStyled';
-import { Colors } from '../constants/Constants';
 import { Foundation, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { getDaysLeft } from '../utils';
+import { Context } from '../Context';
 
 export const TaskSection = ({ taskArr, taskName, taskDone, taskSnooze }: any) => {
+  const { colorsCtx } = useContext(Context);
+  const [Colors] = colorsCtx;
+
   const setTaskDone = (task: any) => {
     taskDone(task);
   };
@@ -15,9 +18,11 @@ export const TaskSection = ({ taskArr, taskName, taskDone, taskSnooze }: any) =>
   };
 
   return (
-    <TransparentView style={styles.taskSection}>
+    <TransparentView style={styles(Colors).taskSection}>
       <TransparentView style={{ flexDirection: 'row' }}>
-        <BoldText style={{ fontSize: 18, paddingLeft: 5, textTransform: 'uppercase' }}>{taskName}</BoldText>
+        <BoldText color={{ Colors }} style={{ fontSize: 18, paddingLeft: 5, textTransform: 'uppercase' }}>
+          {taskName}
+        </BoldText>
         {taskName === 'Water' && <MaterialCommunityIcons style={{ paddingLeft: 2 }} name='watering-can-outline' size={18} color={Colors.text} />}
         {taskName === 'Feed' && <MaterialCommunityIcons style={{ paddingTop: 2 }} name='lightning-bolt' size={15} color={Colors.text} />}
         {taskName === 'Custom' && <Foundation style={{ paddingTop: 3, paddingLeft: 3 }} name='asterisk' size={15} color={Colors.text} />}
@@ -31,25 +36,29 @@ export const TaskSection = ({ taskArr, taskName, taskDone, taskSnooze }: any) =>
             <>
               <TransparentView style={{ flexDirection: 'row' }}>
                 {task.plantImg ? (
-                  <Image source={{ uri: task.plantImg }} style={styles.img} />
+                  <Image source={{ uri: task.plantImg }} style={styles(Colors).img} />
                 ) : (
-                  <Image source={require('../assets/images/1-op.jpg')} style={styles.img} />
+                  <Image source={require('../assets/images/1-op.jpg')} style={styles(Colors).img} />
                 )}
 
                 <TransparentView style={{ alignSelf: 'center' }}>
                   {taskName === 'Custom' ? (
-                    <Text adjustsFontSizeToFit={true} style={{ width: '100%', paddingLeft: 5, alignSelf: 'center', fontSize: 15 }}>
+                    <Text color={{ Colors }} adjustsFontSizeToFit={true} style={{ width: '100%', paddingLeft: 5, alignSelf: 'center', fontSize: 15 }}>
                       {task.taskName + ' ~ ' + task.plantName}
                     </Text>
                   ) : (
-                    <Text adjustsFontSizeToFit={true} style={{ width: '100%', paddingLeft: 5, alignSelf: 'center', fontSize: 15 }}>
+                    <Text color={{ Colors }} adjustsFontSizeToFit={true} style={{ width: '100%', paddingLeft: 5, alignSelf: 'center', fontSize: 15 }}>
                       {task.plantName}
                     </Text>
                   )}
                   {getDaysLeft(task.taskDate) > 0 ? (
-                    <Text style={{ paddingLeft: 5, fontSize: 13, color: '#5a5a5a' }}>{'(In ' + getDaysLeft(task.taskDate) + ' days)'}</Text>
+                    <Text color={{ Colors }} style={{ paddingLeft: 5, fontSize: 13, color: '#5a5a5a' }}>
+                      {'(In ' + getDaysLeft(task.taskDate) + ' days)'}
+                    </Text>
                   ) : (
-                    <Text style={{ paddingLeft: 5, fontSize: 13, color: '#5a5a5a' }}>{'(Now)'}</Text>
+                    <Text color={{ Colors }} style={{ paddingLeft: 5, fontSize: 13, color: '#5a5a5a' }}>
+                      {'(Now)'}
+                    </Text>
                   )}
                 </TransparentView>
               </TransparentView>
@@ -75,16 +84,17 @@ export const TaskSection = ({ taskArr, taskName, taskDone, taskSnooze }: any) =>
   );
 };
 
-const styles = StyleSheet.create({
-  img: {
-    width: 35,
-    height: 35,
-    borderRadius: 100,
-  },
-  taskSection: {
-    backgroundColor: Colors.innerSection,
-    padding: 10,
-    borderRadius: 15,
-    marginBottom: 10,
-  },
-});
+const styles = (Colors: any) =>
+  StyleSheet.create({
+    img: {
+      width: 35,
+      height: 35,
+      borderRadius: 100,
+    },
+    taskSection: {
+      backgroundColor: Colors.innerSection,
+      padding: 10,
+      borderRadius: 15,
+      marginBottom: 10,
+    },
+  });

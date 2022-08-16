@@ -5,7 +5,6 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useContext, useEffect, useState } from 'react';
 import { StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
 import { BoldText, SafeAreaView, TransparentView, Text } from '../components/CustomStyled';
-import { Colors } from '../constants/Constants';
 import { PlantsTabParamList, TabsParamList } from '../types';
 import { SearchBar } from '@rneui/themed';
 import { Context } from '../Context';
@@ -17,6 +16,8 @@ export default function PlantsScreen({ navigation, route }: PlantsScreenNavigati
   const [plants] = plantsCtx;
   const [filteredPlants, setFilteredPlants] = useState([]);
   const [search, setSearch] = useState('');
+  const { colorsCtx } = useContext(Context);
+  const [Colors] = colorsCtx;
 
   const updateSearch = (search: any) => {
     if (search) {
@@ -44,7 +45,7 @@ export default function PlantsScreen({ navigation, route }: PlantsScreenNavigati
   }, [plants]);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView color={{ Colors }} style={styles(Colors).container}>
       <TransparentView style={{ width: '90%' }}>
         <ScrollView>
           <SearchBar
@@ -71,9 +72,11 @@ export default function PlantsScreen({ navigation, route }: PlantsScreenNavigati
             onChangeText={(text) => updateSearch(text)}
             value={search}
           />
-          <TransparentView style={styles.section}>
+          <TransparentView style={styles(Colors).section}>
             <TransparentView style={{ flexDirection: 'row', marginBottom: 10 }}>
-              <BoldText style={{ fontSize: 20 }}>All plants</BoldText>
+              <BoldText color={{ Colors }} style={{ fontSize: 20 }}>
+                All plants
+              </BoldText>
               <TransparentView>
                 <TouchableOpacity
                   style={{ marginLeft: 5 }}
@@ -88,18 +91,20 @@ export default function PlantsScreen({ navigation, route }: PlantsScreenNavigati
             {filteredPlants?.reverse().map((plant: any) => (
               <TouchableOpacity
                 key={plant._id}
-                style={styles.plant}
+                style={styles(Colors).plant}
                 onPress={() => {
                   navigation.navigate('Plant', { plant: plant });
                 }}
               >
                 <TransparentView style={{ flexDirection: 'row' }}>
                   {plant.img ? (
-                    <Image source={{ uri: plant.img }} style={styles.img} />
+                    <Image source={{ uri: plant.img }} style={styles(Colors).img} />
                   ) : (
-                    <Image source={require('../assets/images/1-op.jpg')} style={styles.img} />
+                    <Image source={require('../assets/images/1-op.jpg')} style={styles(Colors).img} />
                   )}
-                  <Text style={{ paddingLeft: 10, alignSelf: 'center', fontSize: 15 }}>{plant.nickname}</Text>
+                  <Text color={{ Colors }} style={{ paddingLeft: 10, alignSelf: 'center', fontSize: 15 }}>
+                    {plant.nickname}
+                  </Text>
                 </TransparentView>
               </TouchableOpacity>
             ))}
@@ -111,30 +116,32 @@ export default function PlantsScreen({ navigation, route }: PlantsScreenNavigati
   );
 }
 
-const styles = StyleSheet.create({
-  img: {
-    width: 40,
-    height: 40,
-    borderRadius: 100,
-  },
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    paddingTop: 60,
-  },
-  section: {
-    backgroundColor: Colors.section,
-    padding: 20,
-    borderRadius: 15,
-    marginTop: 20,
-    marginBottom: 50,
-  },
-  plant: {
-    backgroundColor: Colors.innerSection,
-    padding: 10,
-    borderRadius: 15,
-    marginBottom: 5,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-});
+const styles = (Colors: any) =>
+  StyleSheet.create({
+    img: {
+      width: 40,
+      height: 40,
+      borderRadius: 100,
+    },
+    container: {
+      backgroundColor: Colors.background,
+      flex: 1,
+      alignItems: 'center',
+      paddingTop: 60,
+    },
+    section: {
+      backgroundColor: Colors.section,
+      padding: 20,
+      borderRadius: 15,
+      marginTop: 20,
+      marginBottom: 50,
+    },
+    plant: {
+      backgroundColor: Colors.innerSection,
+      padding: 10,
+      borderRadius: 15,
+      marginBottom: 5,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+    },
+  });

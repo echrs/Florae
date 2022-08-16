@@ -6,7 +6,7 @@ import { StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { BoldText, SafeAreaView, TransparentView, Text } from '../components/CustomStyled';
 import { Context } from '../Context';
 import { TabsParamList, TasksTabParamList } from '../types';
-import { Colors, Tab } from '../constants/Constants';
+import { Tab } from '../constants/Constants';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { TaskSection } from '../components/TaskSection';
 import { getDaysLeft, getTodayDate, setDaysAndTime } from '../utils';
@@ -16,6 +16,8 @@ type TasksScreenNavigationProp = CompositeScreenProps<NativeStackScreenProps<Tas
 export default function TasksScreen({ navigation, route }: TasksScreenNavigationProp) {
   const { plantsCtx } = useContext(Context);
   const [plants, setPlants] = plantsCtx;
+  const { colorsCtx } = useContext(Context);
+  const [Colors] = colorsCtx;
   const [todayTasks, setTodayTasks] = useState([]);
   const [todayWaterTasks, setTodayWaterTasks] = useState([]);
   const [todayFeedTasks, setTodayFeedTasks] = useState([]);
@@ -87,18 +89,23 @@ export default function TasksScreen({ navigation, route }: TasksScreenNavigation
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles(Colors).container}>
       <TransparentView style={{ width: '90%' }}>
         <ScrollView>
-          <TransparentView style={styles.section}>
+          <TransparentView style={styles(Colors).section}>
             <TransparentView style={{ flexDirection: 'row', paddingBottom: 10, justifyContent: 'space-between' }}>
               <TransparentView style={{ flexDirection: 'row' }}>
                 <TouchableOpacity onPress={() => setActiveTab(Tab.today)}>
-                  <BoldText style={[{ fontSize: 20 }, activeTab === Tab.today ? styles.active : styles.inactive]}>Today</BoldText>
+                  <BoldText color={{ Colors }} style={[{ fontSize: 20 }, activeTab === Tab.today ? styles(Colors).active : styles(Colors).inactive]}>
+                    Today
+                  </BoldText>
                 </TouchableOpacity>
-                <BoldText style={{ fontSize: 20 }}> / </BoldText>
+                <BoldText color={{ Colors }} style={{ fontSize: 20 }}>
+                  {' '}
+                  /
+                </BoldText>
                 <TouchableOpacity onPress={() => setActiveTab(Tab.upcoming)}>
-                  <BoldText style={[{ fontSize: 20 }, activeTab === Tab.upcoming ? styles.active : styles.inactive]}>Soon</BoldText>
+                  <BoldText style={[{ fontSize: 20 }, activeTab === Tab.upcoming ? styles(Colors).active : styles(Colors).inactive]}> Soon</BoldText>
                 </TouchableOpacity>
               </TransparentView>
               <TransparentView style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -131,8 +138,8 @@ export default function TasksScreen({ navigation, route }: TasksScreenNavigation
                 )}
               </TransparentView>
             )}
-            {todayTasks.length <= 0 && activeTab === Tab.today && <Text>Awesome! No tasks today.</Text>}
-            {!upcomingTasks && activeTab === Tab.upcoming && <Text>No upcoming tasks, great!</Text>}
+            {todayTasks.length <= 0 && activeTab === Tab.today && <Text color={{ Colors }}>Awesome! No tasks today.</Text>}
+            {!upcomingTasks && activeTab === Tab.upcoming && <Text color={{ Colors }}>No upcoming tasks, great!</Text>}
           </TransparentView>
         </ScrollView>
       </TransparentView>
@@ -140,19 +147,21 @@ export default function TasksScreen({ navigation, route }: TasksScreenNavigation
   );
 }
 
-const styles = StyleSheet.create({
-  active: { color: Colors.text },
-  inactive: { color: Colors.placeholder },
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    paddingTop: 40,
-  },
-  section: {
-    backgroundColor: Colors.section,
-    padding: 20,
-    borderRadius: 15,
-    marginTop: 20,
-    marginBottom: 50,
-  },
-});
+const styles = (Colors: any) =>
+  StyleSheet.create({
+    active: { color: Colors.text },
+    inactive: { color: Colors.placeholder },
+    container: {
+      backgroundColor: Colors.background,
+      flex: 1,
+      alignItems: 'center',
+      paddingTop: 40,
+    },
+    section: {
+      backgroundColor: Colors.section,
+      padding: 20,
+      borderRadius: 15,
+      marginTop: 20,
+      marginBottom: 50,
+    },
+  });

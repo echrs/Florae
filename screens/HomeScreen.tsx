@@ -6,7 +6,6 @@ import { HomeTabParamList, TabsParamList } from '../types';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { CompositeScreenProps } from '@react-navigation/native';
 import { ProgressBar } from 'react-native-paper';
-import { Colors } from '../constants/Constants';
 import { Context } from '../Context';
 import { getDaysLeft } from '../utils';
 
@@ -16,6 +15,9 @@ export default function HomeScreen({ navigation, route }: HomeScreenNavigationPr
   const [timeStr, setTimeStr] = useState('');
   const { plantsCtx } = useContext(Context);
   const [plants] = plantsCtx;
+  const { colorsCtx } = useContext(Context);
+  const [Colors] = colorsCtx;
+
   const [percentage, setPercentage] = useState(1);
 
   useEffect(() => {
@@ -62,32 +64,44 @@ export default function HomeScreen({ navigation, route }: HomeScreenNavigationPr
 
   return (
     <>
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles(Colors).container}>
         <TransparentView style={{ width: '90%' }}>
           <ScrollView>
-            <BoldText style={{ alignSelf: 'flex-start', paddingBottom: 20, fontSize: 36 }}>Good {timeStr}!</BoldText>
+            <BoldText color={{ Colors }} style={{ alignSelf: 'flex-start', paddingBottom: 20, fontSize: 36 }}>
+              Good {timeStr}!
+            </BoldText>
             <TouchableOpacity
-              style={styles.tasks}
+              style={styles(Colors).tasks}
               onPress={() => {
                 navigation.jumpTo('TasksTab');
               }}
             >
-              <BoldText style={{ fontSize: 20 }}>Plant tasks</BoldText>
-              <Text style={{ paddingTop: 5 }}>Are your plants happy?</Text>
-              <BoldText style={{ paddingTop: 30 }}>{percentage === 0 ? 0 : (percentage * 100).toFixed(0) || 100}%</BoldText>
+              <BoldText color={{ Colors }} style={{ fontSize: 20 }}>
+                Plant tasks
+              </BoldText>
+              <Text color={{ Colors }} style={{ paddingTop: 5 }}>
+                Are your plants happy?
+              </Text>
+              <BoldText color={{ Colors }} style={{ paddingTop: 30 }}>
+                {percentage === 0 ? 0 : (percentage * 100).toFixed(0) || 100}%
+              </BoldText>
               <ProgressBar style={{ marginBottom: 5 }} progress={percentage === 0 ? 0 : percentage || 1} color={Colors.button} />
             </TouchableOpacity>
-            <TransparentView style={styles.plants}>
-              <BoldText style={{ fontSize: 20 }}>Latest plants</BoldText>
+            <TransparentView style={styles(Colors).plants}>
+              <BoldText color={{ Colors }} style={{ fontSize: 20 }}>
+                Latest plants
+              </BoldText>
               {(!plants || !plants.length) && (
                 <TransparentView style={{ flexDirection: 'row', paddingTop: 5 }}>
-                  <Text>There are currently none!</Text>
+                  <Text color={{ Colors }}>There are currently none!</Text>
                   <TouchableOpacity
                     onPress={() => {
                       navigation.navigate('Plant');
                     }}
                   >
-                    <BoldText style={{ paddingLeft: 5 }}>Add one now.</BoldText>
+                    <BoldText color={{ Colors }} style={{ paddingLeft: 5 }}>
+                      Add one now.
+                    </BoldText>
                   </TouchableOpacity>
                 </TransparentView>
               )}
@@ -99,18 +113,20 @@ export default function HomeScreen({ navigation, route }: HomeScreenNavigationPr
                     .map((plant: any) => (
                       <TouchableOpacity
                         key={plant._id}
-                        style={styles.plant}
+                        style={styles(Colors).plant}
                         onPress={() => {
                           navigation.navigate('Plant', { plant: plant });
                         }}
                       >
                         <TransparentView style={{}}>
                           {plant.img ? (
-                            <Image source={{ uri: plant.img }} style={styles.img} />
+                            <Image source={{ uri: plant.img }} style={styles(Colors).img} />
                           ) : (
-                            <Image source={require('../assets/images/1-op.jpg')} style={styles.img} />
+                            <Image source={require('../assets/images/1-op.jpg')} style={styles(Colors).img} />
                           )}
-                          <Text style={{ fontSize: 15 }}>{plant.nickname}</Text>
+                          <Text color={{ Colors }} style={{ fontSize: 15 }}>
+                            {plant.nickname}
+                          </Text>
                         </TransparentView>
                       </TouchableOpacity>
                     ))}
@@ -123,35 +139,37 @@ export default function HomeScreen({ navigation, route }: HomeScreenNavigationPr
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    paddingTop: 60,
-  },
-  tasks: {
-    backgroundColor: Colors.section,
-    padding: 20,
-    borderRadius: 15,
-  },
-  plant: {
-    backgroundColor: Colors.innerSection,
-    padding: 10,
-    borderRadius: 15,
-    marginBottom: 5,
-    marginRight: 5,
-    width: '48.4%',
-  },
-  img: {
-    width: '100%',
-    height: 100,
-    borderRadius: 5,
-  },
-  plants: {
-    backgroundColor: Colors.section,
-    padding: 20,
-    borderRadius: 15,
-    marginTop: 20,
-    marginBottom: 50,
-  },
-});
+const styles = (Colors: any) =>
+  StyleSheet.create({
+    container: {
+      backgroundColor: Colors.background,
+      flex: 1,
+      alignItems: 'center',
+      paddingTop: 60,
+    },
+    tasks: {
+      backgroundColor: Colors.section,
+      padding: 20,
+      borderRadius: 15,
+    },
+    plant: {
+      backgroundColor: Colors.innerSection,
+      padding: 10,
+      borderRadius: 15,
+      marginBottom: 5,
+      marginRight: 5,
+      width: '48.4%',
+    },
+    img: {
+      width: '100%',
+      height: 100,
+      borderRadius: 5,
+    },
+    plants: {
+      backgroundColor: Colors.section,
+      padding: 20,
+      borderRadius: 15,
+      marginTop: 20,
+      marginBottom: 50,
+    },
+  });

@@ -59,7 +59,7 @@ export default function SignUpScreen({ navigation, route }: SignInScreenNavigati
   };
 
   return (
-    <View style={styles.container}>
+    <TransparentView style={styles.container}>
       <ScrollView
         contentContainerStyle={{
           flexGrow: 1,
@@ -194,7 +194,7 @@ export default function SignUpScreen({ navigation, route }: SignInScreenNavigati
           </FormView>
         </ImageBackground>
       </ScrollView>
-    </View>
+    </TransparentView>
   );
 }
 

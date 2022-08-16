@@ -2,7 +2,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { getFocusedRouteNameFromRoute, NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
-import { Colors, Fonts } from '../constants/Constants';
+import { Fonts } from '../constants/Constants';
 import HomeScreen from '../screens/HomeScreen';
 import PlantsScreen from '../screens/PlantsScreen';
 import ProfileScreen from '../screens/ProfileScreen';
@@ -31,6 +31,8 @@ const Root = createNativeStackNavigator<RootStackParamList>();
 function RootNavigator() {
   const { userCtx } = useContext(Context);
   const user = userCtx;
+  const { colorsCtx } = useContext(Context);
+  const [Colors] = colorsCtx;
 
   return (
     <Root.Navigator>
@@ -76,6 +78,8 @@ function RootNavigator() {
 const App = createNativeStackNavigator<AppStackParamList>();
 
 function AppNavigator() {
+  const { colorsCtx } = useContext(Context);
+  const [Colors] = colorsCtx;
   return (
     <App.Navigator>
       <App.Screen name='Tabs' component={TabNavigator} options={{ headerShown: false }} />
@@ -97,6 +101,8 @@ function AppNavigator() {
 const Tab = createBottomTabNavigator<TabsParamList>();
 
 function TabNavigator() {
+  const { colorsCtx } = useContext(Context);
+  const [Colors] = colorsCtx;
   const getTabBarVisibility = (route: any) => {
     const routeName = getFocusedRouteNameFromRoute(route) || '';
     const offScreens = ['Plant'];
@@ -151,6 +157,8 @@ function TabNavigator() {
 const HomeTab = createNativeStackNavigator<HomeTabParamList>();
 
 function HomeTabNavigator() {
+  const { colorsCtx } = useContext(Context);
+  const [Colors] = colorsCtx;
   return (
     <HomeTab.Navigator>
       <HomeTab.Screen
@@ -190,6 +198,8 @@ function HomeTabNavigator() {
 const TasksTab = createNativeStackNavigator<TasksTabParamList>();
 
 function TasksTabNavigator() {
+  const { colorsCtx } = useContext(Context);
+  const [Colors] = colorsCtx;
   return (
     <TasksTab.Navigator>
       <TasksTab.Screen
@@ -218,6 +228,8 @@ function TasksTabNavigator() {
 const PlantsTab = createNativeStackNavigator<PlantsTabParamList>();
 
 function PlantsTabNavigator() {
+  const { colorsCtx } = useContext(Context);
+  const [Colors] = colorsCtx;
   return (
     <PlantsTab.Navigator>
       <PlantsTab.Screen

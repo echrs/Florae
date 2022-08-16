@@ -3,7 +3,6 @@ import * as ImagePicker from 'expo-image-picker';
 import { BoldText, TransparentView } from './CustomStyled';
 import { Image, TouchableOpacity, useWindowDimensions, StyleSheet, ActivityIndicator } from 'react-native';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
-import { Colors } from '../constants/Constants';
 import Constants from 'expo-constants';
 import Modal from 'react-native-modal';
 import * as FileSystem from 'expo-file-system';
@@ -17,6 +16,8 @@ export const PickImage = ({ disabled, viewImg, isProfile, onChange, value }: any
   const [img, setImg] = useState(null);
   const { userCtx } = useContext(Context);
   const [user, setUser] = userCtx;
+  const { colorsCtx } = useContext(Context);
+  const [Colors] = colorsCtx;
   const [isLoading, setIsLoading] = useState(false);
 
   const selectPicture = async () => {
@@ -90,7 +91,7 @@ export const PickImage = ({ disabled, viewImg, isProfile, onChange, value }: any
         useNativeDriver
       >
         <TransparentView style={{ alignSelf: 'center', backgroundColor: Colors.section, width: '100%', padding: 30, borderRadius: 15 }}>
-          <BoldText style={{ paddingBottom: 20 }}>SELECT IMAGE FROM</BoldText>
+          <BoldText color={{Colors}} style={{ paddingBottom: 20 }}>SELECT IMAGE FROM</BoldText>
           <TransparentView style={{ flexDirection: 'row', justifyContent: 'space-evenly' }}>
             {isLoading ? (
               <ActivityIndicator size={40} color={Colors.text} />

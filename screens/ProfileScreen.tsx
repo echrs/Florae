@@ -11,6 +11,7 @@ import {
   TextInput,
   useWindowDimensions,
   ActivityIndicator,
+  ToastAndroid,
 } from 'react-native';
 import { editUser, logout, syncPlants } from '../api';
 import { BoldText, SafeAreaView, TransparentView, Text } from '../components/CustomStyled';
@@ -28,8 +29,8 @@ export default function ProfileScreen() {
   const [plants, setPlants] = plantsCtx;
   const { userCtx } = useContext(Context);
   const [user, setUser] = userCtx;
-  const [enableDarkTheme, setEnableDarkTheme] = useState(false);
-  const [enableNotif, setEnableNotif] = useState(false);
+  const [enableDarkTheme, setEnableDarkTheme] = useState(true);
+  const [enableNotif, setEnableNotif] = useState(true);
   const { control, handleSubmit, getValues, watch, reset } = useForm();
   const { height } = useWindowDimensions();
   const statusBarHeight = Constants.statusBarHeight;
@@ -40,16 +41,30 @@ export default function ProfileScreen() {
   const [viewImg, setViewImg] = useState('');
   const userRef = useRef('');
   userRef.current = user;
+  const { themeCtx } = useContext(Context);
+  const [theme] = themeCtx;
+  const { colorsCtx } = useContext(Context);
+  const [Colors] = colorsCtx;
 
-  const toggleTheme = () => {
+  const toggleTheme = async () => {
     setEnableDarkTheme((previousState) => !previousState);
+    if (enableDarkTheme) {
+      await AsyncStorage.setItem('theme', 'light');
+    } else {
+      await AsyncStorage.setItem('theme', 'dark');
+    }
+    ToastAndroid.show('Done! Please reload the application.', ToastAndroid.SHORT);
   };
+
   const toggleNotifications = () => setEnableNotif((previousState) => !previousState);
 
   useEffect(() => {
     if (user.img) {
       setViewImg(user.img);
     }
+    if (theme === 'dark') {
+      setEnableDarkTheme(true);
+    } else setEnableDarkTheme(false);
   }, []);
 
   const signOut = () => {
@@ -67,14 +82,17 @@ export default function ProfileScreen() {
         return syncPlants(JSON.parse(plants), user.token).then(
           async (response) => {
             setIsLoading(false);
+            ToastAndroid.show('Successfully synced!', ToastAndroid.SHORT);
             return response.data;
           },
           (error) => {
             console.log(error);
+            ToastAndroid.show('An error occurred. Please try again.', ToastAndroid.SHORT);
             setIsLoading(false);
           }
         );
       } else {
+        ToastAndroid.show('There is no internet connection.', ToastAndroid.SHORT);
         return JSON.parse(plants);
       }
     }
@@ -110,7 +128,7 @@ export default function ProfileScreen() {
   return (
     <>
       <Modal
-        style={styles.view}
+        style={styles(Colors).view}
         statusBarTranslucent
         deviceHeight={height + statusBarHeight + 5}
         isVisible={modalVisible}
@@ -137,7 +155,9 @@ export default function ProfileScreen() {
               <TransparentView style={{ width: '80%' }}>
                 {passChange ? (
                   <>
-                    <BoldText style={{ textTransform: 'uppercase' }}>Password</BoldText>
+                    <BoldText color={{ Colors }} style={{ textTransform: 'uppercase' }}>
+                      Password
+                    </BoldText>
                     <Controller
                       control={control}
                       name='Password'
@@ -159,7 +179,7 @@ export default function ProfileScreen() {
                             placeholder='Enter your new password'
                             placeholderTextColor={Colors.placeholder}
                             selectionColor={Colors.button}
-                            style={styles.textInput}
+                            style={styles(Colors).textInput}
                             onBlur={onBlur}
                             onChangeText={onChange}
                             value={value}
@@ -168,7 +188,9 @@ export default function ProfileScreen() {
                         </>
                       )}
                     />
-                    <BoldText style={{ textTransform: 'uppercase', paddingTop: 10 }}>Confirm password</BoldText>
+                    <BoldText color={{ Colors }} style={{ textTransform: 'uppercase', paddingTop: 10 }}>
+                      Confirm password
+                    </BoldText>
                     <Controller
                       control={control}
                       name='ConfirmPassword'
@@ -183,7 +205,7 @@ export default function ProfileScreen() {
                             placeholder='Confirm your password'
                             placeholderTextColor={Colors.placeholder}
                             selectionColor={Colors.button}
-                            style={styles.textInput}
+                            style={styles(Colors).textInput}
                             onBlur={onBlur}
                             onChangeText={onChange}
                             value={value}
@@ -195,7 +217,9 @@ export default function ProfileScreen() {
                   </>
                 ) : (
                   <>
-                    <BoldText style={{ textTransform: 'uppercase' }}>Name</BoldText>
+                    <BoldText color={{ Colors }} style={{ textTransform: 'uppercase' }}>
+                      Name
+                    </BoldText>
                     <Controller
                       defaultValue={user.name}
                       control={control}
@@ -213,12 +237,20 @@ export default function ProfileScreen() {
                       }}
                       render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                         <>
-                          <TextInput selectionColor={Colors.button} style={styles.textInput} onBlur={onBlur} onChangeText={onChange} value={value} />
+                          <TextInput
+                            selectionColor={Colors.button}
+                            style={styles(Colors).textInput}
+                            onBlur={onBlur}
+                            onChangeText={onChange}
+                            value={value}
+                          />
                           {error && <Text style={{ fontSize: 11 }}>{error.message || 'Error'}</Text>}
                         </>
                       )}
                     />
-                    <BoldText style={{ textTransform: 'uppercase', paddingTop: 10 }}>Email</BoldText>
+                    <BoldText color={{ Colors }} style={{ textTransform: 'uppercase', paddingTop: 10 }}>
+                      Email
+                    </BoldText>
                     <Controller
                       defaultValue={user.email}
                       control={control}
@@ -229,7 +261,13 @@ export default function ProfileScreen() {
                       }}
                       render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                         <>
-                          <TextInput selectionColor={Colors.button} style={styles.textInput} onBlur={onBlur} onChangeText={onChange} value={value} />
+                          <TextInput
+                            selectionColor={Colors.button}
+                            style={styles(Colors).textInput}
+                            onBlur={onBlur}
+                            onChangeText={onChange}
+                            value={value}
+                          />
                           {error && <Text style={{ fontSize: 11 }}>{error.message || 'Error'}</Text>}
                         </>
                       )}
@@ -246,7 +284,7 @@ export default function ProfileScreen() {
           </TransparentView>
         </KeyboardAvoidingView>
       </Modal>
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles(Colors).container}>
         <TransparentView style={{ width: '90%' }}>
           <ScrollView>
             <TransparentView style={{ alignItems: 'center', marginBottom: 5 }}>
@@ -257,8 +295,12 @@ export default function ProfileScreen() {
               />
             </TransparentView>
             <TransparentView style={{ alignItems: 'center', marginBottom: 17 }}>
-              <BoldText style={{ textTransform: 'capitalize', fontSize: 36 }}>{user.name}</BoldText>
-              <Text style={{ fontSize: 14 }}>{user.email}</Text>
+              <BoldText color={{ Colors }} style={{ textTransform: 'capitalize', fontSize: 36 }}>
+                {user.name}
+              </BoldText>
+              <Text color={{ Colors }} style={{ fontSize: 14 }}>
+                {user.email}
+              </Text>
             </TransparentView>
             <TransparentView>
               <TouchableOpacity
@@ -266,10 +308,10 @@ export default function ProfileScreen() {
                   setModalVisible(true);
                   setPassChange(false);
                 }}
-                style={[{ padding: 15, backgroundColor: Colors.section }, styles.section]}
+                style={[{ padding: 15, backgroundColor: Colors.section }, styles(Colors).section]}
               >
                 <TransparentView style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <BoldText>Edit profile</BoldText>
+                  <BoldText color={{ Colors }}>Edit profile</BoldText>
                   <MaterialIcons name='edit' size={20} color={Colors.text} />
                 </TransparentView>
               </TouchableOpacity>
@@ -278,16 +320,16 @@ export default function ProfileScreen() {
                   setModalVisible(true);
                   setPassChange(true);
                 }}
-                style={[{ padding: 15, backgroundColor: Colors.section }, styles.section]}
+                style={[{ padding: 15, backgroundColor: Colors.section }, styles(Colors).section]}
               >
                 <TransparentView style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <BoldText>Change password</BoldText>
+                  <BoldText color={{ Colors }}>Change password</BoldText>
                   <MaterialIcons name='lock-outline' size={20} color={Colors.text} />
                 </TransparentView>
               </TouchableOpacity>
-              <TransparentView style={[{ paddingLeft: 15, backgroundColor: Colors.section }, styles.section]}>
+              <TransparentView style={[{ paddingLeft: 15, backgroundColor: Colors.section }, styles(Colors).section]}>
                 <TransparentView style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <BoldText>Notifications</BoldText>
+                  <BoldText color={{ Colors }}>Notifications</BoldText>
                   <Switch
                     trackColor={{ false: Colors.switchTrackIn, true: Colors.switchTrackAc }}
                     thumbColor={enableNotif ? Colors.switchThumbAc : Colors.switchThumbIn}
@@ -296,9 +338,9 @@ export default function ProfileScreen() {
                   />
                 </TransparentView>
               </TransparentView>
-              <TransparentView style={[{ paddingLeft: 15, backgroundColor: Colors.section }, styles.section]}>
+              <TransparentView style={[{ paddingLeft: 15, backgroundColor: Colors.section }, styles(Colors).section]}>
                 <TransparentView style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <BoldText>Dark mode</BoldText>
+                  <BoldText color={{ Colors }}>Dark mode</BoldText>
                   <Switch
                     trackColor={{ false: Colors.switchTrackIn, true: Colors.switchTrackAc }}
                     thumbColor={enableDarkTheme ? Colors.switchThumbAc : Colors.switchThumbIn}
@@ -309,19 +351,19 @@ export default function ProfileScreen() {
               </TransparentView>
               <TouchableOpacity
                 onPress={() => syncWDB()}
-                style={[{ paddingHorizontal: 15, paddingVertical: 12, backgroundColor: Colors.section }, styles.section]}
+                style={[{ paddingHorizontal: 15, paddingVertical: 12, backgroundColor: Colors.section }, styles(Colors).section]}
               >
                 <TransparentView style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <BoldText>Sync now</BoldText>
+                  <BoldText color={{ Colors }}>Sync now</BoldText>
                   {isLoading ? <ActivityIndicator size={24} color={Colors.text} /> : <MaterialIcons name='sync' size={24} color={Colors.text} />}
                 </TransparentView>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => signOut()}
-                style={[{ paddingHorizontal: 15, paddingVertical: 12, backgroundColor: Colors.button }, styles.section]}
+                style={[{ paddingHorizontal: 15, paddingVertical: 12, backgroundColor: Colors.button }, styles(Colors).section]}
               >
                 <TransparentView style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <BoldText>Sign out</BoldText>
+                  <BoldText color={{ Colors }}>Sign out</BoldText>
                   <MaterialIcons name='logout' size={24} color={Colors.text} />
                 </TransparentView>
               </TouchableOpacity>
@@ -333,23 +375,25 @@ export default function ProfileScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  view: {
-    justifyContent: 'flex-end',
-    margin: 0,
-  },
-  textInput: {
-    color: Colors.text,
-    borderColor: Colors.text,
-    borderBottomWidth: 1,
-  },
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    paddingTop: 60,
-  },
-  section: {
-    borderRadius: 15,
-    marginBottom: 5,
-  },
-});
+const styles = (Colors: any) =>
+  StyleSheet.create({
+    view: {
+      justifyContent: 'flex-end',
+      margin: 0,
+    },
+    textInput: {
+      color: Colors.text,
+      borderColor: Colors.text,
+      borderBottomWidth: 1,
+    },
+    container: {
+      backgroundColor: Colors.background,
+      flex: 1,
+      alignItems: 'center',
+      paddingTop: 60,
+    },
+    section: {
+      borderRadius: 15,
+      marginBottom: 5,
+    },
+  });

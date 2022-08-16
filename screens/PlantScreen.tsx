@@ -12,7 +12,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { BoldText, Text, View, TransparentView, CustomButton } from '../components/CustomStyled';
-import { Colors, Mode } from '../constants/Constants';
+import { Mode } from '../constants/Constants';
 import Modal from 'react-native-modal';
 import Constants from 'expo-constants';
 import { Controller, useForm } from 'react-hook-form';
@@ -43,13 +43,17 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
   const [user] = userCtx;
   const { plantsCtx } = useContext(Context);
   const [plants, setPlants] = plantsCtx;
+  const { colorsCtx } = useContext(Context);
+  const [Colors] = colorsCtx;
   const [plant, setPlant] = useState({} as any);
   const [mode, setMode] = useState(0);
   const [viewImg, setViewImg] = useState('');
-  const [taskList, setTaskList] = useState<{ taskFieldName: string; taskName: any; taskDays: number; taskTime: number; taskDate: any, lastTaskDate: any }[]>([]);
+  const [taskList, setTaskList] = useState<
+    { taskFieldName: string; taskName: any; taskDays: number; taskTime: number; taskDate: any; lastTaskDate: any }[]
+  >([]);
   const [isNewTask, setIsNewTask] = useState(false);
   const [taskName, setTaskName] = useState(false);
-  const taskListRef = useRef<{ taskFieldName: string; taskName: any; taskDays: number; taskTime: number; taskDate: any, lastTaskDate: any }[]>([]);
+  const taskListRef = useRef<{ taskFieldName: string; taskName: any; taskDays: number; taskTime: number; taskDate: any; lastTaskDate: any }[]>([]);
   taskListRef.current = taskList;
   const [isLoading, setIsLoading] = useState(false);
 
@@ -102,7 +106,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
                 opacity: pressed ? 0.5 : 1,
               })}
             >
-              <BoldText>EDIT</BoldText>
+              <BoldText color={{ Colors }}>EDIT</BoldText>
             </Pressable>
             <Pressable
               onPress={() => deleteCurrPlant()}
@@ -111,7 +115,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
                 marginLeft: 15,
               })}
             >
-              <BoldText>DELETE</BoldText>
+              <BoldText color={{ Colors }}>DELETE</BoldText>
             </Pressable>
           </>
         ),
@@ -128,7 +132,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
                 marginLeft: 15,
               })}
             >
-              <BoldText>SAVE</BoldText>
+              <BoldText color={{ Colors }}>SAVE</BoldText>
             </Pressable>
           </>
         ),
@@ -256,7 +260,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
         notes: obj.notes,
         tasks: obj.tasks,
         img: obj.img ? obj.img : p[idx].img,
-        userId: obj.userId
+        userId: obj.userId,
       };
       setPlants([...p]);
       setMode(Mode.view);
@@ -280,7 +284,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
   return (
     <>
       <Modal
-        style={styles.view}
+        style={styles(Colors).view}
         statusBarTranslucent
         deviceHeight={height + statusBarHeight + 5}
         isVisible={modalVisible}
@@ -303,8 +307,16 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
               borderRadius: 15,
             }}
           >
-            {!fieldName.includes('NewTask') && <BoldText style={{ textTransform: 'uppercase' }}>{fieldName}</BoldText>}
-            {fieldName.includes('NewTask') && !isNewTask && <BoldText style={{ textTransform: 'uppercase' }}>{taskName}</BoldText>}
+            {!fieldName.includes('NewTask') && (
+              <BoldText color={{ Colors }} style={{ textTransform: 'uppercase' }}>
+                {fieldName}
+              </BoldText>
+            )}
+            {fieldName.includes('NewTask') && !isNewTask && (
+              <BoldText color={{ Colors }} style={{ textTransform: 'uppercase' }}>
+                {taskName}
+              </BoldText>
+            )}
             {isNewTask && (
               <Controller
                 control={control}
@@ -313,7 +325,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
                   <TextInput
                     multiline={multiline}
                     selectionColor={Colors.button}
-                    style={styles.textInputNew}
+                    style={styles(Colors).textInputNew}
                     onBlur={onBlur}
                     onChangeText={onChange}
                     value={value}
@@ -324,7 +336,9 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
             <TransparentView style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
               {fieldName === 'Water' || fieldName === 'Feed' || fieldName.includes('NewTask') ? (
                 <TransparentView style={{ flexDirection: 'row' }}>
-                  <Text style={{ marginTop: 10, marginRight: 10 }}>Every</Text>
+                  <Text color={{ Colors }} style={{ marginTop: 10, marginRight: 10 }}>
+                    Every
+                  </Text>
                   <Controller
                     control={control}
                     name={fieldName + 'Days'}
@@ -333,7 +347,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
                         defaultValue={fieldName.includes('NewTask') && isNewTask ? '7' : ''}
                         selectionColor={Colors.button}
                         keyboardType='numeric'
-                        style={styles.numInput}
+                        style={styles(Colors).numInput}
                         onBlur={onBlur}
                         onChangeText={onChange}
                         value={value}
@@ -341,7 +355,9 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
                       />
                     )}
                   />
-                  <Text style={{ marginTop: 10, marginRight: 10, marginLeft: 10 }}>days @ </Text>
+                  <Text color={{ Colors }} style={{ marginTop: 10, marginRight: 10, marginLeft: 10 }}>
+                    days @{' '}
+                  </Text>
                   <Controller
                     control={control}
                     name={fieldName + 'Time'}
@@ -350,7 +366,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
                         defaultValue={fieldName.includes('NewTask') && isNewTask ? '12' : ''}
                         selectionColor={Colors.button}
                         keyboardType='numeric'
-                        style={styles.numInput}
+                        style={styles(Colors).numInput}
                         onBlur={onBlur}
                         onChangeText={onChange}
                         value={value}
@@ -358,7 +374,10 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
                       />
                     )}
                   />
-                  <Text style={{ marginTop: 10, marginRight: 10, marginLeft: 10 }}> h </Text>
+                  <Text color={{ Colors }} style={{ marginTop: 10, marginRight: 10, marginLeft: 10 }}>
+                    {' '}
+                    h{' '}
+                  </Text>
                 </TransparentView>
               ) : (
                 <Controller
@@ -368,7 +387,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
                     <TextInput
                       multiline={multiline}
                       selectionColor={Colors.button}
-                      style={styles.textInput}
+                      style={styles(Colors).textInput}
                       onBlur={onBlur}
                       onChangeText={onChange}
                       value={value}
@@ -402,7 +421,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
           </TransparentView>
         </KeyboardAvoidingView>
       </Modal>
-      <View style={styles.container}>
+      <View style={styles(Colors).container}>
         <ScrollView
           contentContainerStyle={{
             alignItems: 'center',
@@ -419,26 +438,28 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
             {mode !== Mode.view && (
               <>
                 {!isLoading ? (
-                  <TouchableOpacity style={styles.buttonSection} onPress={() => identifyPlant()}>
+                  <TouchableOpacity style={styles(Colors).buttonSection} onPress={() => identifyPlant()}>
                     <CustomButton>
-                      <BoldText>IDENTIFY PLANT</BoldText>
+                      <BoldText color={{ Colors }}>IDENTIFY PLANT</BoldText>
                       <MaterialIcons name='search' size={17} color={Colors.text} />
                     </CustomButton>
                   </TouchableOpacity>
                 ) : (
-                  <TouchableOpacity style={styles.buttonSection} onPress={() => {}}>
+                  <TouchableOpacity style={styles(Colors).buttonSection} onPress={() => {}}>
                     <CustomButton>
-                      <BoldText>IDENTIFY PLANT</BoldText>
+                      <BoldText color={{ Colors }}>IDENTIFY PLANT</BoldText>
                       <ActivityIndicator size={17} color={Colors.text} />
                     </CustomButton>
                   </TouchableOpacity>
                 )}
               </>
             )}
-            <BoldText style={styles.headerText}>GENERAL INFO</BoldText>
+            <BoldText color={{ Colors }} style={styles(Colors).headerText}>
+              GENERAL INFO
+            </BoldText>
             <TouchableOpacity
               disabled={mode === 2}
-              style={styles.section}
+              style={styles(Colors).section}
               onPress={() => {
                 setModalVisible(true);
                 setFieldName('Nickname');
@@ -446,13 +467,13 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
               }}
             >
               <CustomButton>
-                <BoldText>NICKNAME</BoldText>
-                <Text>{nicknameField}</Text>
+                <BoldText color={{ Colors }}>NICKNAME</BoldText>
+                <Text color={{ Colors }}>{nicknameField}</Text>
               </CustomButton>
             </TouchableOpacity>
             <TouchableOpacity
               disabled={mode === 2}
-              style={styles.section}
+              style={styles(Colors).section}
               onPress={() => {
                 setModalVisible(true);
                 setFieldName('Name');
@@ -460,23 +481,29 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
               }}
             >
               <CustomButton>
-                <BoldText>NAME</BoldText>
-                <Text>{nameField}</Text>
+                <BoldText color={{ Colors }}>NAME</BoldText>
+                <Text color={{ Colors }}>{nameField}</Text>
               </CustomButton>
             </TouchableOpacity>
-            <BoldText style={styles.headerText}>TASKS</BoldText>
+            <BoldText color={{ Colors }} style={styles(Colors).headerText}>
+              TASKS
+            </BoldText>
             {mode === Mode.view && (
               <>
                 {taskList &&
                   taskList?.map((task) => (
-                    <TransparentView key={task.taskFieldName} style={styles.viewSection}>
+                    <TransparentView key={task.taskFieldName} style={styles(Colors).viewSection}>
                       <TransparentView style={{ flexDirection: 'row' }}>
-                        <BoldText style={{ paddingLeft: 5, textTransform: 'uppercase' }}>{task.taskName}</BoldText>
+                        <BoldText color={{ Colors }} style={{ paddingLeft: 5, textTransform: 'uppercase' }}>
+                          {task.taskName}
+                        </BoldText>
                       </TransparentView>
                       <TransparentView style={{ flexDirection: 'row', alignItems: 'center' }}>
                         {getDaysLeft(task.taskDate) <= 0 ? (
                           <>
-                            <Text style={{ marginRight: 5 }}>Now</Text>
+                            <Text color={{ Colors }} style={{ marginRight: 5 }}>
+                              Now
+                            </Text>
                             <TouchableOpacity
                               style={{ marginLeft: 5 }}
                               onPress={() => {
@@ -488,7 +515,9 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
                           </>
                         ) : (
                           <>
-                            <Text style={{ marginRight: 5 }}>In {getDaysLeft(task.taskDate)} days</Text>
+                            <Text color={{ Colors }} style={{ marginRight: 5 }}>
+                              In {getDaysLeft(task.taskDate)} days
+                            </Text>
                             <MaterialIcons style={{ marginLeft: 5 }} name='check-circle' size={25} color={Colors.checkIconInactive} />
                           </>
                         )}
@@ -503,7 +532,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
                   taskList?.map((task) => (
                     <TouchableOpacity
                       key={task.taskFieldName}
-                      style={styles.section}
+                      style={styles(Colors).section}
                       onPress={() => {
                         setModalVisible(true);
                         setFieldName(task.taskFieldName);
@@ -512,8 +541,10 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
                       }}
                     >
                       <CustomButton>
-                        <BoldText style={{ textTransform: 'uppercase' }}>{task.taskName}</BoldText>
-                        <Text>
+                        <BoldText color={{ Colors }} style={{ textTransform: 'uppercase' }}>
+                          {task.taskName}
+                        </BoldText>
+                        <Text color={{ Colors }}>
                           Every {task.taskDays} days @ {task.taskTime}h
                         </Text>
                       </CustomButton>
@@ -521,7 +552,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
                   ))}
                 {mode !== Mode.view && (
                   <TouchableOpacity
-                    style={styles.buttonSection}
+                    style={styles(Colors).buttonSection}
                     onPress={() => {
                       setModalVisible(true);
                       setMultiline(false);
@@ -530,24 +561,28 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
                     }}
                   >
                     <CustomButton>
-                      <BoldText>ADD TASK</BoldText>
+                      <BoldText color={{ Colors }}>ADD TASK</BoldText>
                       <MaterialCommunityIcons name='plus' size={17} color={Colors.text} />
                     </CustomButton>
                   </TouchableOpacity>
                 )}
               </>
             )}
-            <BoldText style={styles.headerText}>NOTES</BoldText>
+            <BoldText color={{ Colors }} style={styles(Colors).headerText}>
+              NOTES
+            </BoldText>
             <TouchableOpacity
               disabled={mode === 2}
-              style={styles.section}
+              style={styles(Colors).section}
               onPress={() => {
                 setModalVisible(true);
                 setFieldName('Notes');
                 setMultiline(true);
               }}
             >
-              <Text style={{ textAlign: 'justify' }}>{notesField ? notesField : 'Currently there are no notes.'}</Text>
+              <Text color={{ Colors }} style={{ textAlign: 'justify' }}>
+                {notesField ? notesField : 'Currently there are no notes.'}
+              </Text>
             </TouchableOpacity>
           </TransparentView>
         </ScrollView>
@@ -556,7 +591,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
   );
 }
 
-const styles = StyleSheet.create({
+const styles = (Colors: any) => StyleSheet.create({
   view: {
     justifyContent: 'flex-end',
     margin: 0,
@@ -583,6 +618,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   container: {
+    backgroundColor: Colors.background,
     flex: 1,
     alignItems: 'center',
   },

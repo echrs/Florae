@@ -2,12 +2,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, useEffect, useRef, useState } from 'react';
 import { editUser, getPlants, syncPlants } from './api';
 import NetInfo from '@react-native-community/netinfo';
-
+import { Colors as ColorsDark, ColorsLight } from './constants/Constants';
 export const Context = createContext({});
 
 export const Provider = (props: any) => {
   const [user, setUser] = useState('');
   const [plants, setPlants] = useState([]);
+  const [theme, setTheme] = useState('dark');
+  const [Colors, setColors] = useState({ ...ColorsDark });
 
   useEffect(() => {
     fetchUser();
@@ -61,6 +63,15 @@ export const Provider = (props: any) => {
     if (credentials) {
       setUser(JSON.parse(credentials));
     } else setUser('');
+
+    var theme = await AsyncStorage.getItem('theme');
+    if (theme === 'light') {
+      setTheme('light');
+      setColors({ ...ColorsLight });
+    } else {
+      setTheme('dark');
+      setColors({ ...ColorsDark });
+    }
   };
 
   const fetchPlants = async () => {
@@ -108,6 +119,8 @@ export const Provider = (props: any) => {
       value={{
         userCtx: [user, setUser],
         plantsCtx: [plants, setPlants],
+        themeCtx: [theme, setTheme],
+        colorsCtx: [Colors, setColors],
       }}
     >
       {props.children}
