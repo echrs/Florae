@@ -5,9 +5,13 @@ import { Colors } from '../constants/Constants';
 import { Foundation, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { getDaysLeft } from '../utils';
 
-export const TaskSection = ({ taskArr, taskName, onChange }: any) => {
+export const TaskSection = ({ taskArr, taskName, taskDone, taskSnooze }: any) => {
   const setTaskDone = (task: any) => {
-    onChange(task);
+    taskDone(task);
+  };
+
+  const setTaskSnooze = (task: any) => {
+    taskSnooze(task);
   };
 
   return (
@@ -54,9 +58,14 @@ export const TaskSection = ({ taskArr, taskName, onChange }: any) => {
               {getDaysLeft(task.taskDate) > 0 ? (
                 <MaterialIcons name='check-circle' size={26} color={Colors.checkIconInactive} />
               ) : (
-                <TouchableOpacity style={{ marginLeft: 5 }} onPress={() => setTaskDone(task)}>
-                  <MaterialIcons name='check-circle' size={26} color={Colors.checkIconActive} />
-                </TouchableOpacity>
+                <>
+                  <TouchableOpacity style={{ marginLeft: 5 }} onPress={() => setTaskSnooze(task)}>
+                    <MaterialCommunityIcons name='bell-sleep-outline' size={24} color={Colors.checkIconActive} />
+                  </TouchableOpacity>
+                  <TouchableOpacity style={{ marginLeft: 3 }} onPress={() => setTaskDone(task)}>
+                    <MaterialIcons name='check-circle' size={26} color={Colors.checkIconActive} />
+                  </TouchableOpacity>
+                </>
               )}
             </TransparentView>
           </TransparentView>

@@ -60,7 +60,7 @@ export default function TasksScreen({ navigation, route }: TasksScreenNavigation
     }
   }, [plants]);
 
-  const onChangeTask = (task: any) => {
+  const onDoneTask = (task: any) => {
     let p = plants;
     let plantIdx = p.findIndex((plant: any) => plant._id === task.plantId);
     let taskIdx = p[plantIdx].tasks.findIndex((plantTask: any) => plantTask.taskFieldName === task.taskFieldName);
@@ -68,6 +68,19 @@ export default function TasksScreen({ navigation, route }: TasksScreenNavigation
     let plantTask = plantTasks[taskIdx];
     if (plantTask) {
       plantTasks[taskIdx] = { ...plantTask, lastTaskDate: getTodayDate(), taskDate: setDaysAndTime(task.taskDays, task.taskTime) };
+      p[plantIdx] = { ...p[plantIdx], tasks: plantTasks };
+      setPlants([...p]);
+    }
+  };
+
+  const onSnoozeTask = (task: any) => {
+    let p = plants;
+    let plantIdx = p.findIndex((plant: any) => plant._id === task.plantId);
+    let taskIdx = p[plantIdx].tasks.findIndex((plantTask: any) => plantTask.taskFieldName === task.taskFieldName);
+    let plantTasks = p[plantIdx].tasks;
+    let plantTask = plantTasks[taskIdx];
+    if (plantTask) {
+      plantTasks[taskIdx] = { ...plantTask, taskDate: setDaysAndTime(1, task.taskTime) };
       p[plantIdx] = { ...p[plantIdx], tasks: plantTasks };
       setPlants([...p]);
     }
@@ -94,17 +107,27 @@ export default function TasksScreen({ navigation, route }: TasksScreenNavigation
             </TransparentView>
             {activeTab === Tab.today && (
               <TransparentView>
-                {todayWaterTasks.length > 0 && <TaskSection onChange={onChangeTask} taskArr={todayWaterTasks} taskName='Water'></TaskSection>}
-                {todayFeedTasks.length > 0 && <TaskSection onChange={onChangeTask} taskArr={todayFeedTasks} taskName='Feed'></TaskSection>}
-                {todayCustomTasks.length > 0 && <TaskSection onChange={onChangeTask} taskArr={todayCustomTasks} taskName='Custom'></TaskSection>}
+                {todayWaterTasks.length > 0 && (
+                  <TaskSection taskDone={onDoneTask} taskSnooze={onSnoozeTask} taskArr={todayWaterTasks} taskName='Water'></TaskSection>
+                )}
+                {todayFeedTasks.length > 0 && (
+                  <TaskSection taskDone={onDoneTask} taskSnooze={onSnoozeTask} taskArr={todayFeedTasks} taskName='Feed'></TaskSection>
+                )}
+                {todayCustomTasks.length > 0 && (
+                  <TaskSection taskDone={onDoneTask} taskSnooze={onSnoozeTask} taskArr={todayCustomTasks} taskName='Custom'></TaskSection>
+                )}
               </TransparentView>
             )}
             {activeTab === Tab.upcoming && (
               <TransparentView>
-                {upcomingWaterTasks.length > 0 && <TaskSection onChange={onChangeTask} taskArr={upcomingWaterTasks} taskName='Water'></TaskSection>}
-                {upcomingFeedTasks.length > 0 && <TaskSection onChange={onChangeTask} taskArr={upcomingFeedTasks} taskName='Feed'></TaskSection>}
+                {upcomingWaterTasks.length > 0 && (
+                  <TaskSection taskDone={onDoneTask} taskSnooze={onSnoozeTask} taskArr={upcomingWaterTasks} taskName='Water'></TaskSection>
+                )}
+                {upcomingFeedTasks.length > 0 && (
+                  <TaskSection taskDone={onDoneTask} taskSnooze={onSnoozeTask} taskArr={upcomingFeedTasks} taskName='Feed'></TaskSection>
+                )}
                 {upcomingCustomTasks.length > 0 && (
-                  <TaskSection onChange={onChangeTask} taskArr={upcomingCustomTasks} taskName='Custom'></TaskSection>
+                  <TaskSection taskDone={onDoneTask} taskSnooze={onSnoozeTask} taskArr={upcomingCustomTasks} taskName='Custom'></TaskSection>
                 )}
               </TransparentView>
             )}
