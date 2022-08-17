@@ -106,7 +106,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
                 opacity: pressed ? 0.5 : 1,
               })}
             >
-              <BoldText color={{ Colors }}>EDIT</BoldText>
+              <BoldText style={{ color: Colors.header }}>EDIT</BoldText>
             </Pressable>
             <Pressable
               onPress={() => deleteCurrPlant()}
@@ -115,7 +115,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
                 marginLeft: 15,
               })}
             >
-              <BoldText color={{ Colors }}>DELETE</BoldText>
+              <BoldText style={{ color: Colors.header }}>DELETE</BoldText>
             </Pressable>
           </>
         ),
@@ -132,7 +132,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
                 marginLeft: 15,
               })}
             >
-              <BoldText color={{ Colors }}>SAVE</BoldText>
+              <BoldText style={{ color: Colors.header }}>SAVE</BoldText>
             </Pressable>
           </>
         ),

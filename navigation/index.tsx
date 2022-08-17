@@ -188,7 +188,7 @@ function HomeTabNavigator() {
           headerShown: true,
           headerTransparent: true,
           headerShadowVisible: false,
-          headerTintColor: Colors.text,
+          headerTintColor: Colors.header,
         })}
       />
     </HomeTab.Navigator>

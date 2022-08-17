@@ -12,6 +12,7 @@ export const ColorsLight = {
   switchThumbAc: '#8fbfb9',
   switchTrackIn: '#737373',
   switchTrackAc: '#76b1aa',
+  header: '#daeae8',
 };
 
 export const Colors = {
@@ -28,6 +29,7 @@ export const Colors = {
   switchThumbAc: '#474747',
   switchTrackIn: '#919191',
   switchTrackAc: '#3d3d3d',
+  header: '#ffffff',
 };
 
 export const Fonts = {

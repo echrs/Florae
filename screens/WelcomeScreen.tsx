@@ -1,8 +1,9 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import Constants from 'expo-constants';
-import React from 'react';
+import React, { useContext } from 'react';
 import { ImageBackground, StyleSheet, TouchableOpacity, useWindowDimensions } from 'react-native';
 import { BoldText, SignInUpButton, FormView, LightText, View } from '../components/CustomStyled';
+import { Context } from '../Context';
 import { RootStackParamList } from '../types';
 
 type WelcomeScreenNavigationProp = NativeStackScreenProps<RootStackParamList, 'Welcome'>;
@@ -10,9 +11,11 @@ type WelcomeScreenNavigationProp = NativeStackScreenProps<RootStackParamList, 'W
 export default function WelcomeScreen({ navigation, route }: WelcomeScreenNavigationProp) {
   const statusBarHeight = Constants.statusBarHeight;
   const { height, width } = useWindowDimensions();
+  const { colorsCtx } = useContext(Context);
+  const [Colors] = colorsCtx;
 
   return (
-    <View style={styles.container}>
+    <View style={styles(Colors).container}>
       <ImageBackground source={require('../assets/images/1-op.jpg')} style={{ width: width, height: height + statusBarHeight }}>
         <FormView style={{ justifyContent: 'center', flex: 1 }}>
           <BoldText
@@ -68,8 +71,9 @@ export default function WelcomeScreen({ navigation, route }: WelcomeScreenNaviga
   );
 }
 
-const styles = StyleSheet.create({
+const styles = (Colors: any) => StyleSheet.create({
   container: {
+    backgroundColor: Colors.background,
     flex: 1,
     alignItems: 'center',
     width: '100%',
