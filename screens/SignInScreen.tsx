@@ -21,8 +21,8 @@ import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { login } from '../api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Context } from '../Context';
-import { Colors } from '../constants/Constants';
 import NetInfo from '@react-native-community/netinfo';
+import { Colors } from '../constants/Constants';
 
 type SignInScreenNavigationProp = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
 
@@ -31,6 +31,7 @@ export default function SignInScreen({ navigation, route }: SignInScreenNavigati
   const { height, width } = useWindowDimensions();
   const { userCtx } = useContext(Context);
   const [user, setUser] = userCtx;
+
   const {
     control,
     handleSubmit,
@@ -136,6 +137,7 @@ export default function SignInScreen({ navigation, route }: SignInScreenNavigati
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: Colors.background,
     flex: 1,
     alignItems: 'center',
     width: '100%',

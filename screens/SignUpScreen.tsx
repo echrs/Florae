@@ -12,7 +12,6 @@ import {
   SemiBoldText,
   Text,
   TransparentView,
-  View,
 } from '../components/CustomStyled';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types';
@@ -32,6 +31,7 @@ export default function SignUpScreen({ navigation, route }: SignInScreenNavigati
   const { height, width } = useWindowDimensions();
   const { userCtx } = useContext(Context);
   const [user, setUser] = userCtx;
+
   const {
     control,
     handleSubmit,
@@ -200,6 +200,7 @@ export default function SignUpScreen({ navigation, route }: SignInScreenNavigati
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: Colors.background,
     flex: 1,
     alignItems: 'center',
     width: '100%',
