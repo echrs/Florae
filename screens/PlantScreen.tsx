@@ -33,7 +33,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
   const [modalVisible, setModalVisible] = useState(false);
   const { height } = useWindowDimensions();
   const statusBarHeight = Constants.statusBarHeight;
-  const { control, handleSubmit, getValues, setValue } = useForm();
+  const { control, handleSubmit, getValues, setValue, reset } = useForm();
   const [fieldName, setFieldName] = useState('');
   const [nameField, setNameField] = useState('');
   const [nicknameField, setNicknameField] = useState('Plant' + Math.floor(Math.random() * 1000) + 1);
@@ -78,7 +78,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
             taskName: 'Water',
             taskDays: 7,
             taskTime: 12,
-            taskDate: setDaysAndTime(7, 12),
+            taskDate: setDaysAndTime(7, 12, '', ''),
             lastTaskDate: '',
             taskFieldName: 'Water',
           },
@@ -86,7 +86,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
             taskName: 'Feed',
             taskDays: 28,
             taskTime: 12,
-            taskDate: setDaysAndTime(28, 12),
+            taskDate: setDaysAndTime(28, 12, '', ''),
             lastTaskDate: '',
             taskFieldName: 'Feed',
           },
@@ -178,7 +178,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
     let idx = taskList.findIndex((task: any) => task.taskFieldName === fieldName);
     let task = uTaskList[idx];
     if (task) {
-      uTaskList[idx] = { ...task, lastTaskDate: getTodayDate(), taskDate: setDaysAndTime(task.taskDays, task.taskTime) };
+      uTaskList[idx] = { ...task, lastTaskDate: getTodayDate(), taskDate: setDaysAndTime(task.taskDays, task.taskTime, '', '') };
       setTaskList(uTaskList);
       let p = plants;
       let pIdx = p.findIndex((x: any) => x._id === plant._id);
@@ -206,14 +206,19 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
     }
     let days = nt + 'Days';
     let time = nt + 'Time';
-    let taskDays = parseInt(getValues(days)) > 0 ? parseInt(getValues(days)) : 7;
+    let taskDays = parseInt(getValues(days)) ? parseInt(getValues(days)) : 7;
     let taskTime = parseInt(getValues(time)) >= 0 && parseInt(getValues(time)) <= 23 ? parseInt(getValues(time)) : 12;
     let obj = {
       taskFieldName: nt,
       taskName: taskName?.length ? taskName : task ? task.taskName : 'Task',
       taskDays: taskDays,
       taskTime: taskTime,
-      taskDate: setDaysAndTime(taskDays, taskTime),
+      taskDate: setDaysAndTime(
+        taskDays === task?.taskDays ? 0 : taskDays,
+        taskTime === task?.taskTime ? 0 : taskTime,
+        task?.taskDate,
+        task?.taskDays
+      ),
       lastTaskDate: '',
     };
     if (task) {
@@ -265,6 +270,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
       setPlants([...p]);
       setMode(Mode.view);
     }
+    reset();
   };
 
   const saveInput = (fieldName: string) => {
@@ -340,6 +346,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
                     Every
                   </Text>
                   <Controller
+                    defaultValue={taskList.find((x) => x.taskFieldName === fieldName)?.taskDays?.toString()}
                     control={control}
                     name={fieldName + 'Days'}
                     render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
@@ -359,6 +366,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
                     days @{' '}
                   </Text>
                   <Controller
+                    defaultValue={taskList.find((x) => x.taskFieldName === fieldName)?.taskTime?.toString()}
                     control={control}
                     name={fieldName + 'Time'}
                     render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
@@ -381,6 +389,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
                 </TransparentView>
               ) : (
                 <Controller
+                  defaultValue={fieldName === 'Nickname' ? plant.nickname : fieldName === 'Name' ? plant.name : plant.notes}
                   control={control}
                   name={fieldName}
                   render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
@@ -497,6 +506,15 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
                         <BoldText color={{ Colors }} style={{ paddingLeft: 5, textTransform: 'uppercase' }}>
                           {task.taskName}
                         </BoldText>
+                        {task.lastTaskDate ? (
+                          <Text color={{ Colors }} style={{ alignSelf: 'center', paddingLeft: 2, fontSize: 10, color: '#5a5a5a' }}>
+                            (Last done: {new Date(task.lastTaskDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })})
+                          </Text>
+                        ) : (
+                          <Text color={{ Colors }} style={{ alignSelf: 'center', paddingLeft: 2, fontSize: 10, color: '#5a5a5a' }}>
+                            (Last done: Never)
+                          </Text>
+                        )}
                       </TransparentView>
                       <TransparentView style={{ flexDirection: 'row', alignItems: 'center' }}>
                         {getDaysLeft(task.taskDate) <= 0 ? (
@@ -591,61 +609,62 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
   );
 }
 
-const styles = (Colors: any) => StyleSheet.create({
-  view: {
-    justifyContent: 'flex-end',
-    margin: 0,
-  },
-  textInputNew: {
-    color: Colors.text,
-    width: '70%',
-    borderColor: Colors.text,
-    borderBottomWidth: 1,
-    fontFamily: 'inter-bold',
-  },
-  textInput: {
-    color: Colors.text,
-    width: '80%',
-    borderColor: Colors.text,
-    borderBottomWidth: 1,
-  },
-  numInput: {
-    color: Colors.text,
-    width: '10%',
-    borderColor: Colors.text,
-    borderBottomWidth: 1,
-    marginVertical: 5,
-    textAlign: 'center',
-  },
-  container: {
-    backgroundColor: Colors.background,
-    flex: 1,
-    alignItems: 'center',
-  },
-  headerText: {
-    fontSize: 20,
-    paddingTop: 10,
-    paddingBottom: 5,
-  },
-  section: {
-    backgroundColor: Colors.section,
-    padding: 15,
-    borderRadius: 15,
-    marginBottom: 5,
-  },
-  viewSection: {
-    backgroundColor: Colors.section,
-    padding: 10,
-    borderRadius: 15,
-    marginBottom: 5,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  buttonSection: {
-    backgroundColor: Colors.button,
-    padding: 15,
-    borderRadius: 15,
-    marginBottom: 5,
-  },
-});
+const styles = (Colors: any) =>
+  StyleSheet.create({
+    view: {
+      justifyContent: 'flex-end',
+      margin: 0,
+    },
+    textInputNew: {
+      color: Colors.text,
+      width: '70%',
+      borderColor: Colors.text,
+      borderBottomWidth: 1,
+      fontFamily: 'inter-bold',
+    },
+    textInput: {
+      color: Colors.text,
+      width: '80%',
+      borderColor: Colors.text,
+      borderBottomWidth: 1,
+    },
+    numInput: {
+      color: Colors.text,
+      width: '10%',
+      borderColor: Colors.text,
+      borderBottomWidth: 1,
+      marginVertical: 5,
+      textAlign: 'center',
+    },
+    container: {
+      backgroundColor: Colors.background,
+      flex: 1,
+      alignItems: 'center',
+    },
+    headerText: {
+      fontSize: 20,
+      paddingTop: 10,
+      paddingBottom: 5,
+    },
+    section: {
+      backgroundColor: Colors.section,
+      padding: 15,
+      borderRadius: 15,
+      marginBottom: 5,
+    },
+    viewSection: {
+      backgroundColor: Colors.section,
+      padding: 10,
+      borderRadius: 15,
+      marginBottom: 5,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    buttonSection: {
+      backgroundColor: Colors.button,
+      padding: 15,
+      borderRadius: 15,
+      marginBottom: 5,
+    },
+  });

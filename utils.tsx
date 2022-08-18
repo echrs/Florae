@@ -10,10 +10,27 @@ export const getTodayDate = () => {
   return date.toISOString();
 };
 
-export const setDaysAndTime = (days: any, time: any) => {
-  var date = new Date();
-  date.setDate(date.getDate() + parseInt(days));
-  date.setHours(parseInt(time), 0, 0, 0);
+export const setDaysAndTime = (days: any, time: any, existingDate: any, existingDays: any) => {
+  let date = new Date();
+  let exDate;
+  if (existingDate?.length > 0) exDate = new Date(existingDate);
+  if (days > 0) {
+    if (exDate) {
+      let prevDate = new Date(existingDate);
+      prevDate.setDate(prevDate.getDate() - existingDays);
+      prevDate.setHours(0, 0, 0, 0);
+      date.setHours(0, 0, 0, 0);
+      if (prevDate.getTime() === date.getTime()) date.setDate(date.getDate() + parseInt(days));
+      else date.setDate(prevDate.getDate() + parseInt(days));
+    } else date.setDate(date.getDate() + parseInt(days));
+  } else {
+    if (exDate) date.setDate(exDate.getDate());
+  }
+  if (time > 0) {
+    date.setHours(parseInt(time), 0, 0, 0);
+  } else {
+    if (exDate) date.setHours(exDate.getHours(), 0, 0, 0);
+  }
   return date.toISOString();
 };
 

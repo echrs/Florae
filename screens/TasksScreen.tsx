@@ -69,7 +69,7 @@ export default function TasksScreen({ navigation, route }: TasksScreenNavigation
     let plantTasks = p[plantIdx].tasks;
     let plantTask = plantTasks[taskIdx];
     if (plantTask) {
-      plantTasks[taskIdx] = { ...plantTask, lastTaskDate: getTodayDate(), taskDate: setDaysAndTime(task.taskDays, task.taskTime) };
+      plantTasks[taskIdx] = { ...plantTask, lastTaskDate: getTodayDate(), taskDate: setDaysAndTime(task.taskDays, task.taskTime, '', '') };
       p[plantIdx] = { ...p[plantIdx], tasks: plantTasks };
       setPlants([...p]);
     }
@@ -82,7 +82,7 @@ export default function TasksScreen({ navigation, route }: TasksScreenNavigation
     let plantTasks = p[plantIdx].tasks;
     let plantTask = plantTasks[taskIdx];
     if (plantTask) {
-      plantTasks[taskIdx] = { ...plantTask, taskDate: setDaysAndTime(1, task.taskTime) };
+      plantTasks[taskIdx] = { ...plantTask, taskDate: setDaysAndTime(1, task.taskTime, '', '') };
       p[plantIdx] = { ...p[plantIdx], tasks: plantTasks };
       setPlants([...p]);
     }
