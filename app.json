@@ -23,10 +23,6 @@
     },
     "android": {      
       "package": "com.primenum.florae",
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      },
       "googleServicesFile": "./google-services.json"
     },
     "web": {
@@ -36,7 +32,7 @@
       [
         "expo-notifications",
         {
-          "icon": "./assets/images/notificon.png",
+          "icon": "./assets/images/notificon1.png",
           "color": "#ffffff"
         }
       ]

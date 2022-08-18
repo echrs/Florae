@@ -108,7 +108,7 @@ export default function HomeScreen({ navigation, route }: HomeScreenNavigationPr
               <TransparentView style={{ flexDirection: 'row', paddingTop: 10, flexWrap: 'wrap' }}>
                 {plants &&
                   plants
-                    ?.slice(Math.max(plants.length - 4, 0))
+                    ?.slice(0,4)
                     .map((plant: any) => (
                       <TouchableOpacity
                         key={plant._id}
