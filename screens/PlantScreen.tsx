@@ -247,6 +247,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
       tasks: taskArr,
       img: getValues().img,
       userId: user.userId,
+      dateCreated: new Date().toISOString()
     };
 
     if (mode === Mode.new) {
@@ -266,6 +267,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
         tasks: obj.tasks,
         img: obj.img ? obj.img : p[idx].img,
         userId: obj.userId,
+        dateCreated: obj.dateCreated
       };
       setPlants([...p]);
       setMode(Mode.view);

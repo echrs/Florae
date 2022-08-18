@@ -109,7 +109,6 @@ export default function HomeScreen({ navigation, route }: HomeScreenNavigationPr
                 {plants &&
                   plants
                     ?.slice(Math.max(plants.length - 4, 0))
-                    .reverse()
                     .map((plant: any) => (
                       <TouchableOpacity
                         key={plant._id}

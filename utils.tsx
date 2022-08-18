@@ -35,3 +35,7 @@ export const setDaysAndTime = (days: any, time: any, existingDate: any, existing
 };
 
 export const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+
+export const sort = (arr) => {
+  return arr.sort((a, b) => new Date(a.dateCreated).getTime() - new Date(b.dateCreated).getTime()).reverse();
+};
