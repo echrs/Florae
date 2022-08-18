@@ -5,7 +5,7 @@ import { Foundation, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-
 import { getDaysLeft } from '../utils';
 import { Context } from '../Context';
 
-export const TaskSection = ({ taskArr, taskName, taskDone, taskSnooze }: any) => {
+export const TaskSection = ({ navigation, taskArr, taskName, taskDone, taskSnooze }: any) => {
   const { colorsCtx } = useContext(Context);
   const [Colors] = colorsCtx;
 
@@ -33,7 +33,10 @@ export const TaskSection = ({ taskArr, taskName, taskDone, taskSnooze }: any) =>
             style={{ marginTop: 7, flexDirection: 'row', justifyContent: 'space-between', overflow: 'hidden' }}
             key={task.taskFieldname + task.plantId}
           >
-            <>
+            <TouchableOpacity onPress={() => {
+                navigation.navigate('Plant', { plantId: task.plantId });
+              }}
+            >
               <TransparentView style={{ flexDirection: 'row' }}>
                 {task.plantImg ? (
                   <Image source={{ uri: task.plantImg }} style={styles(Colors).img} />
@@ -62,7 +65,7 @@ export const TaskSection = ({ taskArr, taskName, taskDone, taskSnooze }: any) =>
                   )}
                 </TransparentView>
               </TransparentView>
-            </>
+            </TouchableOpacity>
             <TransparentView style={{ flexDirection: 'row', alignItems: 'center' }}>
               {getDaysLeft(task.taskDate) > 0 ? (
                 <MaterialIcons name='check-circle' size={26} color={Colors.checkIconInactive} />

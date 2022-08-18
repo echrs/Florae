@@ -221,6 +221,17 @@ function TasksTabNavigator() {
           ),
         })}
       />
+      <TasksTab.Screen
+        name='Plant'
+        component={PlantScreen}
+        options={({ navigation }) => ({
+          headerTitle: 'New plant',
+          headerShown: true,
+          headerTransparent: true,
+          headerShadowVisible: false,
+          headerTintColor: Colors.text,
+        })}
+      />
     </TasksTab.Navigator>
   );
 }

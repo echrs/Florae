@@ -115,26 +115,62 @@ export default function TasksScreen({ navigation, route }: TasksScreenNavigation
             {activeTab === Tab.today && (
               <TransparentView>
                 {todayWaterTasks.length > 0 && (
-                  <TaskSection taskDone={onDoneTask} taskSnooze={onSnoozeTask} taskArr={todayWaterTasks} taskName='Water'></TaskSection>
+                  <TaskSection
+                    navigation={navigation}
+                    taskDone={onDoneTask}
+                    taskSnooze={onSnoozeTask}
+                    taskArr={todayWaterTasks}
+                    taskName='Water'
+                  ></TaskSection>
                 )}
                 {todayFeedTasks.length > 0 && (
-                  <TaskSection taskDone={onDoneTask} taskSnooze={onSnoozeTask} taskArr={todayFeedTasks} taskName='Feed'></TaskSection>
+                  <TaskSection
+                    navigation={navigation}
+                    taskDone={onDoneTask}
+                    taskSnooze={onSnoozeTask}
+                    taskArr={todayFeedTasks}
+                    taskName='Feed'
+                  ></TaskSection>
                 )}
                 {todayCustomTasks.length > 0 && (
-                  <TaskSection taskDone={onDoneTask} taskSnooze={onSnoozeTask} taskArr={todayCustomTasks} taskName='Custom'></TaskSection>
+                  <TaskSection
+                    navigation={navigation}
+                    taskDone={onDoneTask}
+                    taskSnooze={onSnoozeTask}
+                    taskArr={todayCustomTasks}
+                    taskName='Custom'
+                  ></TaskSection>
                 )}
               </TransparentView>
             )}
             {activeTab === Tab.upcoming && (
               <TransparentView>
                 {upcomingWaterTasks.length > 0 && (
-                  <TaskSection taskDone={onDoneTask} taskSnooze={onSnoozeTask} taskArr={upcomingWaterTasks} taskName='Water'></TaskSection>
+                  <TaskSection
+                    navigation={navigation}
+                    taskDone={onDoneTask}
+                    taskSnooze={onSnoozeTask}
+                    taskArr={upcomingWaterTasks}
+                    taskName='Water'
+                  ></TaskSection>
                 )}
                 {upcomingFeedTasks.length > 0 && (
-                  <TaskSection taskDone={onDoneTask} taskSnooze={onSnoozeTask} taskArr={upcomingFeedTasks} taskName='Feed'></TaskSection>
+                  <TaskSection
+                    navigation={navigation}
+                    taskDone={onDoneTask}
+                    taskSnooze={onSnoozeTask}
+                    taskArr={upcomingFeedTasks}
+                    taskName='Feed'
+                  ></TaskSection>
                 )}
                 {upcomingCustomTasks.length > 0 && (
-                  <TaskSection taskDone={onDoneTask} taskSnooze={onSnoozeTask} taskArr={upcomingCustomTasks} taskName='Custom'></TaskSection>
+                  <TaskSection
+                    navigation={navigation}
+                    taskDone={onDoneTask}
+                    taskSnooze={onSnoozeTask}
+                    taskArr={upcomingCustomTasks}
+                    taskName='Custom'
+                  ></TaskSection>
                 )}
               </TransparentView>
             )}

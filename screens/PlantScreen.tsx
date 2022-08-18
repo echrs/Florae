@@ -16,7 +16,7 @@ import { Mode } from '../constants/Constants';
 import Modal from 'react-native-modal';
 import Constants from 'expo-constants';
 import { Controller, useForm } from 'react-hook-form';
-import { HomeTabParamList, TabsParamList } from '../types';
+import { HomeTabParamList, TabsParamList, Plant } from '../types';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { CompositeScreenProps } from '@react-navigation/native';
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
@@ -45,7 +45,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
   const [plants, setPlants] = plantsCtx;
   const { colorsCtx } = useContext(Context);
   const [Colors] = colorsCtx;
-  const [plant, setPlant] = useState({} as any);
+  const [plant, setPlant] = useState<Plant>();
   const [mode, setMode] = useState(0);
   const [viewImg, setViewImg] = useState('');
   const [taskList, setTaskList] = useState<
@@ -58,8 +58,12 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (route.params?.plant) {
+    if (route.params) {
       let plant = route.params?.plant;
+      let plantId = route.params?.plantId;
+      if (plantId) {
+        plant = plants.find((plant: Plant) => plant._id === plantId);
+      }
       if (plant) {
         setPlant(plant);
         setMode(Mode.view);
@@ -141,7 +145,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
   }, [mode]);
 
   const identifyPlant = async () => {
-    let uri = getValues().img || plant.img;
+    let uri = getValues().img || plant?.img;
     if (uri) {
       setIsLoading(true);
       const base64 = await FileSystem.readAsStringAsync(uri, { encoding: 'base64' });
@@ -181,7 +185,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
       uTaskList[idx] = { ...task, lastTaskDate: getTodayDate(), taskDate: setDaysAndTime(task.taskDays, task.taskTime, '', '') };
       setTaskList(uTaskList);
       let p = plants;
-      let pIdx = p.findIndex((x: any) => x._id === plant._id);
+      let pIdx = p.findIndex((x: any) => x._id === plant?._id);
       p[pIdx] = { ...p[pIdx], tasks: uTaskList };
       setPlants([...p]);
     }
@@ -189,7 +193,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
 
   const deleteCurrPlant = () => {
     let p = plants;
-    p = p.filter((x: any) => x._id !== plant._id);
+    p = p.filter((x: any) => x._id !== plant?._id);
     setPlants([...p]);
     navigation.pop();
   };
@@ -247,7 +251,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
       tasks: taskArr,
       img: getValues().img,
       userId: user.userId,
-      dateCreated: new Date().toISOString()
+      dateCreated: new Date().toISOString(),
     };
 
     if (mode === Mode.new) {
@@ -257,17 +261,17 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
       navigation.pop();
     } else if (mode === Mode.edit) {
       let p = plants;
-      let idx = p.findIndex((el: any) => el._id === plant._id);
+      let idx = p.findIndex((el: any) => el._id === plant?._id);
       p[idx] = {
         __v: 0,
-        _id: plant._id,
+        _id: plant?._id,
         name: obj.name,
         nickname: obj.nickname,
         notes: obj.notes,
         tasks: obj.tasks,
         img: obj.img ? obj.img : p[idx].img,
         userId: obj.userId,
-        dateCreated: obj.dateCreated
+        dateCreated: obj.dateCreated,
       };
       setPlants([...p]);
       setMode(Mode.view);
@@ -391,7 +395,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
                 </TransparentView>
               ) : (
                 <Controller
-                  defaultValue={fieldName === 'Nickname' ? plant.nickname : fieldName === 'Name' ? plant.name : plant.notes}
+                  defaultValue={fieldName === 'Nickname' ? plant?.nickname : fieldName === 'Name' ? plant?.name : plant?.notes}
                   control={control}
                   name={fieldName}
                   render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (

@@ -1,5 +1,3 @@
-import { NavigatorScreenParams } from '@react-navigation/native';
-
 export type NO_PARAMS = undefined;
 
 export type RootStackParamList = {
@@ -22,16 +20,17 @@ export type TabsParamList = {
 
 export type HomeTabParamList = {
   Home: NO_PARAMS;
-  Plant: { plant: { nickname: string; name: string; _id: string; notes: string, img: string, tasks: any } };
+  Plant: { plant?: Plant, plantId?: string };
 };
 
 export type TasksTabParamList = {
   Tasks: NO_PARAMS;
-  NewTask: NO_PARAMS;
-  ViewTask: NO_PARAMS;
+  Plant: { plant?: Plant, plantId?: string };
 };
 
 export type PlantsTabParamList = {
   Plants: NO_PARAMS;
-  Plant: { plant: { nickname: string; name: string; _id: string; notes: string, img: string, tasks: any  } };
+  Plant: { plant?: Plant, plantId?: string };
 };
+
+export type Plant = { _id: string, dateCreated: string, name: string, nickname: string, notes: string, tasks: any, userId: string, img: string };
