@@ -263,7 +263,6 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
       let p = plants;
       let idx = p.findIndex((el: any) => el._id === plant?._id);
       p[idx] = {
-        __v: 0,
         _id: plant?._id,
         name: obj.name,
         nickname: obj.nickname,
@@ -271,7 +270,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
         tasks: obj.tasks,
         img: obj.img ? obj.img : p[idx].img,
         userId: obj.userId,
-        dateCreated: obj.dateCreated,
+        dateCreated: plant?.dateCreated,
       };
       setPlants([...p]);
       setMode(Mode.view);
@@ -335,6 +334,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
                 name={fieldName + 'Name'}
                 render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                   <TextInput
+                    maxLength={10}
                     multiline={multiline}
                     selectionColor={Colors.button}
                     style={styles(Colors).textInputNew}
@@ -400,6 +400,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
                   name={fieldName}
                   render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                     <TextInput
+                      maxLength={fieldName === 'Nickname' ? 15 : fieldName === 'Name' ? 20 : 1000}
                       multiline={multiline}
                       selectionColor={Colors.button}
                       style={styles(Colors).textInput}
@@ -514,7 +515,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
                         </BoldText>
                         {task.lastTaskDate ? (
                           <Text color={{ Colors }} style={{ alignSelf: 'center', paddingLeft: 2, fontSize: 10, color: '#5a5a5a' }}>
-                            (Last done: {new Date(task.lastTaskDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })})
+                            (Last done: {new Date(task.lastTaskDate).toLocaleDateString('en-GB', { month: 'short', day: 'numeric' })})
                           </Text>
                         ) : (
                           <Text color={{ Colors }} style={{ alignSelf: 'center', paddingLeft: 2, fontSize: 10, color: '#5a5a5a' }}>
@@ -523,7 +524,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
                         )}
                       </TransparentView>
                       <TransparentView style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        {getDaysLeft(task.taskDate) <= 0 ? (
+                        {getDaysLeft(task.taskDate) === 0 && (
                           <>
                             <Text color={{ Colors }} style={{ marginRight: 5 }}>
                               Now
@@ -537,10 +538,30 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
                               <MaterialIcons name='check-circle' size={25} color={Colors.checkIconActive} />
                             </TouchableOpacity>
                           </>
-                        ) : (
+                        )}
+                        {getDaysLeft(task.taskDate) < 0 && (
                           <>
                             <Text color={{ Colors }} style={{ marginRight: 5 }}>
-                              In {getDaysLeft(task.taskDate)} days
+                              {getDaysLeft(task.taskDate) === -1
+                                ? 'Overdue ' + getDaysLeft(task.taskDate) * -1 + ' day'
+                                : 'Overdue ' + getDaysLeft(task.taskDate) * -1 + ' days'}
+                            </Text>
+                            <TouchableOpacity
+                              style={{ marginLeft: 5 }}
+                              onPress={() => {
+                                setTaskDone(task.taskFieldName);
+                              }}
+                            >
+                              <MaterialIcons name='check-circle' size={25} color={Colors.checkIconActive} />
+                            </TouchableOpacity>
+                          </>
+                        )}
+                        {getDaysLeft(task.taskDate) > 0 && (
+                          <>
+                            <Text color={{ Colors }} style={{ marginRight: 5 }}>
+                              {getDaysLeft(task.taskDate) === 1
+                                ? 'In ' + getDaysLeft(task.taskDate) + ' day'
+                                : 'In ' + getDaysLeft(task.taskDate) + ' days'}
                             </Text>
                             <MaterialIcons style={{ marginLeft: 5 }} name='check-circle' size={25} color={Colors.checkIconInactive} />
                           </>

@@ -4,7 +4,6 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import {
   ScrollView,
   StyleSheet,
-  Image,
   TouchableOpacity,
   Switch,
   KeyboardAvoidingView,
@@ -15,7 +14,6 @@ import {
 } from 'react-native';
 import { editUser, logout, syncPlants } from '../api';
 import { BoldText, SafeAreaView, TransparentView, Text } from '../components/CustomStyled';
-import { Colors } from '../constants/Constants';
 import { Context } from '../Context';
 import NetInfo from '@react-native-community/netinfo';
 import { Controller, useForm } from 'react-hook-form';
@@ -23,6 +21,7 @@ import Modal from 'react-native-modal';
 import Constants from 'expo-constants';
 import { EMAIL_REGEX } from '../utils';
 import { PickImage } from '../components/PickImage';
+import * as Updates from 'expo-updates';
 
 export default function ProfileScreen() {
   const { plantsCtx } = useContext(Context);
@@ -45,6 +44,8 @@ export default function ProfileScreen() {
   const [theme] = themeCtx;
   const { colorsCtx } = useContext(Context);
   const [Colors] = colorsCtx;
+  const { notificationsCtx } = useContext(Context);
+  const [notifications] = notificationsCtx;
 
   const toggleTheme = async () => {
     setEnableDarkTheme((previousState) => !previousState);
@@ -56,7 +57,14 @@ export default function ProfileScreen() {
     ToastAndroid.show('Done! Please reload the application.', ToastAndroid.SHORT);
   };
 
-  const toggleNotifications = () => setEnableNotif((previousState) => !previousState);
+  const toggleNotifications = async () => {
+    setEnableNotif((previousState) => !previousState);
+    if (enableNotif) {
+      await AsyncStorage.setItem('notifications', 'off');
+    } else {
+      await AsyncStorage.setItem('notifications', 'on');
+    }
+  };
 
   useEffect(() => {
     if (user.img) {
@@ -65,12 +73,16 @@ export default function ProfileScreen() {
     if (theme === 'dark') {
       setEnableDarkTheme(true);
     } else setEnableDarkTheme(false);
+    if (notifications === 'on') {
+      setEnableNotif(true);
+    } else setEnableNotif(false);
   }, []);
 
   const signOut = () => {
     logout();
     setUser('');
     setPlants('');
+    Updates.reloadAsync();
   };
 
   const syncWDB = async () => {
@@ -122,7 +134,6 @@ export default function ProfileScreen() {
       setUser({ ...user, name: name, email: email });
       setModalVisible(false);
     }
-    reset();
   };
 
   return (
@@ -230,14 +241,11 @@ export default function ProfileScreen() {
                           value: 2,
                           message: 'Name should be at least 2 characters long.',
                         },
-                        maxLength: {
-                          value: 15,
-                          message: 'Name should be max 15 characters long.',
-                        },
                       }}
                       render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                         <>
                           <TextInput
+                            maxLength={15}
                             selectionColor={Colors.button}
                             style={styles(Colors).textInput}
                             onBlur={onBlur}
@@ -262,6 +270,7 @@ export default function ProfileScreen() {
                       render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                         <>
                           <TextInput
+                            maxLength={320}
                             selectionColor={Colors.button}
                             style={styles(Colors).textInput}
                             onBlur={onBlur}
@@ -327,7 +336,7 @@ export default function ProfileScreen() {
                   <MaterialIcons name='lock-outline' size={20} color={Colors.text} />
                 </TransparentView>
               </TouchableOpacity>
-              <TransparentView style={[{ paddingLeft: 15, backgroundColor: Colors.section }, styles(Colors).section]}>
+              <TransparentView style={[{ paddingLeft: 15, paddingVertical: 12, backgroundColor: Colors.section }, styles(Colors).section]}>
                 <TransparentView style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                   <BoldText color={{ Colors }}>Notifications</BoldText>
                   <Switch
@@ -338,7 +347,7 @@ export default function ProfileScreen() {
                   />
                 </TransparentView>
               </TransparentView>
-              <TransparentView style={[{ paddingLeft: 15, backgroundColor: Colors.section }, styles(Colors).section]}>
+              <TransparentView style={[{ paddingLeft: 15, paddingVertical: 12, backgroundColor: Colors.section }, styles(Colors).section]}>
                 <TransparentView style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                   <BoldText color={{ Colors }}>Dark mode</BoldText>
                   <Switch

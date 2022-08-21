@@ -17,8 +17,8 @@ export default function HomeScreen({ navigation, route }: HomeScreenNavigationPr
   const [plants] = plantsCtx;
   const { colorsCtx } = useContext(Context);
   const [Colors] = colorsCtx;
-
   const [percentage, setPercentage] = useState(1);
+  const [updatedPlants, setUpdatedPlants] = useState([]);
 
   useEffect(() => {
     navigation.addListener('focus', () => {
@@ -60,6 +60,8 @@ export default function HomeScreen({ navigation, route }: HomeScreenNavigationPr
       });
       if (todayTotalTasks.length != 0 || todayUndoneTasks.length != 0) setPercentage(todayUndoneTasks.length / todayTotalTasks.length);
     }
+
+    setUpdatedPlants(plants);
   }, [plants]);
 
   return (
@@ -91,7 +93,7 @@ export default function HomeScreen({ navigation, route }: HomeScreenNavigationPr
               <BoldText color={{ Colors }} style={{ fontSize: 20 }}>
                 Latest plants
               </BoldText>
-              {(!plants || !plants.length) && (
+              {(!updatedPlants || !updatedPlants.length) && (
                 <TransparentView style={{ flexDirection: 'row', paddingTop: 5 }}>
                   <Text color={{ Colors }}>There are currently none!</Text>
                   <TouchableOpacity
@@ -106,29 +108,27 @@ export default function HomeScreen({ navigation, route }: HomeScreenNavigationPr
                 </TransparentView>
               )}
               <TransparentView style={{ flexDirection: 'row', paddingTop: 10, flexWrap: 'wrap' }}>
-                {plants &&
-                  plants
-                    ?.slice(0,4)
-                    .map((plant: any) => (
-                      <TouchableOpacity
-                        key={plant._id}
-                        style={styles(Colors).plant}
-                        onPress={() => {
-                          navigation.navigate('Plant', { plant: plant });
-                        }}
-                      >
-                        <TransparentView style={{}}>
-                          {plant.img ? (
-                            <Image source={{ uri: plant.img }} style={styles(Colors).img} />
-                          ) : (
-                            <Image source={require('../assets/images/1-op.jpg')} style={styles(Colors).img} />
-                          )}
-                          <Text color={{ Colors }} style={{ fontSize: 15 }}>
-                            {plant.nickname}
-                          </Text>
-                        </TransparentView>
-                      </TouchableOpacity>
-                    ))}
+                {updatedPlants &&
+                  updatedPlants?.slice(0, 4).map((plant: any) => (
+                    <TouchableOpacity
+                      key={plant._id}
+                      style={styles(Colors).plant}
+                      onPress={() => {
+                        navigation.navigate('Plant', { plant: plant });
+                      }}
+                    >
+                      <TransparentView style={{}}>
+                        {plant.img ? (
+                          <Image source={{ uri: plant.img }} style={styles(Colors).img} />
+                        ) : (
+                          <Image source={require('../assets/images/1-op.jpg')} style={styles(Colors).img} />
+                        )}
+                        <Text color={{ Colors }} style={{ fontSize: 15 }}>
+                          {plant.nickname}
+                        </Text>
+                      </TransparentView>
+                    </TouchableOpacity>
+                  ))}
               </TransparentView>
             </TransparentView>
           </ScrollView>

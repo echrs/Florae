@@ -33,7 +33,8 @@ export const TaskSection = ({ navigation, taskArr, taskName, taskDone, taskSnooz
             style={{ marginTop: 7, flexDirection: 'row', justifyContent: 'space-between', overflow: 'hidden' }}
             key={task.taskFieldname + task.plantId}
           >
-            <TouchableOpacity onPress={() => {
+            <TouchableOpacity
+              onPress={() => {
                 navigation.navigate('Plant', { plantId: task.plantId });
               }}
             >
@@ -54,13 +55,23 @@ export const TaskSection = ({ navigation, taskArr, taskName, taskDone, taskSnooz
                       {task.plantName}
                     </Text>
                   )}
-                  {getDaysLeft(task.taskDate) > 0 ? (
+                  {getDaysLeft(task.taskDate) > 0 && (
                     <Text color={{ Colors }} style={{ paddingLeft: 5, fontSize: 13, color: '#5a5a5a' }}>
-                      {'(In ' + getDaysLeft(task.taskDate) + ' days)'}
+                      {getDaysLeft(task.taskDate) === 1
+                        ? '(In ' + getDaysLeft(task.taskDate) + ' day)'
+                        : '(In ' + getDaysLeft(task.taskDate) + ' days)'}
                     </Text>
-                  ) : (
+                  )}
+                  {getDaysLeft(task.taskDate) === 0 && (
                     <Text color={{ Colors }} style={{ paddingLeft: 5, fontSize: 13, color: '#5a5a5a' }}>
                       {'(Now)'}
+                    </Text>
+                  )}
+                  {getDaysLeft(task.taskDate) < 0 && (
+                    <Text color={{ Colors }} style={{ paddingLeft: 5, fontSize: 13, color: '#5a5a5a' }}>
+                      {getDaysLeft(task.taskDate) === -1
+                        ? '(Overdue ' + getDaysLeft(task.taskDate) * -1 + ' day)'
+                        : '(Overdue ' + getDaysLeft(task.taskDate) * -1 + ' days)'}
                     </Text>
                   )}
                 </TransparentView>

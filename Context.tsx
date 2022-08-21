@@ -6,7 +6,7 @@ import { Colors as ColorsDark, ColorsLight } from './constants/Constants';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
-import { sort } from './utils';
+import { getDaysLeft, sort } from './utils';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -22,6 +22,7 @@ export const Provider = (props: any) => {
   const [user, setUser] = useState('');
   const [plants, setPlants] = useState([]);
   const [theme, setTheme] = useState('dark');
+  const [notifications, setNotifications] = useState('on');
   const [Colors, setColors] = useState({ ...ColorsDark });
   const [expoPushToken, setExpoPushToken] = useState('');
   const [notification, setNotification] = useState(false);
@@ -71,6 +72,7 @@ export const Provider = (props: any) => {
       saveToStorage();
       schedulePushNotification();
     }
+
     async function saveToStorage() {
       await AsyncStorage.setItem('plants', JSON.stringify(plants));
       console.log('saved plants to storage');
@@ -78,21 +80,24 @@ export const Provider = (props: any) => {
     }
 
     async function schedulePushNotification() {
-      let allTasks = plants.flatMap((plant: any) => {
-        return plant.tasks.map((task: any) => {
-          return { ...task };
+      if (notifications === 'on') {
+        let allTasks = plants.flatMap((plant: any) => {
+          return plant.tasks.map((task: any) => {
+            return { ...task };
+          });
         });
-      });
-      let earliest = allTasks.sort((objA, objB) => new Date(objA.taskDate).getTime() - new Date(objA.taskDate).getTime())[0];
-      await Notifications.cancelAllScheduledNotificationsAsync();
-      await Notifications.scheduleNotificationAsync({
-        content: {
-          title: 'Your plants are waiting!',
-          body: 'Take care of them.',
-          data: { data: '' },
-        },
-        trigger: { date: new Date(earliest.taskDate) },
-      });
+        let earliest = allTasks.sort((a, b) => new Date(a.taskDate).getTime() - new Date(b.taskDate).getTime())[0];
+        let taskDate = new Date(earliest.taskDate);
+        if (getDaysLeft(earliest.taskDate) < 0) taskDate.setDate(taskDate.getDate() + (getDaysLeft(earliest.taskDate) * -1 + 1));
+        await Notifications.cancelAllScheduledNotificationsAsync();
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: 'Your plants are waiting!',
+            body: 'Take care of them.',
+          },
+          trigger: { date: taskDate },
+        });
+      }
     }
   }, [plants]);
 
@@ -109,6 +114,12 @@ export const Provider = (props: any) => {
     } else {
       setTheme('dark');
       setColors({ ...ColorsDark });
+    }
+    var notifications = await AsyncStorage.getItem('notifications');
+    if (notifications === 'off') {
+      setNotifications('off');
+    } else {
+      setNotifications('on');
     }
   };
 
@@ -183,7 +194,6 @@ export const Provider = (props: any) => {
         return;
       }
       token = (await Notifications.getExpoPushTokenAsync()).data;
-      console.log(token);
     } else {
       alert('Must use physical device for Push Notifications');
     }
@@ -207,6 +217,7 @@ export const Provider = (props: any) => {
         plantsCtx: [plants, setPlants],
         themeCtx: [theme, setTheme],
         colorsCtx: [Colors, setColors],
+        notificationsCtx: [notifications, setNotifications],
       }}
     >
       {props.children}
