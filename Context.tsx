@@ -16,10 +16,10 @@ Notifications.setNotificationHandler({
   }),
 });
 
-export const Context = createContext({});
+export const Context = createContext({} as any);
 
 export const Provider = (props: any) => {
-  const [user, setUser] = useState('');
+  const [user, setUser] = useState('' as any);
   const [plants, setPlants] = useState([]);
   const [theme, setTheme] = useState('dark');
   const [notifications, setNotifications] = useState('on');
