@@ -33,7 +33,6 @@ export default function PlantsScreen({ navigation, route }: PlantsScreenNavigati
     }
   };
 
-
   useEffect(() => {
     navigation.addListener('focus', () => {
       getAndSetPlants();
@@ -78,7 +77,7 @@ export default function PlantsScreen({ navigation, route }: PlantsScreenNavigati
               <BoldText color={{ Colors }} style={{ fontSize: 20 }}>
                 All plants
               </BoldText>
-              <TransparentView>
+              <TransparentView style={{ alignSelf: 'center' }}>
                 <TouchableOpacity
                   style={{ marginLeft: 5 }}
                   onPress={() => {
@@ -89,27 +88,26 @@ export default function PlantsScreen({ navigation, route }: PlantsScreenNavigati
                 </TouchableOpacity>
               </TransparentView>
             </TransparentView>
-            {filteredPlants
-              ?.map((plant: any) => (
-                <TouchableOpacity
-                  key={plant._id}
-                  style={styles(Colors).plant}
-                  onPress={() => {
-                    navigation.navigate('Plant', { plant: plant });
-                  }}
-                >
-                  <TransparentView style={{ flexDirection: 'row' }}>
-                    {plant.img ? (
-                      <Image source={{ uri: plant.img }} style={styles(Colors).img} />
-                    ) : (
-                      <Image source={require('../assets/images/1-op.jpg')} style={styles(Colors).img} />
-                    )}
-                    <Text color={{ Colors }} style={{ paddingLeft: 10, alignSelf: 'center', fontSize: 15 }}>
-                      {plant.nickname}
-                    </Text>
-                  </TransparentView>
-                </TouchableOpacity>
-              ))}
+            {filteredPlants?.map((plant: any) => (
+              <TouchableOpacity
+                key={plant._id}
+                style={styles(Colors).plant}
+                onPress={() => {
+                  navigation.navigate('Plant', { plant: plant });
+                }}
+              >
+                <TransparentView style={{ flexDirection: 'row' }}>
+                  {plant.img ? (
+                    <Image source={{ uri: plant.img }} style={styles(Colors).img} />
+                  ) : (
+                    <Image source={require('../assets/images/1-op.jpg')} style={styles(Colors).img} />
+                  )}
+                  <Text color={{ Colors }} style={{ paddingLeft: 10, alignSelf: 'center', fontSize: 15 }}>
+                    {plant.nickname}
+                  </Text>
+                </TransparentView>
+              </TouchableOpacity>
+            ))}
             {(!filteredPlants || !filteredPlants.length) && <Text>There are currently none!</Text>}
           </TransparentView>
         </ScrollView>

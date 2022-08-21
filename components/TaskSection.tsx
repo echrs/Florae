@@ -23,9 +23,15 @@ export const TaskSection = ({ navigation, taskArr, taskName, taskDone, taskSnooz
         <BoldText color={{ Colors }} style={{ fontSize: 18, paddingLeft: 5, textTransform: 'uppercase' }}>
           {taskName}
         </BoldText>
-        {taskName === 'Water' && <MaterialCommunityIcons style={{ paddingLeft: 2 }} name='watering-can-outline' size={18} color={Colors.text} />}
-        {taskName === 'Feed' && <MaterialCommunityIcons style={{ paddingTop: 2 }} name='lightning-bolt' size={15} color={Colors.text} />}
-        {taskName === 'Custom' && <Foundation style={{ paddingTop: 3, paddingLeft: 3 }} name='asterisk' size={15} color={Colors.text} />}
+        {taskName === 'Water' && (
+          <MaterialCommunityIcons style={{ paddingLeft: 2, alignSelf: 'center' }} name='watering-can-outline' size={18} color={Colors.text} />
+        )}
+        {taskName === 'Feed' && (
+          <MaterialCommunityIcons style={{ paddingTop: 2, alignSelf: 'center' }} name='lightning-bolt' size={15} color={Colors.text} />
+        )}
+        {taskName === 'Custom' && (
+          <Foundation style={{ paddingTop: 3, paddingLeft: 3, alignSelf: 'center' }} name='asterisk' size={15} color={Colors.text} />
+        )}
       </TransparentView>
       <TransparentView>
         {taskArr?.map((task: any) => (

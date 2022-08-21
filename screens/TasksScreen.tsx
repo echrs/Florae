@@ -108,7 +108,7 @@ export default function TasksScreen({ navigation, route }: TasksScreenNavigation
                   <BoldText style={[{ fontSize: 20 }, activeTab === Tab.upcoming ? styles(Colors).active : styles(Colors).inactive]}> Soon</BoldText>
                 </TouchableOpacity>
               </TransparentView>
-              <TransparentView style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <TransparentView style={{ flexDirection: 'row', alignItems: 'center', alignSelf: 'center' }}>
                 <MaterialCommunityIcons name='calendar-clock' size={25} color={Colors.text} />
               </TransparentView>
             </TransparentView>

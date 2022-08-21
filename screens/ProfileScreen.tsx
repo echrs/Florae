@@ -78,11 +78,11 @@ export default function ProfileScreen() {
     } else setEnableNotif(false);
   }, []);
 
-  const signOut = () => {
-    logout();
+  const signOut = async () => {
+    await logout();
     setUser('');
     setPlants('');
-    Updates.reloadAsync();
+    await Updates.reloadAsync();
   };
 
   const syncWDB = async () => {
@@ -337,7 +337,9 @@ export default function ProfileScreen() {
                   <MaterialIcons name='lock-outline' size={20} color={Colors.text} />
                 </TransparentView>
               </TouchableOpacity>
-              <TransparentView style={[{ paddingLeft: 15, paddingVertical: 12, backgroundColor: Colors.section }, styles(Colors).section]}>
+              <TransparentView
+                style={[{ paddingLeft: 15, paddingRight: 5, paddingVertical: 12, backgroundColor: Colors.section }, styles(Colors).section]}
+              >
                 <TransparentView style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                   <BoldText color={{ Colors }}>Notifications</BoldText>
                   <Switch
@@ -348,7 +350,9 @@ export default function ProfileScreen() {
                   />
                 </TransparentView>
               </TransparentView>
-              <TransparentView style={[{ paddingLeft: 15, paddingVertical: 12, backgroundColor: Colors.section }, styles(Colors).section]}>
+              <TransparentView
+                style={[{ paddingLeft: 15, paddingRight: 5, paddingVertical: 12, backgroundColor: Colors.section }, styles(Colors).section]}
+              >
                 <TransparentView style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                   <BoldText color={{ Colors }}>Dark mode</BoldText>
                   <Switch
