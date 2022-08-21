@@ -169,6 +169,7 @@ export default function PlantScreen({ navigation, route }: PlantScreenNavigation
         },
         (error) => {
           console.log(error);
+          ToastAndroid.show('An error occurred. Please try again.', ToastAndroid.SHORT);
           setIsLoading(false);
         }
       );

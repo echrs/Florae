@@ -124,6 +124,7 @@ export default function ProfileScreen() {
             },
             (error) => {
               console.log(error);
+              ToastAndroid.show('An error occurred. Please try again.', ToastAndroid.SHORT);
             }
           );
         }

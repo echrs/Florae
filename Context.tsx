@@ -5,7 +5,7 @@ import NetInfo from '@react-native-community/netinfo';
 import { Colors as ColorsDark, ColorsLight } from './constants/Constants';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
-import { Platform } from 'react-native';
+import { Platform, ToastAndroid } from 'react-native';
 import { getDaysLeft, sort } from './utils';
 
 Notifications.setNotificationHandler({
@@ -52,6 +52,7 @@ export const Provider = (props: any) => {
     }
     async function syncUserWDb() {
       let netInfo = await NetInfo.fetch();
+      console.log(netInfo.isConnected);
       if (netInfo.isConnected) {
         return editUser(user.userId, { name: user.name, email: user.email, img: user.img }, user.token).then(
           async (response) => {
@@ -59,6 +60,7 @@ export const Provider = (props: any) => {
           },
           (error) => {
             console.log(error);
+            ToastAndroid.show(error.message, ToastAndroid.SHORT);
           }
         );
       }
@@ -87,16 +89,18 @@ export const Provider = (props: any) => {
           });
         });
         let earliest = allTasks.sort((a, b) => new Date(a.taskDate).getTime() - new Date(b.taskDate).getTime())[0];
-        let taskDate = new Date(earliest.taskDate);
-        if (getDaysLeft(earliest.taskDate) < 0) taskDate.setDate(taskDate.getDate() + (getDaysLeft(earliest.taskDate) * -1 + 1));
-        await Notifications.cancelAllScheduledNotificationsAsync();
-        await Notifications.scheduleNotificationAsync({
-          content: {
-            title: 'Your plants are waiting!',
-            body: 'Take care of them.',
-          },
-          trigger: { date: taskDate },
-        });
+        if (earliest) {
+          let taskDate = new Date(earliest.taskDate);
+          if (getDaysLeft(earliest.taskDate) < 0) taskDate.setDate(taskDate.getDate() + (getDaysLeft(earliest.taskDate) * -1 + 1));
+          await Notifications.cancelAllScheduledNotificationsAsync();
+          await Notifications.scheduleNotificationAsync({
+            content: {
+              title: 'Your plants are waiting!',
+              body: 'Take care of them.',
+            },
+            trigger: { date: taskDate },
+          });
+        }
       }
     }
   }, [plants]);
@@ -143,6 +147,8 @@ export const Provider = (props: any) => {
           },
           (error) => {
             console.log(error);
+            ToastAndroid.show(error.message, ToastAndroid.SHORT);
+            return JSON.parse(plants);
           }
         );
       } else {
@@ -157,6 +163,7 @@ export const Provider = (props: any) => {
           },
           (error) => {
             console.log(error);
+            ToastAndroid.show(error.message, ToastAndroid.SHORT);
           }
         );
       }

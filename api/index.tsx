@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
-const api = axios.create({ baseURL: 'https://florae-back.herokuapp.com' });
+const api = axios.create({ baseURL: 'https://florae-back.herokuapp.com', timeout: 5000, timeoutErrorMessage: 'Unable to connect to the server.' });
 
 //user
 export const register = (formData: any) => api.post('/users/register', formData);
