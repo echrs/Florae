@@ -175,7 +175,7 @@ export default function TasksScreen({ navigation, route }: TasksScreenNavigation
               </TransparentView>
             )}
             {todayTasks.length <= 0 && activeTab === Tab.today && <Text color={{ Colors }}>Awesome! No tasks today.</Text>}
-            {!upcomingTasks && activeTab === Tab.upcoming && <Text color={{ Colors }}>No upcoming tasks, great!</Text>}
+            {upcomingTasks.length <= 0 && activeTab === Tab.upcoming && <Text color={{ Colors }}>No upcoming tasks, great!</Text>}
           </TransparentView>
         </ScrollView>
       </TransparentView>
