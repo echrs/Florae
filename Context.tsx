@@ -7,6 +7,7 @@ import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import { Platform, ToastAndroid } from 'react-native';
 import { getDaysLeft, sort } from './utils';
+import * as FileSystem from 'expo-file-system';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -58,7 +59,17 @@ export const Provider = (props: any) => {
   useEffect(() => {
     if (user) {
       fetchPlants();
+      checkPlantImgs();
       setupNotifications();
+    }
+
+    async function checkPlantImgs() {
+      plants.forEach(async (plant: any) => {
+        if (plant && plant.img) {
+          let tmp = await FileSystem.getInfoAsync(plant.img);
+          if (!tmp.exists) plant.img = '';
+        }
+      });
     }
 
     async function fetchPlants() {
@@ -150,7 +161,6 @@ export const Provider = (props: any) => {
 
       return token;
     }
-
   }, [user.token]);
 
   useEffect(() => {
@@ -202,16 +212,18 @@ export const Provider = (props: any) => {
         });
         let earliest = allTasks.sort((a, b) => new Date(a.taskDate).getTime() - new Date(b.taskDate).getTime())[0];
         if (earliest) {
-          let taskDate = new Date(earliest.taskDate);
-          if (getDaysLeft(earliest.taskDate) < 0) taskDate.setDate(taskDate.getDate() + (getDaysLeft(earliest.taskDate) * -1 + 1));
-          await Notifications.cancelAllScheduledNotificationsAsync();
-          await Notifications.scheduleNotificationAsync({
-            content: {
-              title: 'Your plants are waiting!',
-              body: 'Take care of them.',
-            },
-            trigger: { date: taskDate },
-          });
+          if (getDaysLeft(earliest.taskDate) >= 0) {
+            let taskDate = new Date(earliest.taskDate);
+            ToastAndroid.show(taskDate, ToastAndroid.SHORT);
+            await Notifications.cancelAllScheduledNotificationsAsync();
+            await Notifications.scheduleNotificationAsync({
+              content: {
+                title: 'Your plants are waiting!',
+                body: 'Take care of them.',
+              },
+              trigger: { date: taskDate },
+            });
+          }
         }
       }
     }

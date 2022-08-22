@@ -41,7 +41,7 @@ export default function HomeScreen({ navigation, route }: HomeScreenNavigationPr
         case hour < 21:
           setTimeStr('evening');
           break;
-        case hour < 23:
+        case hour < 24:
           setTimeStr('night');
           break;
       }
