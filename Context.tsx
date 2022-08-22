@@ -64,12 +64,14 @@ export const Provider = (props: any) => {
     }
 
     async function checkPlantImgs() {
-      plants.forEach(async (plant: any) => {
-        if (plant && plant.img) {
-          let tmp = await FileSystem.getInfoAsync(plant.img);
-          if (!tmp.exists) plant.img = '';
-        }
-      });
+      if (plants) {
+        plants.forEach(async (plant: any) => {
+          if (plant && plant.img) {
+            let tmp = await FileSystem.getInfoAsync(plant.img);
+            if (!tmp.exists) plant.img = '';
+          }
+        });
+      }
     }
 
     async function fetchPlants() {
