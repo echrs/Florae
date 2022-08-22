@@ -21,7 +21,7 @@
     "ios": {
       "supportsTablet": true
     },
-    "android": {      
+    "android": {
       "package": "com.primenum.florae",
       "googleServicesFile": "./google-services.json"
     },
@@ -36,6 +36,11 @@
           "color": "#ffffff"
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "9c97f880-326c-4ca2-917f-abd67514f23e"
+      }
+    }
   }
 }
