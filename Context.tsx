@@ -216,7 +216,6 @@ export const Provider = (props: any) => {
         if (earliest) {
           if (getDaysLeft(earliest.taskDate) >= 0) {
             let taskDate = new Date(earliest.taskDate);
-            //ToastAndroid.show(taskDate.toString(), ToastAndroid.SHORT);
             await Notifications.cancelAllScheduledNotificationsAsync();
             await Notifications.scheduleNotificationAsync({
               content: {
