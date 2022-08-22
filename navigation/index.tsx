@@ -189,6 +189,7 @@ function HomeTabNavigator() {
           headerTransparent: true,
           headerShadowVisible: false,
           headerTintColor: Colors.header,
+          headerTitleStyle: { fontSize: 20 },
         })}
       />
     </HomeTab.Navigator>
@@ -229,7 +230,8 @@ function TasksTabNavigator() {
           headerShown: true,
           headerTransparent: true,
           headerShadowVisible: false,
-          headerTintColor: Colors.text,
+          headerTintColor: Colors.header,
+          headerTitleStyle: { fontSize: 20 },
         })}
       />
     </TasksTab.Navigator>
@@ -270,7 +272,8 @@ function PlantsTabNavigator() {
           headerShown: true,
           headerTransparent: true,
           headerShadowVisible: false,
-          headerTintColor: Colors.text,
+          headerTintColor: Colors.header,
+          headerTitleStyle: { fontSize: 20 },
         })}
       />
     </PlantsTab.Navigator>
